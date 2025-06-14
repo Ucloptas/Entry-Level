@@ -1,0 +1,25 @@
+{
+    "template": {
+      "name": "template master format, example 1",
+      "fields": [
+        { "name": "field 1", "type": "text" },
+        { "name": "field 2", "type": "money" }
+      ]
+    },
+    "entries": [
+      {
+        "field 1": "Entry one",
+        "field 2": 1000.50
+      },
+
+      {
+        "field 1": "Entry two",
+        "field 2": 500.00
+      },
+
+      {
+        "field 1": "Entry three",
+        "field 2": 500.00
+      }
+    ]
+  }

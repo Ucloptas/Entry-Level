@@ -1,0 +1,25 @@
+[
+    { 
+        "name": "template master format, example 1", 
+        "fields": [
+            {"name": "field 1", "type": "text"},
+            {"name": "field 2", "type": "money"}
+        ]
+    },   
+
+    { 
+        "name": "template master format, example 2", 
+        "fields": [
+            {"name": "field 1", "type": "decimal"},
+            {"name": "field 2", "type": "number"},
+            {"name": "field 3", "type": "date"}
+        ]
+    },   
+
+    { 
+        "name": "template master format, example 3", 
+        "fields": [
+            {"name": "field 1", "type": "boolean"}
+        ]
+    }
+]
