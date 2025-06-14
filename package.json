@@ -1,0 +1,22 @@
+{
+  "name": "entry-level",
+  "version": "1.0.0",
+  "description": "Basic Electron app skeleton for school project",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^26.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ucloptas/Entry-Level.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ucloptas/Entry-Level/issues"
+  },
+  "homepage": "https://github.com/Ucloptas/Entry-Level#readme"
+}
