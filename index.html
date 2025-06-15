@@ -13,9 +13,9 @@
   <div class="floating-menu hidden" id="floating-menu">
     <ul>
       <li>About</li>
-      <li>Settings</li>
+      <li id="open-settings">Settings</li>
       <li>Debug Tools</li>
-      <li id="toggle-dark-mode">Toggle Dark Mode</li>
+      <li id="open-exit">Exit</li>
     </ul>
   </div>
 
@@ -34,22 +34,38 @@
 
       <div id="new-template-screen" class="screen hidden">
         <h2>Create New Template</h2>
-        <button class="back-button" data-screen="main-menu">Back</button>
+        <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
       <div id="new-record-screen" class="screen hidden">
         <h2>Create New Record</h2>
-        <button class="back-button" data-screen="main-menu">Back</button>
+        <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
       <div id="view-records-screen" class="screen hidden">
         <h2>View Records</h2>
-        <button class="back-button" data-screen="main-menu">Back</button>
+        <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
     </div>
   </div>
-
+  <div id="settings-overlay" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>Settings</h2>
+      <button id="toggle-dark-mode" class="modal-button">Toggle Dark Mode</button>
+      <button id="close-settings" class="modal-button">Close (Esc)</button>
+    </div>
+  </div>
+  <div id="exit-overlay" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>Exit Application?</h2>
+      <p>Are you sure you want to quit?</p>
+      <div class="button-group">
+        <button id="confirm-exit" class="modal-button">Yes, Exit (Enter)</button>
+        <button id="cancel-exit" class="modal-button">Cancel (Esc)</button>
+      </div>
+    </div>
+  </div>
   <script src="renderer.js"></script>
 </body>
 </html>
