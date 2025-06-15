@@ -1,14 +1,17 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
-// Import your logic modules
+// Import backend logic
 const { loadTemplate, listTemplates } = require('./logic/templateManager');
 const { loadRecord, saveRecord, listRecords } = require('./logic/recordManager');
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 900,
-    height: 700,
+    height: 750,
+    minWidth: 700,
+    minHeight: 500,
+    resizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
@@ -20,12 +23,28 @@ function createWindow() {
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
-// Add IPC handlers to bridge the backend logic
-ipcMain.handle('list-templates', () => listTemplates());
-ipcMain.handle('load-template', (event, name) => loadTemplate(name));
-ipcMain.handle('list-records', () => listRecords());
-ipcMain.handle('load-record', (event, name) => loadRecord(name));
-ipcMain.handle('save-record', (event, { name, data }) => saveRecord(name, data));
+// IPC handlers
+ipcMain.handle('list-templates', () => {
+  return listTemplates();
+});
+
+ipcMain.handle('load-template', (event, name) => {
+  return loadTemplate(name);
+});
+
+ipcMain.handle('list-records', () => {
+  return listRecords();
+});
+
+ipcMain.handle('load-record', (event, name) => {
+  return loadRecord(name);
+});
+
+ipcMain.handle('save-record', (event, { name, data }) => {
+  return saveRecord(name, data);
+});

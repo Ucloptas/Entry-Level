@@ -1,13 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Entry Level</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Entry Level App</h1>
-  <div id="form-container"></div>
-  <button id="save-entry">Save Record</button>
+
+  <!-- Top-right floating menu icon -->
+  <div class="top-right-icon" id="menu-button" title="App Menu">☰</div>
+  <div class="floating-menu hidden" id="floating-menu">
+    <ul>
+      <li>About</li>
+      <li>Settings</li>
+      <li>Debug Tools</li>
+    </ul>
+  </div>
+
+  <!-- Centered application content -->
+  <div class="outer-wrapper">
+    <div class="app-wrapper">
+      
+      <div id="main-menu" class="screen">
+        <h1>Entry Level App</h1>
+        <div class="button-group">
+          <button class="big-button" data-screen="new-template-screen">Create New Template</button>
+          <button class="big-button" data-screen="new-record-screen">Create New Record</button>
+          <button class="big-button" data-screen="view-records-screen">View Records</button>
+        </div>
+      </div>
+
+      <div id="new-template-screen" class="screen hidden">
+        <h2>Create New Template</h2>
+        <button class="back-button" data-screen="main-menu">Back</button>
+      </div>
+
+      <div id="new-record-screen" class="screen hidden">
+        <h2>Create New Record</h2>
+        <button class="back-button" data-screen="main-menu">Back</button>
+      </div>
+
+      <div id="view-records-screen" class="screen hidden">
+        <h2>View Records</h2>
+        <button class="back-button" data-screen="main-menu">Back</button>
+      </div>
+
+    </div>
+  </div>
 
   <script src="renderer.js"></script>
 </body>

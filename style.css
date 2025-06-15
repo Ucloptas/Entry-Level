@@ -1,0 +1,151 @@
+/* BASE RESET */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+  overflow-y: auto;
+}
+
+/* FLEX LAYOUT FOR VERTICAL CENTERING */
+.outer-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  box-sizing: border-box;
+}
+
+/* MAIN CONTENT CARD */
+.app-wrapper {
+  max-width: 700px;
+  width: 100%;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+/* HEADERS */
+h1 {
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 40px;
+  color: #006A4D; /* UNT green */
+}
+
+h2 {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #004b32;
+}
+
+/* GENERAL SCREENS */
+.screen {
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+/* BUTTON GROUP */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+/* BUTTONS */
+.big-button {
+  font-size: 1.2em;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  background-color: #006A4D;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.big-button:hover {
+  background-color: #004b32;
+}
+
+.back-button {
+  margin-top: 30px;
+  padding: 10px 15px;
+  font-size: 1em;
+  background-color: #cccccc;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #aaaaaa;
+}
+
+/* TOP RIGHT ICON */
+.top-right-icon {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1000;
+  color: #006A4D;
+  user-select: none;
+}
+
+/* DROPDOWN MENU */
+.floating-menu {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.floating-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+}
+
+.floating-menu li {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.floating-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+/* FUTURE FORM/ENTRY STYLES */
+.form-row {
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.entry-row {
+  padding: 8px;
+  margin: 5px 0;
+  background: #eef1f5;
+  border-radius: 6px;
+  font-family: monospace;
+}
