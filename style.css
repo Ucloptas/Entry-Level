@@ -1,16 +1,51 @@
-/* BASE RESET */
+/* === THEME VARIABLES === */
+:root {
+  --bg-color: #f5f7fa;
+  --text-color: #222;
+  --card-bg: #ffffff;
+  --header-color: #006A4D;
+  --subheader-color: #004b32;
+  --button-bg: #006A4D;
+  --button-hover-bg: #004b32;
+  --back-button-bg: #cccccc;
+  --back-button-hover: #aaaaaa;
+  --icon-color: #006A4D;
+  --dropdown-bg: white;
+  --dropdown-border: #ccc;
+  --dropdown-hover: #f0f0f0;
+  --entry-bg: #eef1f5;
+}
+
+body.dark {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --card-bg: #1e1e1e;
+  --header-color: #4fd58f;
+  --subheader-color: #38a16c;
+  --button-bg: #4fd58f;
+  --button-hover-bg: #38a16c;
+  --back-button-bg: #333333;
+  --back-button-hover: #444444;
+  --icon-color: #4fd58f;
+  --dropdown-bg: #2a2a2a;
+  --dropdown-border: #555;
+  --dropdown-hover: #3c3c3c;
+  --entry-bg: #2c2c2c;
+}
+
+/* === RESET === */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background-color: #f5f7fa;
+  background-color: var(--bg-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #222;
+  color: var(--text-color);
   overflow-y: auto;
 }
 
-/* FLEX LAYOUT FOR VERTICAL CENTERING */
-.outer-wrapper {
+/* === LAYOUT === */
+.app-shell {
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -19,32 +54,31 @@ html, body {
   box-sizing: border-box;
 }
 
-/* MAIN CONTENT CARD */
-.app-wrapper {
+.content-container {
   max-width: 700px;
   width: 100%;
-  background: #ffffff;
+  background: var(--card-bg);
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
 }
 
-/* HEADERS */
+/* === HEADINGS === */
 h1 {
   text-align: center;
   font-size: 2.5em;
   margin-bottom: 40px;
-  color: #006A4D; /* UNT green */
+  color: var(--header-color);
 }
 
 h2 {
   font-size: 1.8em;
   margin-bottom: 20px;
-  color: #004b32;
+  color: var(--subheader-color);
 }
 
-/* GENERAL SCREENS */
+/* === SCREENS === */
 .screen {
   text-align: center;
 }
@@ -53,7 +87,7 @@ h2 {
   display: none;
 }
 
-/* BUTTON GROUP */
+/* === BUTTON GROUP === */
 .button-group {
   display: flex;
   flex-direction: column;
@@ -61,37 +95,37 @@ h2 {
   align-items: center;
 }
 
-/* BUTTONS */
+/* === BUTTONS === */
 .big-button {
   font-size: 1.2em;
   padding: 15px 30px;
   border: none;
   border-radius: 8px;
-  background-color: #006A4D;
+  background-color: var(--button-bg);
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .big-button:hover {
-  background-color: #004b32;
+  background-color: var(--button-hover-bg);
 }
 
 .back-button {
   margin-top: 30px;
   padding: 10px 15px;
   font-size: 1em;
-  background-color: #cccccc;
+  background-color: var(--back-button-bg);
   border: none;
   border-radius: 6px;
   cursor: pointer;
 }
 
 .back-button:hover {
-  background-color: #aaaaaa;
+  background-color: var(--back-button-hover);
 }
 
-/* TOP RIGHT ICON */
+/* === TOP-RIGHT MENU ICON === */
 .top-right-icon {
   position: fixed;
   top: 15px;
@@ -99,17 +133,17 @@ h2 {
   font-size: 24px;
   cursor: pointer;
   z-index: 1000;
-  color: #006A4D;
+  color: var(--icon-color);
   user-select: none;
 }
 
-/* DROPDOWN MENU */
+/* === FLOATING MENU === */
 .floating-menu {
   position: fixed;
   top: 50px;
   right: 20px;
-  background: white;
-  border: 1px solid #ccc;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   z-index: 1000;
@@ -127,10 +161,10 @@ h2 {
 }
 
 .floating-menu li:hover {
-  background-color: #f0f0f0;
+  background-color: var(--dropdown-hover);
 }
 
-/* FUTURE FORM/ENTRY STYLES */
+/* === FORMS & ENTRIES === */
 .form-row {
   margin-bottom: 10px;
   text-align: left;
@@ -145,7 +179,7 @@ h2 {
 .entry-row {
   padding: 8px;
   margin: 5px 0;
-  background: #eef1f5;
+  background: var(--entry-bg);
   border-radius: 6px;
   font-family: monospace;
 }
