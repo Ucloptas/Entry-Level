@@ -1,33 +1,18 @@
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 
-const templatesDir = path.join(os.homedir(), 'Documents', 'Entry-Level', 'templates');
-
-function ensureDirExists() {
-  if (!fs.existsSync(templatesDir)) {
-    fs.mkdirSync(templatesDir, { recursive: true });
-  }
-}
+// Path to local templates file in the repo
+const templatesPath = path.join(__dirname, '..', 'EntryLevelData', 'templates', 'defaultTemplates.json');
 
 function listTemplates() {
-  ensureDirExists();
-  return fs.readdirSync(templatesDir)
-    .filter(file => file.endsWith('.json'))
-    .map(file => path.basename(file, '.json'));
+  if (!fs.existsSync(templatesPath)) return [];
+  const data = fs.readFileSync(templatesPath, 'utf-8');
+  return JSON.parse(data);
 }
 
-function loadTemplate(templateName) {
-  ensureDirExists();
-  const filePath = path.join(templatesDir, `${templateName}.json`);
-  if (!fs.existsSync(filePath)) throw new Error('Template not found');
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+function loadTemplate(name) {
+  const templates = listTemplates();
+  return templates.find(t => t.name === name);
 }
 
-function saveTemplate(fileName, data) {
-  ensureDirExists();
-  const filePath = path.join(templatesDir, fileName);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-module.exports = { listTemplates, loadTemplate, saveTemplate };
+module.exports = { listTemplates, loadTemplate };

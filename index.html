@@ -26,26 +26,60 @@
       <div id="main-menu" class="screen">
         <h1>Entry Level App</h1>
         <div class="button-group">
-          <button class="big-button" data-screen="new-template-screen">Create New Template</button>
           <button class="big-button" data-screen="new-record-screen">Create New Record</button>
+          <button class="big-button" data-screen="new-entry-screen">Create New Entry</button>
           <button class="big-button" data-screen="view-records-screen">View Records</button>
         </div>
       </div>
 
-      <div id="new-template-screen" class="screen hidden">
-        <h2>Create New Template</h2>
+      <div id="new-entry-screen" class="screen hidden">
+        <h2>Create New Entry</h2>
         <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
       <div id="new-record-screen" class="screen hidden">
         <h2>Create New Record</h2>
-        <button class="modal-button back-button" data-screen="main-menu">Back</button>
+        <button class="big-button" data-screen="select-template-screen">Use Existing Template</button>
+        <button class="big-button" data-screen="create-template-screen">Create New Template</button>
+        <button class="big-button back-button" data-screen="main-menu">Back</button>
       </div>
+
 
       <div id="view-records-screen" class="screen hidden">
         <h2>View Records</h2>
         <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
+
+      <div id="select-template-screen" class="screen hidden">
+        <h2>Select a Template</h2>
+        <div class="template-select-wrapper">
+          <select id="template-select" class="template-dropdown"></select>
+        </div>
+        <div class="button-group" style="margin-top: 20px;">
+          <button id="select-template-confirm" class="modal-button" disabled>Continue</button>
+          <button class="back-button modal-button" data-screen="new-record-screen">Back</button>
+        </div>
+      </div>
+
+
+
+
+      <div id="create-template-screen" class="screen hidden">
+        <h2>Create Template</h2>
+        <p>(You will populate this later.)</p>
+        <button class="back-button" data-screen="new-record-screen">Back</button>
+      </div>
+
+      <div id="entry-form-screen" class="screen hidden">
+        <h2>Fill Out Entry</h2>
+        <div id="form-container"></div>
+        <button id="add-entry" class="modal-button">Add Entry</button>
+        <div id="entries-display"></div>
+        <button id="save-entry" class="modal-button">Save Record</button>
+        <button class="modal-button back-button" data-screen="main-menu">Back</button>
+      </div>
+
+
 
     </div>
   </div>

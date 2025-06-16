@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 
-const recordsDir = path.join(os.homedir(), 'Documents', 'Entry-Level', 'records');
+// Path to local records folder within the project
+const recordsDir = path.join(__dirname, '..', 'EntryLevelData', 'records');
 
 function ensureDirExists() {
   if (!fs.existsSync(recordsDir)) {

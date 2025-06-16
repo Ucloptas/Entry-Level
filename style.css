@@ -225,7 +225,41 @@ body.dark .modal-button {
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
+/* === TEMPLATE SELECT DROPDOWN === */
+#template-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 1em;
+  border: 1px solid var(--dropdown-border);
+  border-radius: 6px;
+  background-color: var(--dropdown-bg);
+  color: var(--text-color);
+  margin: 15px 0;
+  box-sizing: border-box;
+}
 
+body.dark #template-select {
+  background-color: var(--dropdown-bg);
+  color: var(--text-color);
+  border-color: var(--dropdown-border);
+}
+
+#template-select option {
+  padding: 8px;
+  background: var(--dropdown-bg);
+  color: var(--text-color);
+}
+
+#template-select:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 2px rgba(0, 106, 77, 0.2);
+}
+
+.template-select-wrapper {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
 .hidden {
   display: none !important;
