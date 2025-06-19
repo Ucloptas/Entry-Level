@@ -2,32 +2,24 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const templatesDir = path.join(os.homedir(), 'Documents', 'Entry-Level', 'templates');
+function listTemplates(userDataPath) {
+  return fs.readdirSync(path.join(userDataPath, "templates")).filter(file => file.endsWith('.json')).map(file => path.basename(file, '.json'));
+}
 
-function ensureDirExists() {
-  if (!fs.existsSync(templatesDir)) {
-    fs.mkdirSync(templatesDir, { recursive: true });
+function loadTemplate(userDataPath, templateName) { //returns the name of all json files in the templates folder without the ".json"
+  const filePath = path.join(userDataPath, "templates", `${templateName}.json`);
+  if (fs.existsSync(filePath)) return JSON.parse(fs.readFileSync(filePath, 'utf-8')); //returns entire json object if exists
+  else return {};
+}
+
+function saveTemplate(userDataPath, templateName, data) {
+  const filePath = path.join(userDataPath, "templates", `${templateName}.json`);
+  const newFileContent = JSON.stringify(data, null, 2);
+  if (fs.existsSync(filePath)) {//if file already exists, see if any changes were made.
+    const currentFileContent = fs.readFileSync(filePath, 'utf-8');
+    if (currentFileContent === newFileContent) return; // If there are no changes, skip writing
   }
-}
-
-function listTemplates() {
-  ensureDirExists();
-  return fs.readdirSync(templatesDir)
-    .filter(file => file.endsWith('.json'))
-    .map(file => path.basename(file, '.json'));
-}
-
-function loadTemplate(templateName) {
-  ensureDirExists();
-  const filePath = path.join(templatesDir, `${templateName}.json`);
-  if (!fs.existsSync(filePath)) throw new Error('Template not found');
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-}
-
-function saveTemplate(fileName, data) {
-  ensureDirExists();
-  const filePath = path.join(templatesDir, fileName);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  fs.writeFileSync(filePath, newFileContent, 'utf-8');
 }
 
 module.exports = { listTemplates, loadTemplate, saveTemplate };

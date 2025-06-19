@@ -1,0 +1,27 @@
+{
+    "template": {
+      "name": "Attendance for lessons",
+      "fields": [
+        { "name": "Student Name", "type": "text" },
+        { "name": "Lesson Date", "type": "date" },
+        {"name": "Paid? y/n", "type": "boolean"}
+      ]
+    },
+    "entries": [
+      {
+        "Student Name": "Ricky",
+        "Lesson Date": "6/12/25",
+        "Paid? y/n": "false"
+      },
+      {
+        "Student Name": "Myles",
+        "Lesson Date": "6/13/25",
+        "Paid? y/n": "false"
+      },
+      {
+        "Student Name": "Zakki",
+        "Lesson Date": "6/16/25",
+        "Paid? y/n": "false"
+      }
+    ]
+  }
