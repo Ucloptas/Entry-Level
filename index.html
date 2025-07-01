@@ -97,12 +97,42 @@
         </div>
       </div>
 
-      <!-- Create Template Placeholder -->
+      <!-- Create Template Placeholder 
       <div id="create-template-screen" class="screen hidden">
         <h2>Create Template</h2>
         <p>(Feature coming soon.)</p>
         <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
+      </div> -->
+
+      <!-- Create Template -->
+      <div id="create-template-screen" class="screen hidden">
+        <h2>Create Template</h2>
+        <label>
+          Template Name:
+          <input type="text" id="template-name-input">
+        </label>
+
+        <h3>Add Field</h3>
+        <div class="field-creator">
+          <input type="text" id="field-name-input" placeholder="Field Name">
+          <select id="field-type-select">
+            <option value="text">Text</option>
+            <option value="number">Number</option>
+            <option value="date">Date</option>
+            <option value="boolean">Checkbox</option>
+            <option value="money">Money</option>
+            <option value="decimal">Decimal</option>
+          </select>
+          <button id="add-field-button">Add Field</button>
+        </div>
+
+        <h3>Fields Preview</h3>
+        <ul id="template-fields-list"></ul>
+
+        <button id="save-template-button" class="modal-button">Save Template</button>
+        <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
       </div>
+
 
       <!-- Entry Form Screen -->
       <div id="entry-form-screen" class="screen hidden">

@@ -195,9 +195,102 @@ if (recordDropdown) {
   });
 }
 
+// === CREATE NEW TEMPLATE === //
+let customTemplateFields = [];
+
+document.getElementById('add-field-button')?.addEventListener('click', () => {
+  const name = document.getElementById('field-name-input').value.trim();
+  const type = document.getElementById('field-type-select').value;
+
+  if (!name) {
+    showStatusMessage('Field name cannot be empty.');
+    return;
+  }
+
+  customTemplateFields.push({ name, type });
+  renderTemplateFieldsPreview();
+  document.getElementById('field-name-input').value = '';
+});
+
+function renderTemplateFieldsPreview() {
+  const list = document.getElementById('template-fields-list');
+  list.innerHTML = '';
+  customTemplateFields.forEach((field, index) => {
+    const li = document.createElement('li');
+    li.textContent = `${field.name} (${field.type})`;
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = 'Remove';
+    removeBtn.style.marginLeft = '1em';
+    removeBtn.addEventListener('click', () => {
+      customTemplateFields.splice(index, 1);
+      renderTemplateFieldsPreview();
+    });
+
+    li.appendChild(removeBtn);
+    list.appendChild(li);
+  });
+}
+
+document.getElementById('save-template-button')?.addEventListener('click', async () => {
+  const nameInput = document.getElementById('template-name-input');
+  const templateName = nameInput.value.trim();
+
+  if (!templateName) {
+    showStatusMessage('Template name is required.');
+    return;
+  }
+
+  if (customTemplateFields.length === 0) {
+    showStatusMessage('You must add at least one field.');
+    return;
+  }
+
+    const exists = await window.electronAPI.checkTemplateExists(templateName);
+  if (exists) {
+    showStatusMessage('Template already exists. Choose a different name.');
+    return;
+  }
+
+  try {
+    await window.electronAPI.createTemplate({
+      name: templateName,
+      fields: customTemplateFields
+    });
+
+    showStatusMessage('Template saved!');
+    nameInput.value = '';
+    customTemplateFields = [];
+    renderTemplateFieldsPreview();
+    await refreshTemplateDropdown();
+    showScreen('new-record-screen');
+  } catch (err) {
+    console.error(err);
+    showStatusMessage('Failed to save template.');
+  }
+});
 
 
 });
+
+// === EXISTING TEMPLATE === //
+async function refreshTemplateDropdown() {
+  const dropdown = document.getElementById('template-select');
+  const confirmTemplateButton = document.getElementById('select-template-confirm');
+  if (!dropdown) return;
+
+  const templates = await window.electronAPI.listTemplates();
+  dropdown.innerHTML = '<option value="">-- Select a Template --</option>';
+  templates.forEach(t => {
+    const option = document.createElement('option');
+    option.value = t.name;
+    option.textContent = `[${t.source}] ${t.name}`;
+    dropdown.appendChild(option);
+  });
+
+  confirmTemplateButton.disabled = true;
+}
+
 
 // === FORM HELPERS ===
 function renderForm(fields) {
