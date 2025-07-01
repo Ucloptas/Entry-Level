@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// Import logic modules using Ethan's userData path structure
+// Import logic modules using userData path structure
 const {
   loadTemplate,
   listTemplates,
