@@ -1,9 +1,23 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
-// Import backend logic
-const { loadTemplate, listTemplates } = require('./logic/templateManager');
-const { loadRecord, saveRecord, listRecords } = require('./logic/recordManager');
+// Import logic modules using Ethan's userData path structure
+const {
+  loadTemplate,
+  listTemplates,
+  saveTemplate,
+  ensureUserTemplatesFile
+} = require('./logic/templateManager');
+
+const {
+  loadRecord,
+  saveRecord,
+  listRecords,
+  ensureDirsExist
+} = require('./logic/recordManager');
+
+let userDataPath;
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -20,31 +34,54 @@ function createWindow() {
   win.loadFile('index.html');
 }
 
-app.whenReady().then(createWindow);
+// Seeds defaultTemplates into userData/templates if missing
+function seedDefaultTemplatesIfMissing(userDataPath) {
+  const targetPath = path.join(userDataPath, 'templates', 'defaultTemplates.json');
+  const sourcePath = path.join(__dirname, 'EntryLevelData', 'templates', 'defaultTemplates.json');
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
+  if (!fs.existsSync(targetPath)) {
+    try {
+      fs.copyFileSync(sourcePath, targetPath);
+      console.log('Default templates copied to userData path.');
+    } catch (err) {
+      console.error('Failed to copy default templates:', err);
+    }
   }
+}
+
+app.whenReady().then(() => {
+  userDataPath = app.getPath('userData');
+  ensureDirsExist(userDataPath);
+  seedDefaultTemplatesIfMissing(userDataPath);
+  ensureUserTemplatesFile(userDataPath);
+  createWindow();
 });
 
-// IPC handlers
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+// === IPC HANDLERS using userDataPath ===
 ipcMain.handle('list-templates', () => {
-  return listTemplates();
+  return listTemplates(userDataPath);
 });
 
 ipcMain.handle('load-template', (event, name) => {
-  return loadTemplate(name);
+  return loadTemplate(userDataPath, name);
+});
+
+ipcMain.handle('save-template', (event, { name, data }) => {
+  return saveTemplate(userDataPath, name, data);
 });
 
 ipcMain.handle('list-records', () => {
-  return listRecords();
+  return listRecords(userDataPath);
 });
 
 ipcMain.handle('load-record', (event, name) => {
-  return loadRecord(name);
+  return loadRecord(userDataPath, name);
 });
 
 ipcMain.handle('save-record', (event, { name, data }) => {
-  return saveRecord(name, data);
+  return saveRecord(userDataPath, name, data);
 });

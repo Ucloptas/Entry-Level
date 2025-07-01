@@ -141,15 +141,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const recordData = {
       template: {
-        name: currentTemplate.name,
+        name: currentTemplate.name || 'untitled',
         fields: currentTemplate.fields
       },
       entries: collectedEntries
     };
 
-    const safeName = currentTemplate.name.replace(/\s+/g, '_').toLowerCase();
+    const safeName = (currentTemplate.name || 'untitled').replace(/\s+/g, '_').toLowerCase();
+    const fileName = `${safeName}-${Date.now()}`;
+
     await window.electronAPI.saveRecord({
-      name: `${safeName}-${Date.now()}.json`,
+      name: fileName,
       data: recordData
     });
 
@@ -166,7 +168,7 @@ function renderForm(fields) {
 
   fields.forEach(field => {
     const label = document.createElement('label');
-    label.textContent = field.name;
+    label.textContent = `${field.name} (${field.type})`;
     label.style.display = 'block';
 
     const input = document.createElement('input');
@@ -194,6 +196,7 @@ function readFormData(fields) {
   const entry = {};
   fields.forEach(field => {
     const input = document.querySelector(`[name="${field.name}"]`);
+    if (!input) return;
     if (field.type === 'boolean') {
       entry[field.name] = input.checked;
     } else if (field.type === 'number' || field.type === 'money' || field.type === 'decimal') {
@@ -224,6 +227,7 @@ function displayEntries() {
   collectedEntries.forEach((entry, idx) => {
     const div = document.createElement('div');
     div.style.marginBottom = '0.5em';
+    div.classList.add('entry-row');
     div.textContent = `Entry ${idx + 1}: ${JSON.stringify(entry)}`;
     display.appendChild(div);
   });

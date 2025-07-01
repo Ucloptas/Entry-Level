@@ -1,18 +1,65 @@
 const fs = require('fs');
 const path = require('path');
 
-// Path to local templates file in the repo
-const templatesPath = path.join(__dirname, '..', 'EntryLevelData', 'templates', 'defaultTemplates.json');
-
-function listTemplates() {
-  if (!fs.existsSync(templatesPath)) return [];
-  const data = fs.readFileSync(templatesPath, 'utf-8');
-  return JSON.parse(data);
+// Utility to safely read a JSON file
+function readJsonSafe(filePath) {
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error(`Failed to read ${filePath}:`, err);
+  }
+  return [];
 }
 
-function loadTemplate(name) {
-  const templates = listTemplates();
-  return templates.find(t => t.name === name);
+function listTemplates(userDataPath) {
+  const defaultPath = path.join(userDataPath, 'templates', 'defaultTemplates.json');
+  const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
+
+  const defaultTemplates = readJsonSafe(defaultPath);
+  const userTemplates = readJsonSafe(userPath);
+
+  return [...defaultTemplates, ...userTemplates];
 }
 
-module.exports = { listTemplates, loadTemplate };
+function loadTemplate(userDataPath, templateName) {
+  const allTemplates = listTemplates(userDataPath);
+  return allTemplates.find(t => t.name === templateName);
+}
+
+function saveTemplate(userDataPath, templateName, data) {
+  const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
+  let existingTemplates = readJsonSafe(userPath);
+
+  const existingIndex = existingTemplates.findIndex(t => t.name === templateName);
+
+  if (existingIndex !== -1) {
+    existingTemplates[existingIndex] = data;
+  } else {
+    existingTemplates.push(data);
+  }
+
+  fs.writeFileSync(userPath, JSON.stringify(existingTemplates, null, 2), 'utf-8');
+}
+
+// Ensures an empty userTemplates.json exists if missing
+function ensureUserTemplatesFile(userDataPath) {
+  const userTemplatesPath = path.join(userDataPath, 'templates', 'userTemplates.json');
+  if (!fs.existsSync(userTemplatesPath)) {
+    try {
+      fs.writeFileSync(userTemplatesPath, '[]', 'utf-8');
+      console.log('Created empty userTemplates.json.');
+    } catch (err) {
+      console.error('Failed to create userTemplates.json:', err);
+    }
+  }
+}
+
+module.exports = {
+  listTemplates,
+  loadTemplate,
+  saveTemplate,
+  ensureUserTemplatesFile
+};

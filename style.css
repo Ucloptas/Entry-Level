@@ -261,6 +261,11 @@ body.dark #template-select {
   margin-bottom: 20px;
 }
 
+#template-select:hover {
+  background-color: var(--dropdown-hover);
+}
+
+
 .hidden {
   display: none !important;
 }

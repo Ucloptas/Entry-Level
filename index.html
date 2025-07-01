@@ -19,10 +19,11 @@
     </ul>
   </div>
 
-  <!-- Centered application content -->
+  <!-- App content -->
   <div class="app-shell">
     <div class="content-container">
-      
+
+      <!-- Main Menu -->
       <div id="main-menu" class="screen">
         <h1>Entry Level App</h1>
         <div class="button-group">
@@ -32,24 +33,31 @@
         </div>
       </div>
 
+      <!-- New Entry Placeholder -->
       <div id="new-entry-screen" class="screen hidden">
         <h2>Create New Entry</h2>
+        <p>(Feature coming soon.)</p>
         <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
+      <!-- Create New Record Path -->
       <div id="new-record-screen" class="screen hidden">
         <h2>Create New Record</h2>
-        <button class="big-button" data-screen="select-template-screen">Use Existing Template</button>
-        <button class="big-button" data-screen="create-template-screen">Create New Template</button>
-        <button class="big-button back-button" data-screen="main-menu">Back</button>
+        <div class="button-group">
+          <button class="big-button" data-screen="select-template-screen">Use Existing Template</button>
+          <button class="big-button" data-screen="create-template-screen">Create New Template</button>
+          <button class="big-button back-button" data-screen="main-menu">Back</button>
+        </div>
       </div>
 
-
+      <!-- View Records Placeholder -->
       <div id="view-records-screen" class="screen hidden">
         <h2>View Records</h2>
+        <p>(Feature coming soon.)</p>
         <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
+      <!-- Template Selection -->
       <div id="select-template-screen" class="screen hidden">
         <h2>Select a Template</h2>
         <div class="template-select-wrapper">
@@ -57,19 +65,18 @@
         </div>
         <div class="button-group" style="margin-top: 20px;">
           <button id="select-template-confirm" class="modal-button" disabled>Continue</button>
-          <button class="back-button modal-button" data-screen="new-record-screen">Back</button>
+          <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
         </div>
       </div>
 
-
-
-
+      <!-- Create Template Placeholder -->
       <div id="create-template-screen" class="screen hidden">
         <h2>Create Template</h2>
-        <p>(Populate this later.)</p>
-        <button class="back-button" data-screen="new-record-screen">Back</button>
+        <p>(Feature coming soon.)</p>
+        <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
       </div>
 
+      <!-- Entry Form Screen -->
       <div id="entry-form-screen" class="screen hidden">
         <h2>Fill Out Entry</h2>
         <div id="form-container"></div>
@@ -79,10 +86,10 @@
         <button class="modal-button back-button" data-screen="main-menu">Back</button>
       </div>
 
-
-
     </div>
   </div>
+
+  <!-- Settings Modal -->
   <div id="settings-overlay" class="modal-overlay hidden">
     <div class="modal-content">
       <h2>Settings</h2>
@@ -90,6 +97,8 @@
       <button id="close-settings" class="modal-button">Close (Esc)</button>
     </div>
   </div>
+
+  <!-- Exit Modal -->
   <div id="exit-overlay" class="modal-overlay hidden">
     <div class="modal-content">
       <h2>Exit Application?</h2>
@@ -100,6 +109,7 @@
       </div>
     </div>
   </div>
+
   <script src="renderer.js"></script>
 </body>
 </html>
