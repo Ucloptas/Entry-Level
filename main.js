@@ -74,14 +74,28 @@ ipcMain.handle('save-template', (event, { name, data }) => {
   return saveTemplate(userDataPath, name, data);
 });
 
-ipcMain.handle('list-records', () => {
-  return listRecords(userDataPath);
+ipcMain.handle('list-records', async () => {
+  const fs = require('fs');
+  const path = require('path');
+  const recordsPath = path.join(app.getPath('userData'), 'records');
+  if (!fs.existsSync(recordsPath)) return [];
+  return fs.readdirSync(recordsPath).filter(f => f.endsWith('.json'));
 });
 
-ipcMain.handle('load-record', (event, name) => {
-  return loadRecord(userDataPath, name);
+ipcMain.handle('load-record', async (event, fileName) => {
+  const fullPath = path.join(app.getPath('userData'), 'records', fileName);
+  return JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
 });
+
 
 ipcMain.handle('save-record', (event, { name, data }) => {
   return saveRecord(userDataPath, name, data);
 });
+
+ipcMain.handle('list-record-files', () => {
+  const dir = path.join(userDataPath, 'records');
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+});
+
+

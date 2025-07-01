@@ -148,7 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const safeName = (currentTemplate.name || 'untitled').replace(/\s+/g, '_').toLowerCase();
-    const fileName = `${safeName}-${Date.now()}`;
+    const fileName = `${safeName}-${Date.now()}.json`;
+
 
     await window.electronAPI.saveRecord({
       name: fileName,
@@ -161,6 +162,41 @@ document.addEventListener('DOMContentLoaded', () => {
     displayEntries();
     showStatusMessage('Record saved!');
   });
+
+// === LOAD RECORD DROPDOWN ===
+const recordDropdown = document.getElementById('record-select');
+const confirmRecordBtn = document.getElementById('view-record-button');
+
+if (recordDropdown) {
+  window.electronAPI.listRecords().then(files => {
+    recordDropdown.innerHTML = '<option value="">-- Choose a Record --</option>';
+    files.forEach(file => {
+      const option = document.createElement('option');
+      option.value = file;
+      option.textContent = file;
+      recordDropdown.appendChild(option);
+    });
+  });
+
+  recordDropdown.addEventListener('change', () => {
+    confirmRecordBtn.disabled = !recordDropdown.value;
+  });
+
+  confirmRecordBtn.addEventListener('click', async () => {
+    const selected = recordDropdown.value;
+    if (!selected) return;
+
+    const recordData = await window.electronAPI.loadRecord(selected);
+    // You can route to a display screen and use recordData.template / recordData.entries
+    console.log('Loaded record:', recordData);
+
+    // For now just show a toast
+    showStatusMessage(`Loaded: ${selected}`);
+  });
+}
+
+
+
 });
 
 // === FORM HELPERS ===
