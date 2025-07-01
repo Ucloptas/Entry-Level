@@ -4,7 +4,7 @@
   --text-color: #222;
   --card-bg: #ffffff;
   --header-color: #006A4D;
-  --subheader-color: #004b32;
+  --subheader-color: #006A4D;
   --button-bg: #006A4D;
   --button-hover-bg: #004b32;
   --back-button-bg: #cccccc;
@@ -21,7 +21,7 @@ body.dark {
   --text-color: #e0e0e0;
   --card-bg: #1e1e1e;
   --header-color: #4fd58f;
-  --subheader-color: #38a16c;
+  --subheader-color: #4fd58f;
   --button-bg: #4fd58f;
   --button-hover-bg: #38a16c;
   --back-button-bg: #333333;
