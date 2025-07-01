@@ -23,10 +23,11 @@ The View Record Screen will allow users to load and visually browse the contents
 
 - Each entry is rendered as a “card” UI element.
 - Each card:
-  - Shows all field names and values in a clean format
+  - Shows all field names and values in a clean format (unless there is too much, more on that below)
   - Displays `NULL` if any field is missing
-  - Respects dark/light mode
   - Has a `...` menu icon to the top right for options
+  - If an entry contains too much data to be displayed within card, excess data will not be shown until user clicks on the entry to focus it in a new modal window
+  - The above requirement means adding a new screen that can be used to show a single entry, with a scroll bar or some other method of traversing through the data fields
 
 ### 3. Record Actions Menu (Per Entry)
 
@@ -35,7 +36,7 @@ The View Record Screen will allow users to load and visually browse the contents
   - **(Delete is NOT implemented yet)**
 - Editing opens a small modal that overlays the screen
 - User clicks “Save Changes” to commit changes to memory
-- Saved changes persist only when the user clicks a global Save button
+- Saved changes persist only when the user clicks a save button
 
 ### 4. Error Handling
 
