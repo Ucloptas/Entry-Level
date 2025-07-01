@@ -7,6 +7,8 @@ const {
   loadTemplate,
   listTemplates,
   saveTemplate,
+  createTemplate,
+  templateExists,
   ensureUserTemplatesFile
 } = require('./logic/templateManager');
 
@@ -98,4 +100,11 @@ ipcMain.handle('list-record-files', () => {
   return fs.readdirSync(dir).filter(f => f.endsWith('.json'));
 });
 
+ipcMain.handle('create-template', (event, payload) => {
+  return createTemplate(userDataPath, payload);
+});
+
+ipcMain.handle('check-template-exists', (event, name) => {
+  return templateExists(userDataPath, name);
+});
 

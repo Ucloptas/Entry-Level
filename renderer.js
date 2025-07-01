@@ -246,17 +246,28 @@ document.getElementById('save-template-button')?.addEventListener('click', async
     return;
   }
 
-  await window.electronAPI.saveTemplate({
-    name: templateName,
-    data: { name: templateName, fields: customTemplateFields }
-  });
+    const exists = await window.electronAPI.checkTemplateExists(templateName);
+  if (exists) {
+    showStatusMessage('Template already exists. Choose a different name.');
+    return;
+  }
 
-  showStatusMessage('Template saved!');
-  nameInput.value = '';
-  customTemplateFields = [];
-  renderTemplateFieldsPreview();
-  await refreshTemplateDropdown(); //refresh template dropdown
-  showScreen('new-record-screen'); 
+  try {
+    await window.electronAPI.createTemplate({
+      name: templateName,
+      fields: customTemplateFields
+    });
+
+    showStatusMessage('Template saved!');
+    nameInput.value = '';
+    customTemplateFields = [];
+    renderTemplateFieldsPreview();
+    await refreshTemplateDropdown();
+    showScreen('new-record-screen');
+  } catch (err) {
+    console.error(err);
+    showStatusMessage('Failed to save template.');
+  }
 });
 
 

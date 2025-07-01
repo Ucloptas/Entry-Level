@@ -65,9 +65,34 @@ function ensureUserTemplatesFile(userDataPath) {
   }
 }
 
+//create Template logic
+function createTemplate(userDataPath, { name, fields }) {
+  const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
+  let existingTemplates = readJsonSafe(userPath);
+
+  if (existingTemplates.find(t => t.name === name)) {
+    throw new Error(`Template with name "${name}" already exists.`);
+  }
+
+  const newTemplate = { name, fields };
+  existingTemplates.push(newTemplate);
+
+  fs.writeFileSync(userPath, JSON.stringify(existingTemplates, null, 2), 'utf-8');
+  return newTemplate;
+}
+//this checks if the template already exisits
+function templateExists(userDataPath, name) {
+  const allTemplates = listTemplates(userDataPath);
+  return allTemplates.some(t => t.name === name);
+}
+
+
+
 module.exports = {
   listTemplates,
   loadTemplate,
   saveTemplate,
+  createTemplate,
+  templateExists,
   ensureUserTemplatesFile
 };
