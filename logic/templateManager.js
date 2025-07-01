@@ -18,11 +18,19 @@ function listTemplates(userDataPath) {
   const defaultPath = path.join(userDataPath, 'templates', 'defaultTemplates.json');
   const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
 
-  const defaultTemplates = readJsonSafe(defaultPath);
-  const userTemplates = readJsonSafe(userPath);
+  const defaultTemplates = readJsonSafe(defaultPath).map(t => ({
+    ...t,
+    source: 'Default'
+  }));
+
+  const userTemplates = readJsonSafe(userPath).map(t => ({
+    ...t,
+    source: 'User'
+  }));
 
   return [...defaultTemplates, ...userTemplates];
 }
+
 
 function loadTemplate(userDataPath, templateName) {
   const allTemplates = listTemplates(userDataPath);

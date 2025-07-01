@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
       templates.forEach(t => {
         const option = document.createElement('option');
         option.value = t.name;
-        option.textContent = t.name;
+        option.textContent = `[${t.source}] ${t.name}`;
         dropdown.appendChild(option);
       });
     });
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('save-entry')?.addEventListener('click', async () => {
     if (collectedEntries.length === 0) {
-      alert('No entries to save.');
+      showStatusMessage('No entries to save.');
       return;
     }
 
@@ -155,9 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
       data: recordData
     });
 
-    alert('Record saved!');
     collectedEntries = [];
+    renderForm(currentTemplate.fields);
+    clearForm(currentTemplate.fields);
     displayEntries();
+    showStatusMessage('Record saved!');
   });
 });
 
@@ -183,8 +185,14 @@ function renderForm(fields) {
       case 'boolean':
         input.type = 'checkbox';
         break;
+      case 'money':
+      case 'decimal':
+        input.type = 'number';
+        break;
       default:
+        console.warn(`Unknown field type: ${field.type}, defaulting to text.`);
         input.type = 'text';
+        break;
     }
 
     label.appendChild(input);
@@ -231,4 +239,16 @@ function displayEntries() {
     div.textContent = `Entry ${idx + 1}: ${JSON.stringify(entry)}`;
     display.appendChild(div);
   });
+}
+
+function showStatusMessage(text) {
+  const msgBox = document.getElementById('status-message');
+  if (!msgBox) return;
+
+  msgBox.textContent = text;
+  msgBox.classList.remove('hidden');
+
+  setTimeout(() => {
+    msgBox.classList.add('hidden');
+  }, 3000);
 }
