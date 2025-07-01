@@ -53,9 +53,32 @@
       <!-- View Records Placeholder -->
       <div id="view-records-screen" class="screen hidden">
         <h2>View Records</h2>
-        <p>(Feature coming soon.)</p>
-        <button class="modal-button back-button" data-screen="main-menu">Back</button>
+        <div class="button-group">
+          <button class="big-button" data-screen="all-records-screen">View All Records</button>
+          <button class="big-button" data-screen="record-search-screen">Record Search</button>
+          <button class="big-button" data-screen="record-categories-screen">Categories</button>
+          <button class="big-button back-button" data-screen="main-menu">Back</button>
+        </div>
       </div>
+
+      <div id="all-records-screen" class="screen hidden">
+        <h2>All Records</h2>
+        <p>[Placeholder for listing all records]</p>
+        <button class="big-button back-button" data-screen="view-records-screen">Back</button>
+      </div>
+
+      <div id="record-search-screen" class="screen hidden">
+        <h2>Search Records</h2>
+        <p>[Placeholder for search functionality]</p>
+        <button class="big-button back-button" data-screen="view-records-screen">Back</button>
+      </div>
+
+      <div id="record-categories-screen" class="screen hidden">
+        <h2>Browse by Categories</h2>
+        <p>[Placeholder for category browsing]</p>
+        <button class="big-button back-button" data-screen="view-records-screen">Back</button>
+      </div>
+
 
       <!-- Template Selection -->
       <div id="select-template-screen" class="screen hidden">
