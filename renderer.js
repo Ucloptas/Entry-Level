@@ -1,4 +1,5 @@
 let currentTemplate = null;
+let currentRecord = null;
 let collectedEntries = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -95,31 +96,62 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // === TEMPLATE DROPDOWN LOGIC ===
-  const dropdown = document.getElementById('template-select');
+  const template_dropdown = document.getElementById('template-dropdown');
   const confirmTemplateButton = document.getElementById('select-template-confirm');
 
-  if (dropdown) {
+  if (template_dropdown) {
     window.electronAPI.listTemplates().then(templates => {
-      dropdown.innerHTML = '<option value="">-- Select a Template --</option>';
+      template_dropdown.innerHTML = '<option value="">-- Select a Template --</option>';
       templates.forEach(t => {
         const option = document.createElement('option');
         option.value = t.name;
         option.textContent = `[${t.source}] ${t.name}`;
-        dropdown.appendChild(option);
+        template_dropdown.appendChild(option);
       });
     });
 
-    dropdown.addEventListener('change', () => {
-      confirmTemplateButton.disabled = !dropdown.value;
+    template_dropdown.addEventListener('change', () => {
+      confirmTemplateButton.disabled = !template_dropdown.value;
     });
 
     confirmTemplateButton.addEventListener('click', async () => {
-      const selected = dropdown.value;
+      const selected = template_dropdown.value;
       if (!selected) return;
 
       currentTemplate = await window.electronAPI.loadTemplate(selected);
       collectedEntries = [];
       renderForm(currentTemplate.fields);
+      displayEntries();
+      showScreen('entry-form-screen');
+    });
+  }
+
+  // === RECORD DROPDOWN LOGIC ===
+  const record_dropdown = document.getElementById('record-dropdown');
+  const confirmRecordButton = document.getElementById('select-record-confirm');
+
+  if (record_dropdown) {
+    window.electronAPI.listRecords().then(records => {
+      record_dropdown.innerHTML = '<option value="">-- Select a Record --</option>';
+      records.forEach(r => {
+        const option = document.createElement('option');
+        option.value = r.name;
+        option.textContent = `[${r.source}] ${r.name}`;
+        record_dropdown.appendChild(option);
+      });
+    });
+
+    record_dropdown.addEventListener('change', () => {
+      confirmRecordButton.disabled = !record_dropdown.value;
+    });
+
+    confirmRecordButton.addEventListener('click', async () => {
+      const selected = record_dropdown.value;
+      if (!selected) return;
+
+      currentRecord = await window.electronAPI.loadRecord(selected);
+      collectedEntries = [];
+      renderForm(currentRecord.fields);
       displayEntries();
       showScreen('entry-form-screen');
     });

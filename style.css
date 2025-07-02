@@ -225,8 +225,8 @@ body.dark .modal-button {
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
-/* === TEMPLATE SELECT DROPDOWN === */
-#template-select {
+/* === SELECTION DROPDOWN === */
+.dropdown-select {
   width: 100%;
   padding: 12px;
   font-size: 1em;
@@ -238,30 +238,24 @@ body.dark .modal-button {
   box-sizing: border-box;
 }
 
-body.dark #template-select {
-  background-color: var(--dropdown-bg);
-  color: var(--text-color);
-  border-color: var(--dropdown-border);
-}
-
-#template-select option {
+.dropdown-select option {
   padding: 8px;
   background: var(--dropdown-bg);
   color: var(--text-color);
 }
 
-#template-select:focus {
+.dropdown-select:focus {
   outline: none;
   border-color: var(--button-bg);
   box-shadow: 0 0 0 2px rgba(0, 106, 77, 0.2);
 }
 
-.template-select-wrapper {
+.dropdown-select-wrapper {
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
-#template-select:hover {
+.dropdown-select:hover {
   background-color: var(--dropdown-hover);
 }
 
