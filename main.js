@@ -55,9 +55,17 @@ function seedDefaultTemplatesIfMissing(userDataPath) {
 
 app.whenReady().then(() => {
   userDataPath = app.getPath('userData');
-  ensureDirsExist(userDataPath);
-  seedDefaultTemplatesIfMissing(userDataPath);
-  ensureUserTemplatesFile(userDataPath);
+  console.log('User data path:', userDataPath);
+  
+  try {
+    ensureDirsExist(userDataPath);
+    seedDefaultTemplatesIfMissing(userDataPath);
+    ensureUserTemplatesFile(userDataPath);
+    console.log('Initialization completed successfully');
+  } catch (error) {
+    console.error('Error during initialization:', error);
+  }
+  
   createWindow();
 });
 
@@ -93,8 +101,16 @@ ipcMain.handle('save-record', (event, { name, data }) => {
 
 
 
-ipcMain.handle('create-template', (event, payload) => {
-  return createTemplate(userDataPath, payload);
+ipcMain.handle('create-template', async (event, payload) => {
+  try {
+    console.log('Creating template with payload:', payload);
+    const result = await createTemplate(userDataPath, payload);
+    console.log('Template created successfully:', result);
+    return result;
+  } catch (error) {
+    console.error('Error in create-template IPC handler:', error);
+    throw error;
+  }
 });
 
 ipcMain.handle('check-template-exists', (event, name) => {

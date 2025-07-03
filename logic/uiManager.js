@@ -113,8 +113,147 @@ class ScreenManager {
   }
 }
 
+// Record Display Manager
+class RecordDisplayManager {
+  constructor() {
+    this.titleElement = null;
+    this.contentElement = null;
+  }
+
+  // Display record data in the UI
+  displayRecord(recordData, fileName) {
+    this.titleElement = document.getElementById('record-display-title');
+    this.contentElement = document.getElementById('record-display-content');
+    
+    if (!this.titleElement || !this.contentElement) {
+      console.error('Record display elements not found');
+      return;
+    }
+    
+    // Set the title
+    this.titleElement.textContent = `Record: ${fileName}`;
+    
+    // Clear previous content
+    this.contentElement.innerHTML = '';
+    
+    // Display template info
+    const templateInfo = document.createElement('div');
+    templateInfo.innerHTML = `
+      <h3>Template: ${recordData.template.name}</h3>
+      <p><strong>Fields:</strong> ${recordData.template.fields.map(f => f.name).join(', ')}</p>
+    `;
+    this.contentElement.appendChild(templateInfo);
+    
+    // Display entries
+    const entriesSection = document.createElement('div');
+    entriesSection.innerHTML = `<h3>Entries (${recordData.entries.length})</h3>`;
+    
+    if (recordData.entries.length === 0) {
+      entriesSection.innerHTML += '<p>No entries found.</p>';
+    } else {
+      const entriesList = document.createElement('div');
+      entriesList.className = 'entries-list';
+      
+      recordData.entries.forEach((entry, index) => {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'entry-row';
+        entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
+        
+        const fieldsList = document.createElement('ul');
+        recordData.template.fields.forEach(field => {
+          const value = entry[field.name] || 'N/A';
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${field.name}:</strong> ${value}`;
+          fieldsList.appendChild(li);
+        });
+        
+        entryDiv.appendChild(fieldsList);
+        entriesList.appendChild(entryDiv);
+      });
+      
+      entriesSection.appendChild(entriesList);
+    }
+    
+    this.contentElement.appendChild(entriesSection);
+  }
+}
+
+// Template UI Manager
+class TemplateUIManager {
+  constructor() {
+    this.customTemplateFields = [];
+  }
+
+  // Refresh template dropdown
+  async refreshTemplateDropdown(dropdownManager, templates) {
+    dropdownManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
+    dropdownManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
+  }
+
+  // Refresh record dropdowns
+  async refreshRecordDropdowns(dropdownManager, records) {
+    // Refresh "Create New Entry" dropdown
+    dropdownManager.createDropdown('record-dropdown', records, '-- Select a Record --');
+    dropdownManager.setupDropdownWithConfirm('record-dropdown', 'select-record-confirm');
+    
+    // Refresh "View Records" dropdown
+    dropdownManager.createDropdown('record-select', records, '-- Choose a Record --');
+    dropdownManager.setupDropdownWithConfirm('record-select', 'view-record-button');
+  }
+
+  // Render template fields preview
+  renderTemplateFieldsPreview() {
+    const list = document.getElementById('template-fields-list');
+    if (!list) {
+      console.error('Template fields list element not found');
+      return;
+    }
+    
+    list.innerHTML = '';
+    this.customTemplateFields.forEach((field, index) => {
+      const li = document.createElement('li');
+      li.textContent = `${field.name} (${field.type})`;
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = 'Remove';
+      removeBtn.style.marginLeft = '1em';
+      removeBtn.addEventListener('click', () => {
+        this.customTemplateFields.splice(index, 1);
+        this.renderTemplateFieldsPreview();
+      });
+
+      li.appendChild(removeBtn);
+      list.appendChild(li);
+    });
+  }
+
+  // Add a field to the custom template
+  addTemplateField(name, type) {
+    this.customTemplateFields.push({ name, type });
+    this.renderTemplateFieldsPreview();
+  }
+
+  // Get custom template fields
+  getCustomTemplateFields() {
+    return [...this.customTemplateFields];
+  }
+
+  // Clear custom template fields
+  clearCustomTemplateFields() {
+    this.customTemplateFields = [];
+    this.renderTemplateFieldsPreview();
+  }
+
+  // Check if field name already exists
+  hasFieldName(name) {
+    return this.customTemplateFields.find(field => field.name === name);
+  }
+}
+
 // Export the managers
 module.exports = {
   DropdownManager,
-  ScreenManager
+  ScreenManager,
+  RecordDisplayManager,
+  TemplateUIManager
 }; 

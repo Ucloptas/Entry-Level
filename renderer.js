@@ -1,26 +1,6 @@
 let currentTemplate = null;
 let currentRecord = null;
 
-// Global function for refreshing template dropdown
-async function refreshTemplateDropdown() {
-  const templates = await window.electronAPI.listTemplates();
-  window.uiManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
-  window.uiManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
-}
-
-// Global function for refreshing record dropdowns
-async function refreshRecordDropdowns() {
-  const records = await window.electronAPI.listRecords();
-  
-  // Refresh "Create New Entry" dropdown
-  window.uiManager.createDropdown('record-dropdown', records, '-- Select a Record --');
-  window.uiManager.setupDropdownWithConfirm('record-dropdown', 'select-record-confirm');
-  
-  // Refresh "View Records" dropdown
-  window.uiManager.createDropdown('record-select', records, '-- Choose a Record --');
-  window.uiManager.setupDropdownWithConfirm('record-select', 'view-record-button');
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM Content Loaded');
   
@@ -36,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Refresh dropdowns when navigating to screens that need them
     if (id === 'select-record-screen' || id === 'view-records-screen') {
-      refreshRecordDropdowns();
+      window.uiManager.refreshRecordDropdowns();
     }
   }
 
@@ -249,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.uiManager.clearForm(fields);
     
     // Refresh record dropdowns after saving
-    await refreshRecordDropdowns();
+    await window.uiManager.refreshRecordDropdowns();
   });
 
 // === VIEW RECORDS DROPDOWN ===
@@ -267,66 +247,15 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   console.log('Loaded record:', recordData);
 
   // Display the record data
-  displayRecord(recordData, selected);
+  window.uiManager.displayRecord(recordData, selected);
   
   // Navigate to the record display screen
   showScreen('record-display-screen');
 });
 
-// Function to display record data
-function displayRecord(recordData, fileName) {
-  const titleElement = document.getElementById('record-display-title');
-  const contentElement = document.getElementById('record-display-content');
-  
-  // Set the title
-  titleElement.textContent = `Record: ${fileName}`;
-  
-  // Clear previous content
-  contentElement.innerHTML = '';
-  
-  // Display template info
-  const templateInfo = document.createElement('div');
-  templateInfo.innerHTML = `
-    <h3>Template: ${recordData.template.name}</h3>
-    <p><strong>Fields:</strong> ${recordData.template.fields.map(f => f.name).join(', ')}</p>
-  `;
-  contentElement.appendChild(templateInfo);
-  
-  // Display entries
-  const entriesSection = document.createElement('div');
-  entriesSection.innerHTML = `<h3>Entries (${recordData.entries.length})</h3>`;
-  
-  if (recordData.entries.length === 0) {
-    entriesSection.innerHTML += '<p>No entries found.</p>';
-  } else {
-    const entriesList = document.createElement('div');
-    entriesList.className = 'entries-list';
-    
-    recordData.entries.forEach((entry, index) => {
-      const entryDiv = document.createElement('div');
-      entryDiv.className = 'entry-row';
-      entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
-      
-      const fieldsList = document.createElement('ul');
-      recordData.template.fields.forEach(field => {
-        const value = entry[field.name] || 'N/A';
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${field.name}:</strong> ${value}`;
-        fieldsList.appendChild(li);
-      });
-      
-      entryDiv.appendChild(fieldsList);
-      entriesList.appendChild(entryDiv);
-    });
-    
-    entriesSection.appendChild(entriesList);
-  }
-  
-  contentElement.appendChild(entriesSection);
-}
+
 
 // === CREATE NEW TEMPLATE === //
-let customTemplateFields = [];
 
 document.getElementById('add-field-button')?.addEventListener('click', () => {
   const name = document.getElementById('field-name-input').value.trim();
@@ -340,36 +269,15 @@ document.getElementById('add-field-button')?.addEventListener('click', () => {
   }
 
   // Check for duplicate field names
-  if (customTemplateFields.find(field => field.name === name)) {
+  if (window.uiManager.hasFieldName(name)) {
     window.uiManager.showErrorMessage(`Field name '${name}' already exists`);
     return;
   }
 
-  customTemplateFields.push({ name, type });
-  renderTemplateFieldsPreview();
+  window.uiManager.addTemplateField(name, type);
   document.getElementById('field-name-input').value = '';
   window.uiManager.showSuccessMessage(`Field '${name}' added`);
 });
-
-function renderTemplateFieldsPreview() {
-  const list = document.getElementById('template-fields-list');
-  list.innerHTML = '';
-  customTemplateFields.forEach((field, index) => {
-    const li = document.createElement('li');
-    li.textContent = `${field.name} (${field.type})`;
-    
-    const removeBtn = document.createElement('button');
-    removeBtn.textContent = 'Remove';
-    removeBtn.style.marginLeft = '1em';
-    removeBtn.addEventListener('click', () => {
-      customTemplateFields.splice(index, 1);
-      renderTemplateFieldsPreview();
-    });
-
-    li.appendChild(removeBtn);
-    list.appendChild(li);
-  });
-}
 
 document.getElementById('save-template-button')?.addEventListener('click', async () => {
   const nameInput = document.getElementById('template-name-input');
@@ -383,7 +291,7 @@ document.getElementById('save-template-button')?.addEventListener('click', async
   }
 
   // Validate template fields
-  const fieldErrors = window.uiManager.validateTemplateFields(customTemplateFields);
+  const fieldErrors = window.uiManager.validateTemplateFields(window.uiManager.getCustomTemplateFields());
   if (fieldErrors.length > 0) {
     window.uiManager.showErrorMessage(fieldErrors.join(', '));
     return;
@@ -396,20 +304,25 @@ document.getElementById('save-template-button')?.addEventListener('click', async
   }
 
   try {
-    await window.electronAPI.createTemplate({
+    console.log('Attempting to create template:', {
       name: templateName,
-      fields: customTemplateFields
+      fields: window.uiManager.getCustomTemplateFields()
+    });
+    
+    const result = await window.electronAPI.createTemplate({
+      name: templateName,
+      fields: window.uiManager.getCustomTemplateFields()
     });
 
+    console.log('Template created successfully:', result);
     window.uiManager.showSuccessMessage('Template saved!');
     nameInput.value = '';
-    customTemplateFields = [];
-    renderTemplateFieldsPreview();
-    await refreshTemplateDropdown();
+    window.uiManager.clearCustomTemplateFields();
+    await window.uiManager.refreshTemplateDropdown();
     showScreen('new-record-screen');
   } catch (err) {
-    console.error(err);
-    window.uiManager.showErrorMessage('Failed to save template.');
+    console.error('Template creation failed:', err);
+    window.uiManager.showErrorMessage(`Failed to save template: ${err.message}`);
   }
 });
 

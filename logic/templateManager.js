@@ -15,8 +15,14 @@ function readJsonSafe(filePath) {
 }
 
 function listTemplates(userDataPath) {
-  const defaultPath = path.join(userDataPath, 'templates', 'defaultTemplates.json');
-  const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
+  const templatesDir = path.join(userDataPath, 'templates');
+  const defaultPath = path.join(templatesDir, 'defaultTemplates.json');
+  const userPath = path.join(templatesDir, 'userTemplates.json');
+
+  // Ensure templates directory exists
+  if (!fs.existsSync(templatesDir)) {
+    fs.mkdirSync(templatesDir, { recursive: true });
+  }
 
   const defaultTemplates = readJsonSafe(defaultPath).map(t => ({
     ...t,
@@ -38,7 +44,14 @@ function loadTemplate(userDataPath, templateName) {
 }
 
 function saveTemplate(userDataPath, templateName, data) {
-  const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
+  const templatesDir = path.join(userDataPath, 'templates');
+  const userPath = path.join(templatesDir, 'userTemplates.json');
+  
+  // Ensure templates directory exists
+  if (!fs.existsSync(templatesDir)) {
+    fs.mkdirSync(templatesDir, { recursive: true });
+  }
+  
   let existingTemplates = readJsonSafe(userPath);
 
   const existingIndex = existingTemplates.findIndex(t => t.name === templateName);
@@ -54,31 +67,52 @@ function saveTemplate(userDataPath, templateName, data) {
 
 // Ensures an empty userTemplates.json exists if missing
 function ensureUserTemplatesFile(userDataPath) {
-  const userTemplatesPath = path.join(userDataPath, 'templates', 'userTemplates.json');
-  if (!fs.existsSync(userTemplatesPath)) {
-    try {
+  const templatesDir = path.join(userDataPath, 'templates');
+  const userTemplatesPath = path.join(templatesDir, 'userTemplates.json');
+  
+  try {
+    // Ensure templates directory exists
+    if (!fs.existsSync(templatesDir)) {
+      fs.mkdirSync(templatesDir, { recursive: true });
+      console.log('Created templates directory:', templatesDir);
+    }
+    
+    if (!fs.existsSync(userTemplatesPath)) {
       fs.writeFileSync(userTemplatesPath, '[]', 'utf-8');
       console.log('Created empty userTemplates.json.');
-    } catch (err) {
-      console.error('Failed to create userTemplates.json:', err);
     }
+  } catch (err) {
+    console.error('Failed to create userTemplates.json:', err);
+    throw err;
   }
 }
 
 //create Template logic
 function createTemplate(userDataPath, { name, fields }) {
-  const userPath = path.join(userDataPath, 'templates', 'userTemplates.json');
-  let existingTemplates = readJsonSafe(userPath);
+  try {
+    const templatesDir = path.join(userDataPath, 'templates');
+    const userPath = path.join(templatesDir, 'userTemplates.json');
+    
+    // Ensure templates directory exists
+    if (!fs.existsSync(templatesDir)) {
+      fs.mkdirSync(templatesDir, { recursive: true });
+    }
+    
+    let existingTemplates = readJsonSafe(userPath);
 
-  if (existingTemplates.find(t => t.name === name)) {
-    throw new Error(`Template with name "${name}" already exists.`);
+    if (existingTemplates.find(t => t.name === name)) {
+      throw new Error(`Template with name "${name}" already exists.`);
+    }
+
+    const newTemplate = { name, fields };
+    existingTemplates.push(newTemplate);
+
+    fs.writeFileSync(userPath, JSON.stringify(existingTemplates, null, 2), 'utf-8');
+    return newTemplate;
+  } catch (error) {
+    console.error('Error creating template:', error);
+    throw new Error(`Failed to create template: ${error.message}`);
   }
-
-  const newTemplate = { name, fields };
-  existingTemplates.push(newTemplate);
-
-  fs.writeFileSync(userPath, JSON.stringify(existingTemplates, null, 2), 'utf-8');
-  return newTemplate;
 }
 //this checks if the template already exisits
 function templateExists(userDataPath, name) {

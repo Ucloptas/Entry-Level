@@ -99,49 +99,8 @@ class FormManager {
     });
   }
 
-  // Validate form data
-  validateFormData(fields, entry) {
-    const errors = [];
-
-    fields.forEach(field => {
-      const value = entry[field.name];
-
-      // Check required fields (all fields are required for now)
-      if (value === undefined || value === null || value === '') {
-        errors.push(`${field.name} is required`);
-        return;
-      }
-
-      // Type-specific validation
-      switch (field.type) {
-        case 'number':
-        case 'money':
-        case 'decimal':
-          if (isNaN(value) || typeof value !== 'number') {
-            errors.push(`${field.name} must be a valid number`);
-          }
-          break;
-        case 'date':
-          if (value && !this.isValidDate(value)) {
-            errors.push(`${field.name} must be a valid date`);
-          }
-          break;
-        case 'boolean':
-          if (typeof value !== 'boolean') {
-            errors.push(`${field.name} must be a boolean value`);
-          }
-          break;
-      }
-    });
-
-    return errors;
-  }
-
-  // Helper method to validate date strings
-  isValidDate(dateString) {
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date);
-  }
+  // Note: Form validation is handled by ValidationManager
+  // Use window.uiManager.validateFormData() for validation
 
   // Get form container reference
   getFormContainer() {

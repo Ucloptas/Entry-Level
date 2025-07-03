@@ -25,6 +25,8 @@ try {
   // Create instances in preload context
   const screenManagerInstance = new uiManager.ScreenManager();
   const dropdownManagerInstance = new uiManager.DropdownManager();
+  const recordDisplayManagerInstance = new uiManager.RecordDisplayManager();
+  const templateUIManagerInstance = new uiManager.TemplateUIManager();
   const formManagerInstance = new formManager.FormManager();
   const entryManagerInstance = new entryManager.EntryManager();
   const validationManagerInstance = new validationManager.ValidationManager();
@@ -41,6 +43,24 @@ try {
       dropdownManagerInstance.setupDropdownWithConfirm(dropdownId, confirmButtonId),
     getSelectedValue: (dropdownId) => dropdownManagerInstance.getSelectedValue(dropdownId),
     clearDropdown: (dropdownId) => dropdownManagerInstance.clearDropdown(dropdownId),
+    
+    // Record display management
+    displayRecord: (recordData, fileName) => recordDisplayManagerInstance.displayRecord(recordData, fileName),
+    
+    // Template UI management
+    renderTemplateFieldsPreview: () => templateUIManagerInstance.renderTemplateFieldsPreview(),
+    addTemplateField: (name, type) => templateUIManagerInstance.addTemplateField(name, type),
+    getCustomTemplateFields: () => templateUIManagerInstance.getCustomTemplateFields(),
+    clearCustomTemplateFields: () => templateUIManagerInstance.clearCustomTemplateFields(),
+    hasFieldName: (name) => templateUIManagerInstance.hasFieldName(name),
+    refreshTemplateDropdown: async () => {
+      const templates = await ipcRenderer.invoke('list-templates');
+      return templateUIManagerInstance.refreshTemplateDropdown(dropdownManagerInstance, templates);
+    },
+    refreshRecordDropdowns: async () => {
+      const records = await ipcRenderer.invoke('list-records');
+      return templateUIManagerInstance.refreshRecordDropdowns(dropdownManagerInstance, records);
+    },
     
     // Form management
     renderForm: (fields) => formManagerInstance.renderForm(fields),
