@@ -28,7 +28,7 @@
         <h1>Entry Level App</h1>
         <div class="button-group">
           <button class="big-button" data-screen="new-record-screen">Create New Record</button>
-          <button class="big-button" data-screen="new-entry-screen">Create New Entry</button>
+          <button class="big-button" data-screen="select-record-screen">Create New Entry</button>
           <button class="big-button" data-screen="view-records-screen">View Records</button>
         </div>
       </div>
@@ -63,7 +63,7 @@
 
       <div id="all-records-screen" class="screen hidden">
         <h2>Select a Record</h2>
-        <div class="template-select-wrapper">
+        <div class="dropdown-select-wrapper">
           <select id="record-select">
             <option value="">-- Choose a Record --</option>
           </select>
@@ -71,6 +71,15 @@
         <!--Added data-screen: "view-record"-->
         <button id="view-record-button" data-screen="view-record-selected-screen" class="big-button" disabled>View Record</button>
         <button class="big-button back-button" data-screen="view-records-screen">Back</button>
+      </div>
+
+      <!-- Record Display Screen -->
+      <div id="record-display-screen" class="screen hidden">
+        <h2 id="record-display-title">Record Details</h2>
+        <div id="record-display-content">
+          <!-- Record details will be populated here -->
+        </div>
+        <button class="big-button back-button" data-screen="all-records-screen">Back</button>
       </div>
 
       <!--My code-->
@@ -99,12 +108,24 @@
       <!-- Template Selection -->
       <div id="select-template-screen" class="screen hidden">
         <h2>Select a Template</h2>
-        <div class="template-select-wrapper">
-          <select id="template-select" class="template-dropdown"></select>
+        <div class="dropdown-select-wrapper">
+          <select id="template-dropdown" class="dropdown-select"></select>
         </div>
         <div class="button-group" style="margin-top: 20px;">
           <button id="select-template-confirm" class="modal-button" disabled>Continue</button>
           <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
+        </div>
+      </div>
+
+      <!-- Record Selection Screen-->
+      <div id="select-record-screen" class="screen hidden">
+        <h2>Select a Record</h2>
+        <div class="dropdown-select-wrapper">
+          <select id="record-dropdown" class="dropdown-select"></select>
+        </div>
+        <div class="button-group" style="margin-top: 20px;">
+          <button id="select-record-confirm" class="modal-button" disabled>Continue</button>
+          <button class="modal-button back-button" data-screen="main-menu">Back</button>
         </div>
       </div>
 

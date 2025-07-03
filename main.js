@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs'); // Still needed for seedDefaultTemplatesIfMissing
 
 // Import logic modules using userData path structure
 const {
@@ -29,7 +29,9 @@ function createWindow() {
     minHeight: 500,
     resizable: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: true
     }
   });
 
@@ -53,9 +55,17 @@ function seedDefaultTemplatesIfMissing(userDataPath) {
 
 app.whenReady().then(() => {
   userDataPath = app.getPath('userData');
-  ensureDirsExist(userDataPath);
-  seedDefaultTemplatesIfMissing(userDataPath);
-  ensureUserTemplatesFile(userDataPath);
+  console.log('User data path:', userDataPath);
+  
+  try {
+    ensureDirsExist(userDataPath);
+    seedDefaultTemplatesIfMissing(userDataPath);
+    ensureUserTemplatesFile(userDataPath);
+    console.log('Initialization completed successfully');
+  } catch (error) {
+    console.error('Error during initialization:', error);
+  }
+  
   createWindow();
 });
 
@@ -76,17 +86,12 @@ ipcMain.handle('save-template', (event, { name, data }) => {
   return saveTemplate(userDataPath, name, data);
 });
 
-ipcMain.handle('list-records', async () => {
-  const fs = require('fs');
-  const path = require('path');
-  const recordsPath = path.join(app.getPath('userData'), 'records');
-  if (!fs.existsSync(recordsPath)) return [];
-  return fs.readdirSync(recordsPath).filter(f => f.endsWith('.json'));
+ipcMain.handle('list-records', () => {
+  return listRecords(userDataPath);
 });
 
-ipcMain.handle('load-record', async (event, fileName) => {
-  const fullPath = path.join(app.getPath('userData'), 'records', fileName);
-  return JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+ipcMain.handle('load-record', (event, fileName) => {
+  return loadRecord(userDataPath, fileName);
 });
 
 
@@ -94,14 +99,18 @@ ipcMain.handle('save-record', (event, { name, data }) => {
   return saveRecord(userDataPath, name, data);
 });
 
-ipcMain.handle('list-record-files', () => {
-  const dir = path.join(userDataPath, 'records');
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter(f => f.endsWith('.json'));
-});
 
-ipcMain.handle('create-template', (event, payload) => {
-  return createTemplate(userDataPath, payload);
+
+ipcMain.handle('create-template', async (event, payload) => {
+  try {
+    console.log('Creating template with payload:', payload);
+    const result = await createTemplate(userDataPath, payload);
+    console.log('Template created successfully:', result);
+    return result;
+  } catch (error) {
+    console.error('Error in create-template IPC handler:', error);
+    throw error;
+  }
 });
 
 ipcMain.handle('check-template-exists', (event, name) => {
