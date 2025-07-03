@@ -244,67 +244,62 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
 
   if (!selected) return;
     
-    const nextEntries = document.getElementById('next-entries');
-    const previousEntries = document.getElementById('previous-entries');
+  const nextEntries = document.getElementById('next-entries');
+  const previousEntries = document.getElementById('previous-entries');
+
+  document.getElementById('back-from-entries').addEventListener('click', () => {
+    nextEntries.classList.add('hidden');
+    previousEntries.classList.add('hidden');
+  });
+  
   const recordData = await window.electronAPI.loadRecord(selected);
-    const content = document.getElementById('content');
-    let array = [];
+
     let index = 0;
 
-    content.innerHTML = '';
-    array = Object.entries(recordData.entries);
+    let reducedData = {
+      ...recordData,
+      entries: recordData.entries.slice(index, index+5),
+    }
 
-    if(array.length > 5) {
+    if(recordData.entries.length > 5) {
       nextEntries.classList.remove('hidden');
       previousEntries.classList.remove('hidden');
     }
 
-    showEntries(array, index, content);
-
+    //Shows next entries
     document.getElementById('next-entries').addEventListener('click', () => {
-      if(!(index+5 > array.length) && !(index === array.length)){
+      if(!(index+5 > recordData.entries.length) && !(index === recordData.entries.length)){
         index += 5;
-        showEntries(array, index, content);
+        reducedData = {
+          ...recordData,
+          entries: recordData.entries.slice(index, index+5),
+        }
+        window.uiManager.displayRecord(reducedData, selected);
       }
       console.log(index);
     });
     
+    //Shows previous entries
     document.getElementById('previous-entries').addEventListener('click', () => {
       if(!(index-5 < 0) && !(index === 0)){
         index -= 5;
-        showEntries(array, index, content);
+        reducedData = {
+          ...recordData,
+          entries: recordData.entries.slice(index, index+5),
+        }
+        window.uiManager.displayRecord(reducedData, selected);
       }
       console.log(index);
     });
 
-    console.log('array is: ', array);
-
-    document.getElementById('record-name').textContent = selected.split('.').slice(0, -1);
-
   console.log('Loaded record:', recordData);
 
   // Display the record data
-  window.uiManager.displayRecord(recordData, selected);
+  window.uiManager.displayRecord(reducedData, selected);
   
   // Navigate to the record display screen
   showScreen('record-display-screen');
 });
-
-
-
-//Function to show 5 entries per page at max
-function showEntries(arr, index, content){
-  content.textContent = '';
-
-  const end = Math.min(index+5, arr.length);
-
-  for(let i = index; i < end; i++){
-    Object.entries(arr[i][1]).forEach(([key, value]) => {
-      content.textContent += `${key}: ${value}\n`;
-    });
-    content.textContent += '\n';
-  }
-}
 
 // === CREATE NEW TEMPLATE === //
 

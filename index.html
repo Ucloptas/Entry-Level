@@ -68,8 +68,7 @@
             <option value="">-- Choose a Record --</option>
           </select>
         </div>
-        <!--Added data-screen: "view-record"-->
-        <button id="view-record-button" data-screen="view-record-selected-screen" class="big-button" disabled>View Record</button>
+        <button id="view-record-button" class="big-button" disabled>View Record</button>
         <button class="big-button back-button" data-screen="view-records-screen">Back</button>
       </div>
 
@@ -79,18 +78,10 @@
         <div id="record-display-content">
           <!-- Record details will be populated here -->
         </div>
-        <button class="big-button back-button" data-screen="all-records-screen">Back</button>
+        <button id="previous-entries" class="big-button hidden" data-screen="record-display-screen">Previous</button>
+        <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
+        <button class="big-button back-button" data-screen="all-records-screen" id="back-from-entries">Back</button>
       </div>
-
-      <!--My code-->
-      <div id="view-record-selected-screen" class="screen hidden">
-        <h2 id="record-name"></h2>
-        <pre id="content"></pre>
-        <button id="previous-entries" class="big-button hidden" data-screen="view-record-selected-screen">Previous</button>
-        <button id="next-entries" class="big-button hidden" data-screen="view-record-selected-screen">Next</button>
-        <button class="big-button back-button" data-screen="all-records-screen">Back</button>
-      </div>
-      <!------------------------------>
 
       <div id="record-search-screen" class="screen hidden">
         <h2>Search Records</h2>
