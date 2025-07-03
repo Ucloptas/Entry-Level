@@ -1,28 +1,67 @@
 let currentTemplate = null;
 let currentRecord = null;
-let collectedEntries = [];
+
+// Global function for refreshing template dropdown
+async function refreshTemplateDropdown() {
+  const templates = await window.electronAPI.listTemplates();
+  window.uiManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
+  window.uiManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
+}
+
+// Global function for refreshing record dropdowns
+async function refreshRecordDropdowns() {
+  const records = await window.electronAPI.listRecords();
+  
+  // Refresh "Create New Entry" dropdown
+  window.uiManager.createDropdown('record-dropdown', records, '-- Select a Record --');
+  window.uiManager.setupDropdownWithConfirm('record-dropdown', 'select-record-confirm');
+  
+  // Refresh "View Records" dropdown
+  window.uiManager.createDropdown('record-select', records, '-- Choose a Record --');
+  window.uiManager.setupDropdownWithConfirm('record-select', 'view-record-button');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  // === SCREEN NAVIGATION ===
-  document.querySelectorAll('.big-button').forEach(button => {
-    button.addEventListener('click', () => {
-      const screenId = button.getAttribute('data-screen');
-      showScreen(screenId);
-    });
-  });
-
-  document.querySelectorAll('.back-button').forEach(button => {
-    button.addEventListener('click', () => {
-      const screenId = button.getAttribute('data-screen');
-      showScreen(screenId);
-    });
-  });
-
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
-    const target = document.getElementById(id);
-    if (target) target.classList.remove('hidden');
+  console.log('DOM Content Loaded');
+  
+  // Debug: Check if uiManager is available
+  console.log('window.uiManager available:', !!window.uiManager);
+  if (window.uiManager) {
+    console.log('uiManager methods:', Object.keys(window.uiManager));
   }
+  
+  function showScreen(id) {
+    console.log('Showing screen:', id);
+    window.uiManager.showScreen(id);
+    
+    // Refresh dropdowns when navigating to screens that need them
+    if (id === 'select-record-screen' || id === 'view-records-screen') {
+      refreshRecordDropdowns();
+    }
+  }
+
+  // === SCREEN NAVIGATION ===
+  const bigButtons = document.querySelectorAll('.big-button');
+  console.log('Found big buttons:', bigButtons.length);
+  
+  bigButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const screenId = button.getAttribute('data-screen');
+      console.log('Big button clicked, screen:', screenId);
+      showScreen(screenId);
+    });
+  });
+
+  const backButtons = document.querySelectorAll('.back-button');
+  console.log('Found back buttons:', backButtons.length);
+  
+  backButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const screenId = button.getAttribute('data-screen');
+      console.log('Back button clicked, screen:', screenId);
+      showScreen(screenId);
+    });
+  });
 
   // === MENU LOGIC ===
   const menuButton = document.getElementById('menu-button');
@@ -87,144 +126,203 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // === DARK MODE DETECTION + TOGGLE ===
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.body.classList.add('dark');
+  // Check for dark mode preference and apply it
+  const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  
+  function applyDarkMode() {
+    if (darkModeMediaQuery.matches) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
   }
+  
+  // Apply on load
+  applyDarkMode();
+  
+  // Listen for changes
+  darkModeMediaQuery.addEventListener('change', applyDarkMode);
 
   document.getElementById('toggle-dark-mode')?.addEventListener('click', () => {
     document.body.classList.toggle('dark');
   });
 
   // === TEMPLATE DROPDOWN LOGIC ===
-  const template_dropdown = document.getElementById('template-dropdown');
-  const confirmTemplateButton = document.getElementById('select-template-confirm');
+  // Initialize template dropdown
+  window.electronAPI.listTemplates().then(templates => {
+    window.uiManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
+    window.uiManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
+  });
 
-  if (template_dropdown) {
-    window.electronAPI.listTemplates().then(templates => {
-      template_dropdown.innerHTML = '<option value="">-- Select a Template --</option>';
-      templates.forEach(t => {
-        const option = document.createElement('option');
-        option.value = t.name;
-        option.textContent = `[${t.source}] ${t.name}`;
-        template_dropdown.appendChild(option);
-      });
-    });
+  document.getElementById('select-template-confirm')?.addEventListener('click', async () => {
+    const selected = window.uiManager.getSelectedValue('template-dropdown');
+    if (!selected) return;
 
-    template_dropdown.addEventListener('change', () => {
-      confirmTemplateButton.disabled = !template_dropdown.value;
-    });
+    currentTemplate = await window.electronAPI.loadTemplate(selected);
+    window.uiManager.clearEntries();
+    window.uiManager.renderForm(currentTemplate.fields);
+    window.uiManager.updateDisplay();
+    showScreen('entry-form-screen');
+  });
 
-    confirmTemplateButton.addEventListener('click', async () => {
-      const selected = template_dropdown.value;
-      if (!selected) return;
+    // === RECORD DROPDOWN LOGIC ===
+  // Initialize record dropdown for "Create New Entry"
+  window.electronAPI.listRecords().then(records => {
+    window.uiManager.createDropdown('record-dropdown', records, '-- Select a Record --');
+    window.uiManager.setupDropdownWithConfirm('record-dropdown', 'select-record-confirm');
+  });
 
-      currentTemplate = await window.electronAPI.loadTemplate(selected);
-      collectedEntries = [];
-      renderForm(currentTemplate.fields);
-      displayEntries();
-      showScreen('entry-form-screen');
-    });
-  }
+  document.getElementById('select-record-confirm')?.addEventListener('click', async () => {
+    const selected = window.uiManager.getSelectedValue('record-dropdown');
+    if (!selected) return;
 
-  // === RECORD DROPDOWN LOGIC ===
-  const record_dropdown = document.getElementById('record-dropdown');
-  const confirmRecordButton = document.getElementById('select-record-confirm');
-
-  if (record_dropdown) {
-    window.electronAPI.listRecords().then(records => {
-      record_dropdown.innerHTML = '<option value="">-- Select a Record --</option>';
-      records.forEach(r => {
-        const option = document.createElement('option');
-        option.value = r.name;
-        option.textContent = `[${r.source}] ${r.name}`;
-        record_dropdown.appendChild(option);
-      });
-    });
-
-    record_dropdown.addEventListener('change', () => {
-      confirmRecordButton.disabled = !record_dropdown.value;
-    });
-
-    confirmRecordButton.addEventListener('click', async () => {
-      const selected = record_dropdown.value;
-      if (!selected) return;
-
-      currentRecord = await window.electronAPI.loadRecord(selected);
-      collectedEntries = [];
-      renderForm(currentRecord.fields);
-      displayEntries();
-      showScreen('entry-form-screen');
-    });
-  }
+    currentRecord = await window.electronAPI.loadRecord(selected);
+    window.uiManager.clearEntries();
+    // Fix: Extract fields from the template, not directly from record
+    window.uiManager.renderForm(currentRecord.template.fields);
+    window.uiManager.updateDisplay();
+    showScreen('entry-form-screen');
+  });
 
   // === FORM ACTIONS ===
   document.getElementById('add-entry')?.addEventListener('click', () => {
-    const entry = readFormData(currentTemplate.fields);
-    collectedEntries.push(entry);
-    displayEntries();
-    clearForm(currentTemplate.fields);
+    // Use the appropriate fields based on whether we're creating new or adding to existing
+    const fields = currentRecord ? currentRecord.template.fields : currentTemplate.fields;
+    const entry = window.uiManager.readFormData(fields);
+    
+    // Validate the entry before adding
+    const validationErrors = window.uiManager.validateFormData(fields, entry);
+    if (validationErrors.length > 0) {
+      window.uiManager.showErrorMessage(validationErrors.join(', '));
+      return;
+    }
+    
+    window.uiManager.addEntry(entry);
+    window.uiManager.clearForm(fields);
+    window.uiManager.showSuccessMessage('Entry added successfully');
   });
 
   document.getElementById('save-entry')?.addEventListener('click', async () => {
-    if (collectedEntries.length === 0) {
-      showStatusMessage('No entries to save.');
+    if (window.uiManager.isEmpty()) {
+      window.uiManager.showErrorMessage('No entries to save.');
       return;
     }
 
-    const recordData = {
-      template: {
-        name: currentTemplate.name || 'untitled',
-        fields: currentTemplate.fields
-      },
-      entries: collectedEntries
-    };
+    if (currentRecord) {
+      // Adding to existing record
+      const updatedRecord = {
+        template: currentRecord.template,
+        entries: [...currentRecord.entries, ...window.uiManager.getEntries()]
+      };
+      
+      // Save with the same filename
+      await window.electronAPI.saveRecord({
+        name: window.uiManager.getSelectedValue('record-dropdown'),
+        data: updatedRecord
+      });
+      
+      window.uiManager.showSuccessMessage('Entries added to existing record!');
+    } else {
+      // Creating new record
+      const recordData = {
+        template: {
+          name: currentTemplate.name || 'untitled',
+          fields: currentTemplate.fields
+        },
+        entries: window.uiManager.getEntries()
+      };
 
-    const safeName = (currentTemplate.name || 'untitled').replace(/\s+/g, '_').toLowerCase();
-    const fileName = `${safeName}-${Date.now()}.json`;
+      const safeName = (currentTemplate.name || 'untitled').replace(/\s+/g, '_').toLowerCase();
+      const fileName = `${safeName}-${Date.now()}.json`;
 
+      await window.electronAPI.saveRecord({
+        name: fileName,
+        data: recordData
+      });
+      
+      window.uiManager.showSuccessMessage('New record saved!');
+    }
 
-    await window.electronAPI.saveRecord({
-      name: fileName,
-      data: recordData
+    window.uiManager.clearEntries();
+    const fields = currentRecord ? currentRecord.template.fields : currentTemplate.fields;
+    window.uiManager.renderForm(fields);
+    window.uiManager.clearForm(fields);
+    
+    // Refresh record dropdowns after saving
+    await refreshRecordDropdowns();
+  });
+
+// === VIEW RECORDS DROPDOWN ===
+// Initialize record dropdown for "View Records"
+window.electronAPI.listRecords().then(files => {
+  window.uiManager.createDropdown('record-select', files, '-- Choose a Record --');
+  window.uiManager.setupDropdownWithConfirm('record-select', 'view-record-button');
+});
+
+document.getElementById('view-record-button')?.addEventListener('click', async () => {
+  const selected = window.uiManager.getSelectedValue('record-select');
+  if (!selected) return;
+
+  const recordData = await window.electronAPI.loadRecord(selected);
+  console.log('Loaded record:', recordData);
+
+  // Display the record data
+  displayRecord(recordData, selected);
+  
+  // Navigate to the record display screen
+  showScreen('record-display-screen');
+});
+
+// Function to display record data
+function displayRecord(recordData, fileName) {
+  const titleElement = document.getElementById('record-display-title');
+  const contentElement = document.getElementById('record-display-content');
+  
+  // Set the title
+  titleElement.textContent = `Record: ${fileName}`;
+  
+  // Clear previous content
+  contentElement.innerHTML = '';
+  
+  // Display template info
+  const templateInfo = document.createElement('div');
+  templateInfo.innerHTML = `
+    <h3>Template: ${recordData.template.name}</h3>
+    <p><strong>Fields:</strong> ${recordData.template.fields.map(f => f.name).join(', ')}</p>
+  `;
+  contentElement.appendChild(templateInfo);
+  
+  // Display entries
+  const entriesSection = document.createElement('div');
+  entriesSection.innerHTML = `<h3>Entries (${recordData.entries.length})</h3>`;
+  
+  if (recordData.entries.length === 0) {
+    entriesSection.innerHTML += '<p>No entries found.</p>';
+  } else {
+    const entriesList = document.createElement('div');
+    entriesList.className = 'entries-list';
+    
+    recordData.entries.forEach((entry, index) => {
+      const entryDiv = document.createElement('div');
+      entryDiv.className = 'entry-row';
+      entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
+      
+      const fieldsList = document.createElement('ul');
+      recordData.template.fields.forEach(field => {
+        const value = entry[field.name] || 'N/A';
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${field.name}:</strong> ${value}`;
+        fieldsList.appendChild(li);
+      });
+      
+      entryDiv.appendChild(fieldsList);
+      entriesList.appendChild(entryDiv);
     });
-
-    collectedEntries = [];
-    renderForm(currentTemplate.fields);
-    clearForm(currentTemplate.fields);
-    displayEntries();
-    showStatusMessage('Record saved!');
-  });
-
-// === LOAD RECORD DROPDOWN ===
-const recordDropdown = document.getElementById('record-select');
-const confirmRecordBtn = document.getElementById('view-record-button');
-
-if (recordDropdown) {
-  window.electronAPI.listRecords().then(files => {
-    recordDropdown.innerHTML = '<option value="">-- Choose a Record --</option>';
-    files.forEach(file => {
-      const option = document.createElement('option');
-      option.value = file;
-      option.textContent = file;
-      recordDropdown.appendChild(option);
-    });
-  });
-
-  recordDropdown.addEventListener('change', () => {
-    confirmRecordBtn.disabled = !recordDropdown.value;
-  });
-
-  confirmRecordBtn.addEventListener('click', async () => {
-    const selected = recordDropdown.value;
-    if (!selected) return;
-
-    const recordData = await window.electronAPI.loadRecord(selected);
-    // You can route to a display screen and use recordData.template / recordData.entries
-    console.log('Loaded record:', recordData);
-
-    // For now just show a toast
-    showStatusMessage(`Loaded: ${selected}`);
-  });
+    
+    entriesSection.appendChild(entriesList);
+  }
+  
+  contentElement.appendChild(entriesSection);
 }
 
 // === CREATE NEW TEMPLATE === //
@@ -234,14 +332,23 @@ document.getElementById('add-field-button')?.addEventListener('click', () => {
   const name = document.getElementById('field-name-input').value.trim();
   const type = document.getElementById('field-type-select').value;
 
-  if (!name) {
-    showStatusMessage('Field name cannot be empty.');
+  // Validate field name
+  const nameErrors = window.uiManager.validateFieldName(name);
+  if (nameErrors.length > 0) {
+    window.uiManager.showErrorMessage(nameErrors.join(', '));
+    return;
+  }
+
+  // Check for duplicate field names
+  if (customTemplateFields.find(field => field.name === name)) {
+    window.uiManager.showErrorMessage(`Field name '${name}' already exists`);
     return;
   }
 
   customTemplateFields.push({ name, type });
   renderTemplateFieldsPreview();
   document.getElementById('field-name-input').value = '';
+  window.uiManager.showSuccessMessage(`Field '${name}' added`);
 });
 
 function renderTemplateFieldsPreview() {
@@ -268,19 +375,23 @@ document.getElementById('save-template-button')?.addEventListener('click', async
   const nameInput = document.getElementById('template-name-input');
   const templateName = nameInput.value.trim();
 
-  if (!templateName) {
-    showStatusMessage('Template name is required.');
+  // Validate template name
+  const nameErrors = window.uiManager.validateTemplateName(templateName);
+  if (nameErrors.length > 0) {
+    window.uiManager.showErrorMessage(nameErrors.join(', '));
     return;
   }
 
-  if (customTemplateFields.length === 0) {
-    showStatusMessage('You must add at least one field.');
+  // Validate template fields
+  const fieldErrors = window.uiManager.validateTemplateFields(customTemplateFields);
+  if (fieldErrors.length > 0) {
+    window.uiManager.showErrorMessage(fieldErrors.join(', '));
     return;
   }
 
-    const exists = await window.electronAPI.checkTemplateExists(templateName);
+  const exists = await window.electronAPI.checkTemplateExists(templateName);
   if (exists) {
-    showStatusMessage('Template already exists. Choose a different name.');
+    window.uiManager.showErrorMessage('Template already exists. Choose a different name.');
     return;
   }
 
@@ -290,7 +401,7 @@ document.getElementById('save-template-button')?.addEventListener('click', async
       fields: customTemplateFields
     });
 
-    showStatusMessage('Template saved!');
+    window.uiManager.showSuccessMessage('Template saved!');
     nameInput.value = '';
     customTemplateFields = [];
     renderTemplateFieldsPreview();
@@ -298,118 +409,15 @@ document.getElementById('save-template-button')?.addEventListener('click', async
     showScreen('new-record-screen');
   } catch (err) {
     console.error(err);
-    showStatusMessage('Failed to save template.');
+    window.uiManager.showErrorMessage('Failed to save template.');
   }
 });
 
-
 });
 
-// === EXISTING TEMPLATE === //
-async function refreshTemplateDropdown() {
-  const dropdown = document.getElementById('template-select');
-  const confirmTemplateButton = document.getElementById('select-template-confirm');
-  if (!dropdown) return;
-
-  const templates = await window.electronAPI.listTemplates();
-  dropdown.innerHTML = '<option value="">-- Select a Template --</option>';
-  templates.forEach(t => {
-    const option = document.createElement('option');
-    option.value = t.name;
-    option.textContent = `[${t.source}] ${t.name}`;
-    dropdown.appendChild(option);
-  });
-
-  confirmTemplateButton.disabled = true;
-}
 
 
-// === FORM HELPERS ===
-function renderForm(fields) {
-  const formContainer = document.getElementById('form-container');
-  formContainer.innerHTML = '';
 
-  fields.forEach(field => {
-    const label = document.createElement('label');
-    label.textContent = `${field.name} (${field.type})`;
-    label.style.display = 'block';
 
-    const input = document.createElement('input');
-    input.name = field.name;
 
-    switch (field.type) {
-      case 'text':
-      case 'number':
-      case 'date':
-        input.type = field.type;
-        break;
-      case 'boolean':
-        input.type = 'checkbox';
-        break;
-      case 'money':
-      case 'decimal':
-        input.type = 'number';
-        break;
-      default:
-        console.warn(`Unknown field type: ${field.type}, defaulting to text.`);
-        input.type = 'text';
-        break;
-    }
 
-    label.appendChild(input);
-    formContainer.appendChild(label);
-  });
-}
-
-function readFormData(fields) {
-  const entry = {};
-  fields.forEach(field => {
-    const input = document.querySelector(`[name="${field.name}"]`);
-    if (!input) return;
-    if (field.type === 'boolean') {
-      entry[field.name] = input.checked;
-    } else if (field.type === 'number' || field.type === 'money' || field.type === 'decimal') {
-      entry[field.name] = parseFloat(input.value);
-    } else {
-      entry[field.name] = input.value;
-    }
-  });
-  return entry;
-}
-
-function clearForm(fields) {
-  fields.forEach(field => {
-    const input = document.querySelector(`[name="${field.name}"]`);
-    if (!input) return;
-    if (field.type === 'boolean') {
-      input.checked = false;
-    } else {
-      input.value = '';
-    }
-  });
-}
-
-function displayEntries() {
-  const display = document.getElementById('entries-display');
-  display.innerHTML = '';
-
-  collectedEntries.forEach((entry, idx) => {
-    const div = document.createElement('div');
-    div.style.marginBottom = '0.5em';
-    div.classList.add('entry-row');
-    div.textContent = `Entry ${idx + 1}: ${JSON.stringify(entry)}`;
-    display.appendChild(div);
-  });
-}
-
-function showStatusMessage(text) {
-  const msgBox = document.getElementById('status-message');
-  if (!msgBox) return;
-
-  msgBox.textContent = text;
-  msgBox.classList.remove('hidden');
-
-  setTimeout(() => {
-    msgBox.classList.add('hidden');
-  }, 3000);
-}

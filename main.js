@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs'); // Still needed for seedDefaultTemplatesIfMissing
 
 // Import logic modules using userData path structure
 const {
@@ -29,7 +29,9 @@ function createWindow() {
     minHeight: 500,
     resizable: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: true
     }
   });
 
@@ -76,17 +78,12 @@ ipcMain.handle('save-template', (event, { name, data }) => {
   return saveTemplate(userDataPath, name, data);
 });
 
-ipcMain.handle('list-records', async () => {
-  const fs = require('fs');
-  const path = require('path');
-  const recordsPath = path.join(app.getPath('userData'), 'records');
-  if (!fs.existsSync(recordsPath)) return [];
-  return fs.readdirSync(recordsPath).filter(f => f.endsWith('.json'));
+ipcMain.handle('list-records', () => {
+  return listRecords(userDataPath);
 });
 
-ipcMain.handle('load-record', async (event, fileName) => {
-  const fullPath = path.join(app.getPath('userData'), 'records', fileName);
-  return JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+ipcMain.handle('load-record', (event, fileName) => {
+  return loadRecord(userDataPath, fileName);
 });
 
 
@@ -94,11 +91,7 @@ ipcMain.handle('save-record', (event, { name, data }) => {
   return saveRecord(userDataPath, name, data);
 });
 
-ipcMain.handle('list-record-files', () => {
-  const dir = path.join(userDataPath, 'records');
-  if (!fs.existsSync(dir)) return [];
-  return fs.readdirSync(dir).filter(f => f.endsWith('.json'));
-});
+
 
 ipcMain.handle('create-template', (event, payload) => {
   return createTemplate(userDataPath, payload);
