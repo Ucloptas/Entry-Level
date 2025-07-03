@@ -184,15 +184,66 @@ if (recordDropdown) {
 
   confirmRecordBtn.addEventListener('click', async () => {
     const selected = recordDropdown.value;
-    if (!selected) return;
 
+    if (!selected) return;
+    
+    const nextEntries = document.getElementById('next-entries');
+    const previousEntries = document.getElementById('previous-entries');
     const recordData = await window.electronAPI.loadRecord(selected);
+    const content = document.getElementById('content');
+    let array = [];
+    let index = 0;
+
+    content.innerHTML = '';
+    array = Object.entries(recordData.entries);
+
+    if(array.length > 5) {
+      nextEntries.classList.remove('hidden');
+      previousEntries.classList.remove('hidden');
+    }
+
+    showEntries(array, index, content);
+
+    document.getElementById('next-entries').addEventListener('click', () => {
+      if(!(index+5 > array.length) && !(index === array.length)){
+        index += 5;
+        showEntries(array, index, content);
+      }
+      console.log(index);
+    });
+    
+    document.getElementById('previous-entries').addEventListener('click', () => {
+      if(!(index-5 < 0) && !(index === 0)){
+        index -= 5;
+        showEntries(array, index, content);
+      }
+      console.log(index);
+    });
+
+    console.log('array is: ', array);
+
+    document.getElementById('record-name').textContent = selected.split('.').slice(0, -1);
+
     // You can route to a display screen and use recordData.template / recordData.entries
     console.log('Loaded record:', recordData);
 
     // For now just show a toast
     showStatusMessage(`Loaded: ${selected}`);
   });
+}
+
+//Function to show 5 entries per page at max
+function showEntries(arr, index, content){
+  content.textContent = '';
+
+  const end = Math.min(index+5, arr.length);
+
+  for(let i = index; i < end; i++){
+    Object.entries(arr[i][1]).forEach(([key, value]) => {
+      content.textContent += `${key}: ${value}\n`;
+    });
+    content.textContent += '\n';
+  }
 }
 
 // === CREATE NEW TEMPLATE === //
