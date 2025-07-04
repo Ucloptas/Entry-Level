@@ -15,13 +15,17 @@ class FormManager {
 
     this.formContainer.innerHTML = '';
 
-    fields.forEach(field => {
+    fields.forEach((field, idx) => {
       const label = document.createElement('label');
+      // Ensure each input has a unique id
+      const inputId = `form-field-${field.name.replace(/\s+/g, '-').toLowerCase()}-${idx}`;
+      label.setAttribute('for', inputId);
       label.textContent = `${field.name} (${field.type})`;
       label.style.display = 'block';
 
       const input = document.createElement('input');
       input.name = field.name;
+      input.id = inputId;
 
       // Set input type based on field type
       switch (field.type) {

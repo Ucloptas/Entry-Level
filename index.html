@@ -8,172 +8,172 @@
 </head>
 <body>
 
-  <!-- Top-right floating menu icon -->
-  <div class="top-right-icon" id="menu-button" title="App Menu">☰</div>
-  <div class="floating-menu hidden" id="floating-menu">
-    <ul>
-      <li>About</li>
-      <li id="open-settings">Settings</li>
-      <li>Debug Tools</li>
-      <li id="open-exit">Exit</li>
-    </ul>
-  </div>
+  <!-- Header with floating menu icon and menu -->
+  <header>
+    <div class="top-right-icon" id="menu-button" title="App Menu" aria-label="Open App Menu" tabindex="0">☰</div>
+    <nav class="floating-menu hidden" id="floating-menu" aria-label="App Menu">
+      <ul>
+        <li><button type="button" aria-label="About">About</button></li>
+        <li><button type="button" id="open-settings" aria-label="Open Settings">Settings</button></li>
+        <li><button type="button" aria-label="Debug Tools">Debug Tools</button></li>
+        <li><button type="button" id="open-exit" aria-label="Exit Application">Exit</button></li>
+      </ul>
+    </nav>
+  </header>
 
-  <!-- App content -->
-  <div class="app-shell">
-    <div class="content-container">
+  <!-- Main app content -->
+  <main>
+    <div class="app-shell">
+      <div class="content-container">
 
-      <!-- Main Menu -->
-      <div id="main-menu" class="screen">
-        <h1>Entry Level App</h1>
-        <div class="button-group">
-          <button class="big-button" data-screen="new-record-screen">Create New Record</button>
-          <button class="big-button" data-screen="select-record-screen">Create New Entry</button>
-          <button class="big-button" data-screen="view-records-screen">View Records</button>
-        </div>
-      </div>
-
-      <!-- New Entry Placeholder -->
-      <div id="new-entry-screen" class="screen hidden">
-        <h2>Create New Entry</h2>
-        <p>(Feature coming soon.)</p>
-        <button class="modal-button back-button" data-screen="main-menu">Back</button>
-      </div>
-
-      <!-- Create New Record Path -->
-      <div id="new-record-screen" class="screen hidden">
-        <h2>Create New Record</h2>
-        <div class="button-group">
-          <button class="big-button" data-screen="select-template-screen">Use Existing Template</button>
-          <button class="big-button" data-screen="create-template-screen">Create New Template</button>
-          <button class="big-button back-button" data-screen="main-menu">Back</button>
-        </div>
-      </div>
-
-      <!-- View Records Placeholder -->
-      <div id="view-records-screen" class="screen hidden">
-        <h2>View Records</h2>
-        <div class="button-group">
-          <button class="big-button" data-screen="all-records-screen">View All Records</button>
-          <button class="big-button" data-screen="record-search-screen">Record Search</button>
-          <button class="big-button" data-screen="record-categories-screen">Categories</button>
-          <button class="big-button back-button" data-screen="main-menu">Back</button>
-        </div>
-      </div>
-
-      <div id="all-records-screen" class="screen hidden">
-        <h2>Select a Record</h2>
-        <div class="dropdown-select-wrapper">
-          <select id="record-select">
-            <option value="">-- Choose a Record --</option>
-          </select>
-        </div>
-        <button id="view-record-button" class="big-button" disabled>View Record</button>
-        <button class="big-button back-button" data-screen="view-records-screen">Back</button>
-      </div>
-
-      <!-- Record Display Screen -->
-      <div id="record-display-screen" class="screen hidden">
-        <h2 id="record-display-title">Record Details</h2>
-        <div id="record-display-content">
-          <!-- Record details will be populated here -->
-        </div>
-        <button class="big-button back-button" data-screen="all-records-screen">Back</button>
-      </div>
-
-      <div id="record-search-screen" class="screen hidden">
-        <h2>Search Records</h2>
-        <p>[Placeholder for search functionality]</p>
-        <button class="big-button back-button" data-screen="view-records-screen">Back</button>
-      </div>
-
-      <div id="record-categories-screen" class="screen hidden">
-        <h2>Browse by Categories</h2>
-        <p>[Placeholder for category browsing]</p>
-        <button class="big-button back-button" data-screen="view-records-screen">Back</button>
-      </div>
-
-
-      <!-- Template Selection -->
-      <div id="select-template-screen" class="screen hidden">
-        <h2>Select a Template</h2>
-        <div class="dropdown-select-wrapper">
-          <select id="template-dropdown" class="dropdown-select"></select>
-        </div>
-        <div class="button-group" style="margin-top: 20px;">
-          <button id="select-template-confirm" class="modal-button" disabled>Continue</button>
-          <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
-        </div>
-      </div>
-
-      <!-- Record Selection Screen-->
-      <div id="select-record-screen" class="screen hidden">
-        <h2>Select a Record</h2>
-        <div class="dropdown-select-wrapper">
-          <select id="record-dropdown" class="dropdown-select"></select>
-        </div>
-        <div class="button-group" style="margin-top: 20px;">
-          <button id="select-record-confirm" class="modal-button" disabled>Continue</button>
-          <button class="modal-button back-button" data-screen="main-menu">Back</button>
-        </div>
-      </div>
-
-      <!-- Create Template Placeholder 
-      <div id="create-template-screen" class="screen hidden">
-        <h2>Create Template</h2>
-        <p>(Feature coming soon.)</p>
-        <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
-      </div> -->
-
-      <!-- Create Template -->
-      <div id="create-template-screen" class="screen hidden">
-        <h2>Create Template</h2>
-        <label>
-          Template Name:
-          <input type="text" id="template-name-input">
-        </label>
-
-        <h3>Add Field</h3>
-        <div class="field-creator">
-          <input type="text" id="field-name-input" placeholder="Field Name">
-          <select id="field-type-select">
-            <option value="text">Text</option>
-            <option value="number">Number</option>
-            <option value="date">Date</option>
-            <option value="boolean">Checkbox</option>
-            <option value="money">Money</option>
-            <option value="decimal">Decimal</option>
-          </select>
-          <button id="add-field-button">Add Field</button>
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen">
+          <h1>Entry Level App</h1>
+          <div class="button-group">
+            <button class="big-button" data-screen="new-record-screen" aria-label="Create New Record">Create New Record</button>
+            <button class="big-button" data-screen="select-record-screen" aria-label="Create New Entry">Create New Entry</button>
+            <button class="big-button" data-screen="view-records-screen" aria-label="View Records">View Records</button>
+          </div>
         </div>
 
-        <h3>Fields Preview</h3>
-        <ul id="template-fields-list"></ul>
+        <!-- New Entry Placeholder -->
+        <div id="new-entry-screen" class="screen hidden">
+          <h2>Create New Entry</h2>
+          <p>(Feature coming soon.)</p>
+          <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+        </div>
 
-        <button id="save-template-button" class="modal-button">Save Template</button>
-        <button class="modal-button back-button" data-screen="new-record-screen">Back</button>
+        <!-- Create New Record Path -->
+        <div id="new-record-screen" class="screen hidden">
+          <h2>Create New Record</h2>
+          <div class="button-group">
+            <button class="big-button" data-screen="select-template-screen" aria-label="Use Existing Template">Use Existing Template</button>
+            <button class="big-button" data-screen="create-template-screen" aria-label="Create New Template">Create New Template</button>
+            <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+          </div>
+        </div>
+
+        <!-- View Records Placeholder -->
+        <div id="view-records-screen" class="screen hidden">
+          <h2>View Records</h2>
+          <div class="button-group">
+            <button class="big-button" data-screen="all-records-screen" aria-label="View All Records">View All Records</button>
+            <button class="big-button" data-screen="record-search-screen" aria-label="Record Search">Record Search</button>
+            <button class="big-button" data-screen="record-categories-screen" aria-label="Categories">Categories</button>
+            <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+          </div>
+        </div>
+
+        <div id="all-records-screen" class="screen hidden">
+          <h2>Select a Record</h2>
+          <label for="record-select">Select a Record:</label>
+          <div class="dropdown-select-wrapper">
+            <select id="record-select" aria-label="Record Select">
+              <option value="">-- Choose a Record --</option>
+            </select>
+          </div>
+          <button id="view-record-button" class="big-button" disabled aria-label="View Selected Record">View Record</button>
+          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
+        </div>
+
+        <!-- Record Display Screen -->
+        <div id="record-display-screen" class="screen hidden">
+          <h2 id="record-display-title">Record Details</h2>
+          <div id="record-display-content">
+            <!-- Record details will be populated here -->
+          </div>
+          <button class="big-button back-button" data-screen="all-records-screen" aria-label="Back to All Records">Back</button>
+        </div>
+
+        <div id="record-search-screen" class="screen hidden">
+          <h2>Search Records</h2>
+          <p>[Placeholder for search functionality]</p>
+          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
+        </div>
+
+        <div id="record-categories-screen" class="screen hidden">
+          <h2>Browse by Categories</h2>
+          <p>[Placeholder for category browsing]</p>
+          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
+        </div>
+
+
+        <!-- Template Selection -->
+        <div id="select-template-screen" class="screen hidden">
+          <h2>Select a Template</h2>
+          <label for="template-dropdown">Select a Template:</label>
+          <div class="dropdown-select-wrapper">
+            <select id="template-dropdown" class="dropdown-select" aria-label="Template Dropdown"></select>
+          </div>
+          <div class="button-group" style="margin-top: 20px;">
+            <button id="select-template-confirm" class="modal-button" disabled aria-label="Continue with Selected Template">Continue</button>
+            <button class="modal-button back-button" data-screen="new-record-screen" aria-label="Back to New Record">Back</button>
+          </div>
+        </div>
+
+        <!-- Record Selection Screen-->
+        <div id="select-record-screen" class="screen hidden">
+          <h2>Select a Record</h2>
+          <label for="record-dropdown">Select a Record:</label>
+          <div class="dropdown-select-wrapper">
+            <select id="record-dropdown" class="dropdown-select" aria-label="Record Dropdown"></select>
+          </div>
+          <div class="button-group" style="margin-top: 20px;">
+            <button id="select-record-confirm" class="modal-button" disabled aria-label="Continue with Selected Record">Continue</button>
+            <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+          </div>
+        </div>
+
+        <!-- Create Template -->
+        <div id="create-template-screen" class="screen hidden">
+          <h2>Create Template</h2>
+          <label for="template-name-input">Template Name:</label>
+          <input type="text" id="template-name-input" aria-label="Template Name">
+
+          <h3>Add Field</h3>
+          <div class="field-creator">
+            <label for="field-name-input">Field Name:</label>
+            <input type="text" id="field-name-input" placeholder="Field Name" aria-label="Field Name">
+            <label for="field-type-select">Field Type:</label>
+            <select id="field-type-select" aria-label="Field Type">
+              <option value="text">Text</option>
+              <option value="number">Number</option>
+              <option value="date">Date</option>
+              <option value="boolean">Checkbox</option>
+              <option value="money">Money</option>
+              <option value="decimal">Decimal</option>
+            </select>
+            <button id="add-field-button" aria-label="Add Field">Add Field</button>
+          </div>
+
+          <h3>Fields Preview</h3>
+          <ul id="template-fields-list"></ul>
+
+          <button id="save-template-button" class="modal-button" aria-label="Save Template">Save Template</button>
+          <button class="modal-button back-button" data-screen="new-record-screen" aria-label="Back to New Record">Back</button>
+        </div>
+
+
+        <!-- Entry Form Screen -->
+        <div id="entry-form-screen" class="screen hidden">
+          <h2>Fill Out Entry</h2>
+          <div id="form-container"></div>
+          <button id="add-entry" class="modal-button" aria-label="Add Entry">Add Entry</button>
+          <div id="entries-display"></div>
+          <button id="save-entry" class="modal-button" aria-label="Save Record">Save Record</button>
+          <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+        </div>
+
       </div>
-
-
-      <!-- Entry Form Screen -->
-      <div id="entry-form-screen" class="screen hidden">
-        <h2>Fill Out Entry</h2>
-        <div id="form-container"></div>
-        <button id="add-entry" class="modal-button">Add Entry</button>
-        <div id="entries-display"></div>
-        <button id="save-entry" class="modal-button">Save Record</button>
-        <button class="modal-button back-button" data-screen="main-menu">Back</button>
-      </div>
-
     </div>
-  </div>
+  </main>
 
   <!-- Settings Modal -->
   <div id="settings-overlay" class="modal-overlay hidden">
     <div class="modal-content">
       <h2>Settings</h2>
-      <button id="toggle-dark-mode" class="modal-button">Toggle Dark Mode</button>
-      <button id="close-settings" class="modal-button">Close (Esc)</button>
+      <button id="toggle-dark-mode" class="modal-button" aria-label="Toggle Dark Mode">Toggle Dark Mode</button>
+      <button id="close-settings" class="modal-button" aria-label="Close Settings">Close (Esc)</button>
     </div>
   </div>
 
@@ -183,16 +183,13 @@
       <h2>Exit Application?</h2>
       <p>Are you sure you want to quit?</p>
       <div class="button-group">
-        <button id="confirm-exit" class="modal-button">Yes, Exit (Enter)</button>
-        <button id="cancel-exit" class="modal-button">Cancel (Esc)</button>
+        <button id="confirm-exit" class="modal-button" aria-label="Confirm Exit">Yes, Exit (Enter)</button>
+        <button id="cancel-exit" class="modal-button" aria-label="Cancel Exit">Cancel (Esc)</button>
       </div>
     </div>
   </div>
 
   <div id="status-message" class="status-toast hidden"></div>
-
-
-
 
   <script src="renderer.js"></script>
 </body>
