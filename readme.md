@@ -60,23 +60,34 @@ Entry-Level/
 - **When to Modify**: Adding new backend APIs, changing exposed functions
 
 #### `renderer.js` - Frontend Logic
-- **Purpose**: Handles all user interactions and UI state management
+- **Purpose**: Handles all user interactions, UI state management, and accessibility features
 - **Responsibilities**:
   - Event listeners for buttons and forms
   - Screen navigation logic
   - Modal management (settings, exit)
   - Dark mode detection and toggle
   - Template/record selection logic
+  - **Accessibility features**:
+    - Keyboard navigation and shortcuts
+    - Focus management and trapping
+    - ARIA attribute management
+    - Screen reader support
+    - Form validation with accessible error messages
 - **Key Patterns**:
   - Uses `window.uiManager` for UI operations
   - Uses `window.electronAPI` for backend operations
   - Modular event handling with clear separation
-- **When to Modify**: Adding new UI interactions, changing screen flow, adding new features
+  - **Accessibility patterns**:
+    - Focus trapping in modals
+    - Keyboard shortcut handling (Escape, Enter)
+    - ARIA state management
+    - Accessible form validation
+- **When to Modify**: Adding new UI interactions, changing screen flow, adding new features, improving accessibility
 
 ### UI and Styling
 
 #### `index.html` - Application Structure
-- **Purpose**: Defines all application screens and UI components
+- **Purpose**: Defines all application screens and UI components with accessibility markup
 - **Structure**:
   - Main menu with navigation buttons
   - Template selection and creation screens
@@ -87,23 +98,38 @@ Entry-Level/
   - `.screen` class for different application views
   - `.hidden` class for visibility control
   - Data attributes for screen navigation
-- **When to Modify**: Adding new screens, changing UI layout, adding new form fields
+  - **Accessibility markup**:
+    - `lang="en"` on HTML element
+    - ARIA labels on all interactive elements
+    - Proper form labels and associations
+    - Semantic HTML structure
+    - Tabindex attributes for keyboard navigation
+- **When to Modify**: Adding new screens, changing UI layout, adding new form fields, improving accessibility markup
 
 #### `style.css` - Visual Design
-- **Purpose**: All visual styling, theming, and responsive design
+- **Purpose**: All visual styling, theming, responsive design, and accessibility features
 - **Features**:
   - CSS custom properties for theming
-  - Dark mode support
+  - Dark mode support with automatic detection
   - Responsive design patterns
   - Modal and overlay styling
   - Form and button styling
+  - **Accessibility-focused design**:
+    - High contrast focus indicators with UNT green theme
+    - Theme-aware focus colors (light/dark mode)
+    - Focus-visible support for keyboard navigation
+    - Improved color contrast ratios
 - **Key Sections**:
   - CSS variables for colors and spacing
   - Screen management styles
   - Modal and overlay styles
   - Form and input styles
   - Dark mode overrides
-- **When to Modify**: Changing visual design, adding new UI components, updating themes
+  - **Accessibility styles**:
+    - Focus indicator styling
+    - Theme-aware focus colors
+    - Form error and help text styling
+- **When to Modify**: Changing visual design, adding new UI components, updating themes, improving accessibility
 
 ### Business Logic Modules (`logic/`)
 
@@ -390,6 +416,65 @@ Modals work similarly but overlay on top of the current screen:
 
 ---
 
+##  Accessibility Features
+
+The Entry-Level application has been designed with comprehensive accessibility support to ensure it can be used by people with various abilities and assistive technologies.
+
+### Keyboard Navigation
+- **Full keyboard accessibility**: All interactive elements can be accessed and operated using only the keyboard
+- **Logical tab order**: Tab navigation follows a logical sequence through the interface
+- **Keyboard shortcuts**:
+  - `Escape`: Close modals and return to previous screen
+  - `Enter`: Confirm actions in modals (e.g., exit application)
+  - `Tab/Shift+Tab`: Navigate between interactive elements
+- **Focus management**: Clear visual focus indicators with UNT green theme colors
+- **Focus trapping**: Modals trap focus to prevent users from tabbing outside the modal
+
+### Screen Reader Support
+- **Semantic HTML**: Proper use of headings, lists, and semantic elements
+- **ARIA labels**: All interactive elements have descriptive `aria-label` attributes
+- **Form associations**: Proper `for` attributes linking labels to form controls
+- **Error announcements**: Form validation errors are announced to screen readers
+- **Status messages**: Success, error, and warning messages are accessible
+- **Help text**: Context-aware help text for form fields
+
+### Visual Accessibility
+- **High contrast focus indicators**: Clear focus states with UNT green theme
+- **Theme-aware colors**: Focus colors adapt to light/dark mode
+- **Color contrast**: Improved contrast ratios for better readability
+- **Focus-visible support**: Focus indicators only show for keyboard navigation
+- **Form validation**: Visual error states with accessible error messages
+
+### Modal Accessibility
+- **ARIA modal attributes**: Proper `aria-modal="true"` and `role="dialog"` attributes
+- **Focus management**: Automatic focus to first interactive element in modal
+- **Focus restoration**: Returns focus to triggering element when modal closes
+- **Keyboard shortcuts**: Escape key closes modals
+- **Screen reader announcements**: Proper ARIA attributes for modal state
+
+### Form Accessibility
+- **Dynamic form generation**: Forms include proper labels and help text
+- **Validation feedback**: Accessible error messages with `aria-invalid` and `aria-describedby`
+- **Field types**: Appropriate input types for different data (text, number, date, etc.)
+- **Help text**: Context-aware help text for form fields
+- **Error handling**: Clear error states and messages
+
+### Assistive Technology Compatibility
+- **Screen readers**: Tested with popular screen readers
+- **Voice control**: Compatible with voice control software
+- **Switch devices**: Navigable with switch control devices
+- **High contrast mode**: Compatible with system high contrast settings
+- **Zoom**: Supports browser zoom up to 200%
+
+### Accessibility Testing
+- **Manual testing**: Regular testing with keyboard-only navigation
+- **Screen reader testing**: Testing with NVDA, JAWS, and VoiceOver
+- **Color contrast**: Verified with accessibility tools
+- **WCAG compliance**: Designed to meet WCAG 2.1 AA standards
+- **Continuous improvement**: Ongoing accessibility enhancements
+
+---
+
 ##  Development Workflow
 
 ### Setting Up Development Environment
@@ -426,6 +511,7 @@ Modals work similarly but overlay on top of the current screen:
 3. **Backend Changes**: Add IPC handlers in `main.js`
 4. **API Exposure**: Update `preload.js` to expose new functions
 5. **Event Handling**: Add listeners in `renderer.js`
+6. **Accessibility**: Ensure new features include proper ARIA labels, keyboard navigation, and screen reader support
 
 #### File Naming Conventions
 - **Modules**: camelCase (e.g., `templateManager.js`)
@@ -438,6 +524,7 @@ Modals work similarly but overlay on top of the current screen:
 - Provide clear error messages via `validationManager`
 - Handle file operations gracefully
 - Log errors for debugging
+- **Accessibility**: Ensure error messages are accessible to screen readers and include proper ARIA attributes
 
 ### Testing and Debugging
 
@@ -451,6 +538,7 @@ Modals work similarly but overlay on top of the current screen:
 - **Form Not Rendering**: Verify template structure and field definitions
 - **Data Not Saving**: Check file permissions and user data directory
 - **Validation Errors**: Review field types and validation rules
+- **Accessibility Issues**: Verify ARIA labels, keyboard navigation, and focus management
 
 ---
 
@@ -537,6 +625,12 @@ Modals work similarly but overlay on top of the current screen:
 - [ ] Error handling implemented
 - [ ] Validation added where needed
 - [ ] Documentation updated
+- [ ] **Accessibility requirements met**:
+  - [ ] ARIA labels added to interactive elements
+  - [ ] Keyboard navigation supported
+  - [ ] Focus management implemented
+  - [ ] Screen reader compatibility verified
+  - [ ] Color contrast meets WCAG standards
 
 ---
 
@@ -573,5 +667,11 @@ Modals work similarly but overlay on top of the current screen:
 - [ ] Validate template/record structure
 - [ ] Test with different field types
 - [ ] Verify IPC communication
+- [ ] **Accessibility testing**:
+  - [ ] Test keyboard-only navigation
+  - [ ] Verify screen reader compatibility
+  - [ ] Check focus management in modals
+  - [ ] Validate ARIA attributes
+  - [ ] Test color contrast ratios
 
 ---
