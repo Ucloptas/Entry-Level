@@ -206,6 +206,44 @@ document.addEventListener('DOMContentLoaded', () => {
     showScreen('entry-form-screen');
   });
 
+  const deleteTemplateButton = document.getElementById('delete-template-button');
+const templateDropdown = document.getElementById('template-dropdown');
+
+if (templateDropdown && deleteTemplateButton) {
+  // Enable/disable delete button based on selection
+  templateDropdown.addEventListener('change', () => {
+    const selected = templateDropdown.value;
+    deleteTemplateButton.disabled = !selected;
+  });
+
+  // On delete button click
+  deleteTemplateButton.addEventListener('click', async () => {
+    const selectedTemplate = templateDropdown.value;
+    if (!selectedTemplate) return;
+
+    const confirmed = confirm(`Are you sure you want to delete the template "${selectedTemplate}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    try {
+      await window.electronAPI.deleteTemplate(selectedTemplate);
+      alert(`Template "${selectedTemplate}" deleted.`);
+
+      // Refresh templates dropdown
+      const templates = await window.electronAPI.listTemplates();
+      await window.uiManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
+      window.uiManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
+
+      // Disable buttons until new selection
+      deleteTemplateButton.disabled = true;
+      document.getElementById('select-template-confirm').disabled = true;
+
+    } catch (error) {
+      alert(`Failed to delete template: ${error.message}`);
+    }
+  });
+}
+
+
     // === RECORD DROPDOWN LOGIC ===
   // Initialize record dropdown for "Create New Entry"
   window.electronAPI.listRecords().then(records => {
