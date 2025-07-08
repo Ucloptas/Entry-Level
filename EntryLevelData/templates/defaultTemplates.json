@@ -1,25 +1,34 @@
 [
     { 
-        "name": "template master format, example 1", 
+        "name": "Contact List Template", 
         "fields": [
-            {"name": "field 1", "type": "text"},
-            {"name": "field 2", "type": "money"}
+            {"name": "Full Name", "type": "text"},
+            {"name": "Phone Number", "type": "text"},
+            {"name": "Birthday", "type": "date"},
+            {"name": "Email Address", "type": "text"},
+            {"name": "Notes", "type": "text"}
         ]
     },   
 
     { 
-        "name": "template master format, example 2", 
+        "name": "Expensive Tracker Template", 
         "fields": [
-            {"name": "field 1", "type": "decimal"},
-            {"name": "field 2", "type": "number"},
-            {"name": "field 3", "type": "date"}
+            {"name": "Date", "type": "date"},
+            {"name": "Amount", "type": "money"},
+            {"name": "Payment Method", "type": "text"},
+            {"name": "Receipt Number", "type": "number"}
         ]
     },   
 
     { 
-        "name": "template master format, example 3", 
+        "name": "Event Registration Template", 
         "fields": [
-            {"name": "field 1", "type": "boolean"}
+            {"name": "Registrant Name", "type": "text"},
+            {"name": "Email Address", "type": "text"},
+            {"name": "Registration Date", "type": "date"},
+            {"name": "Ticket Type", "type": "text"},
+            {"name": "Ticket Price", "type": "money"},
+            {"name": "Paid?", "type": "boolean"}
         ]
     }
 ]

@@ -13,6 +13,11 @@ class DropdownManager {
       return null;
     }
 
+    // Ensure consistent dropdown styling
+    if (!dropdown.classList.contains('dropdown-select')) {
+      dropdown.classList.add('dropdown-select');
+    }
+
     // Clear existing options
     dropdown.innerHTML = '';
     

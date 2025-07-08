@@ -14,6 +14,13 @@
   --dropdown-border: #ccc;
   --dropdown-hover: #f0f0f0;
   --entry-bg: #eef1f5;
+  --unt-green: #00853E;
+  --focus-bg-light: #b2dfc7;
+  --focus-bg-dark: #174c2a;
+  --focus-bg: var(--focus-bg-light);
+  --focus-text-light: #00853E;
+  --focus-text-dark: #fff;
+  --focus-text: var(--focus-text-light);
 }
 
 body.dark {
@@ -31,6 +38,8 @@ body.dark {
   --dropdown-border: #555;
   --dropdown-hover: #3c3c3c;
   --entry-bg: #2c2c2c;
+  --focus-bg: var(--focus-bg-dark);
+  --focus-text: var(--focus-text-dark);
 }
 
 /* === RESET === */
@@ -44,6 +53,15 @@ html, body {
   overflow-y: auto;
 }
 
+/* === DESKTOP ACCESSIBILITY & SCALABILITY === */
+html {
+  font-size: 100%; /* Allow user font scaling */
+}
+
+body {
+  min-width: 320px;
+}
+
 /* === LAYOUT === */
 .app-shell {
   min-height: 100vh;
@@ -55,13 +73,24 @@ html, body {
 }
 
 .content-container {
-  max-width: 800px;
   width: 100%;
+  max-width: 900px;
+  min-width: 400px;
+  min-height: 500px;
+  margin: 0 auto;
   background: var(--card-bg);
-  padding: 40px;
-  border-radius: 12px;
+  padding: 40px 32px;
+  border-radius: 0;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (min-width: 950px) {
+  .content-container {
+    border-radius: 12px;
+  }
 }
 
 /* Responsive design */
@@ -111,8 +140,6 @@ h2 {
   text-align: center;
 }
 
-
-
 /* === BUTTON GROUP === */
 .button-group {
   display: flex;
@@ -147,12 +174,12 @@ h2 {
 }
 
 .big-button:disabled {
-  background-color: #ccc;
+  background-color: #bdbdbd;
+  color: #444;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
-
 
 /* === TOP-RIGHT MENU ICON === */
 .top-right-icon {
@@ -191,6 +218,34 @@ h2 {
 
 .floating-menu li:hover {
   background-color: var(--dropdown-hover);
+}
+
+/* Floating menu button styling for accessibility */
+#floating-menu button {
+  background: none;
+  border: none;
+  color: var(--unt-green);
+  font: inherit;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s;
+}
+#floating-menu button:hover, #floating-menu button:focus {
+  background: #e6f7ed;
+  color: var(--unt-green);
+}
+#floating-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#floating-menu li {
+  margin: 0;
+  padding: 0;
 }
 
 /* === FORMS & ENTRIES === */
@@ -237,8 +292,8 @@ h2 {
 #form-container input[type="number"]:focus,
 #form-container input[type="date"]:focus {
   outline: none;
-  border-color: var(--button-bg);
-  box-shadow: 0 0 0 2px rgba(0, 106, 77, 0.2);
+  border-color: var(--unt-green);
+  box-shadow: 0 0 0 2px #b2dfc7;
 }
 
 #form-container input[type="checkbox"] {
@@ -351,7 +406,7 @@ h2 {
 /* Entries display area */
 #entries-display {
   margin: 20px 0;
-  max-height: 300px;
+  max-height: 40vh;
   overflow-y: auto;
   border: 1px solid var(--dropdown-border);
   border-radius: 8px;
@@ -398,6 +453,8 @@ h2 {
   max-width: 90%;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 body.dark .modal-content {
@@ -434,7 +491,8 @@ body.dark .modal-content {
 }
 
 .modal-button:disabled {
-  background-color: #ccc;
+  background-color: #bdbdbd;
+  color: #444;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -463,21 +521,21 @@ body.dark .modal-button {
   color: var(--text-color);
 }
 
+/* Restore original .dropdown-select focus and hover styles */
 .dropdown-select:focus {
   outline: none;
   border-color: var(--button-bg);
   box-shadow: 0 0 0 2px rgba(0, 106, 77, 0.2);
 }
 
-.dropdown-select-wrapper {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
 .dropdown-select:hover {
   background-color: var(--dropdown-hover);
 }
 
+.dropdown-select-wrapper {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
 .status-toast {
   position: fixed;
@@ -543,15 +601,77 @@ body.dark .status-toast.success {
   border-left-color: #1e7e34;
 }
 
-
-
-
-
-
-
-
 .hidden {
   display: none !important;
+}
+
+/* === ACCESSIBILITY: FOCUS INDICATORS (UNT GREEN, THEME-AWARE, IMPROVED CONTRAST) === */
+[data-theme="dark"] {
+  --focus-bg: var(--focus-bg-dark);
+  --focus-text: var(--focus-text-dark);
+}
+[data-theme="light"] {
+  --focus-bg: var(--focus-bg-light);
+  --focus-text: var(--focus-text-light);
+}
+
+button:focus, .big-button:focus, .modal-button:focus, .back-button:focus,
+a:focus, input:focus, select:focus, textarea:focus {
+  outline: 3px solid var(--unt-green);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--unt-green);
+  background-color: var(--focus-bg);
+  color: var(--focus-text);
+  z-index: 2;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
+#floating-menu button:focus {
+  background: var(--focus-bg);
+  color: var(--unt-green);
+}
+
+/* Status toast icon class */
+.status-toast .status-icon {
+  font-size: 1.2em;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* Prevent content overflow and allow scrolling if needed */
+.content-container, .app-shell {
+  overflow-x: auto;
+}
+
+/* Ensure buttons and inputs scale with text size */
+button, .big-button, .modal-button, .back-button, input, select, textarea {
+  font-size: 1em;
+}
+
+/* === FORM FIELD ERROR & HELP STYLES === */
+.input-error {
+  border-color: #dc3545 !important;
+  background-color: #fff0f3 !important;
+}
+
+.form-error-message {
+  color: #dc3545;
+  font-size: 0.95em;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-help-text {
+  color: #666;
+  font-size: 0.95em;
+  margin-top: 2px;
+  margin-bottom: 8px;
+  display: block;
 }
 
 

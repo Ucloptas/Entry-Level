@@ -62,13 +62,73 @@ document.addEventListener('DOMContentLoaded', () => {
   const settingsOverlay = document.getElementById('settings-overlay');
   const closeSettings = document.getElementById('close-settings');
 
-  openSettings?.addEventListener('click', () => {
-    floatingMenu.classList.add('hidden');
-    settingsOverlay.classList.remove('hidden');
-  });
+  // Modal accessibility helpers
+  function trapFocus(modal) {
+    const focusableSelectors = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusableEls = Array.from(modal.querySelectorAll(focusableSelectors));
+    if (focusableEls.length === 0) return;
+    let firstEl = focusableEls[0];
+    let lastEl = focusableEls[focusableEls.length - 1];
 
-  closeSettings?.addEventListener('click', () => {
+    function handleTab(e) {
+      if (e.key === 'Tab') {
+        if (e.shiftKey) {
+          if (document.activeElement === firstEl) {
+            e.preventDefault();
+            lastEl.focus();
+          }
+        } else {
+          if (document.activeElement === lastEl) {
+            e.preventDefault();
+            firstEl.focus();
+          }
+        }
+      }
+    }
+    modal.addEventListener('keydown', handleTab);
+    modal._trapFocusHandler = handleTab;
+  }
+
+  function releaseFocus(modal) {
+    if (modal._trapFocusHandler) {
+      modal.removeEventListener('keydown', modal._trapFocusHandler);
+      delete modal._trapFocusHandler;
+    }
+  }
+
+  // Settings modal accessibility
+  const appMain = document.querySelector('main');
+  let lastFocusedElement = null;
+
+  function openSettingsModal() {
+    lastFocusedElement = document.activeElement;
+    settingsOverlay.classList.remove('hidden');
+    settingsOverlay.setAttribute('aria-modal', 'true');
+    settingsOverlay.setAttribute('role', 'dialog');
+    appMain.setAttribute('aria-hidden', 'true');
+    trapFocus(settingsOverlay);
+    // Focus the first focusable element in the modal
+    const firstFocusable = settingsOverlay.querySelector('button, [tabindex]:not([tabindex="-1"])');
+    if (firstFocusable) firstFocusable.focus();
+  }
+
+  function closeSettingsModal() {
     settingsOverlay.classList.add('hidden');
+    settingsOverlay.removeAttribute('aria-modal');
+    settingsOverlay.removeAttribute('role');
+    appMain.removeAttribute('aria-hidden');
+    releaseFocus(settingsOverlay);
+    if (lastFocusedElement) lastFocusedElement.focus();
+  }
+
+  // Replace your existing settings modal open/close logic with these functions
+  // Example event listeners:
+  document.getElementById('open-settings').addEventListener('click', openSettingsModal);
+  document.getElementById('close-settings').addEventListener('click', closeSettingsModal);
+  document.addEventListener('keydown', function(e) {
+    if (!settingsOverlay.classList.contains('hidden')) {
+      if (e.key === 'Escape') closeSettingsModal();
+    }
   });
 
   // === EXIT MODAL ===
@@ -141,9 +201,48 @@ document.addEventListener('DOMContentLoaded', () => {
     currentTemplate = await window.electronAPI.loadTemplate(selected);
     window.uiManager.clearEntries();
     window.uiManager.renderForm(currentTemplate.fields);
+    addHelpTextToFormFields();
     window.uiManager.updateDisplay();
     showScreen('entry-form-screen');
   });
+
+  const deleteTemplateButton = document.getElementById('delete-template-button');
+const templateDropdown = document.getElementById('template-dropdown');
+
+if (templateDropdown && deleteTemplateButton) {
+  // Enable/disable delete button based on selection
+  templateDropdown.addEventListener('change', () => {
+    const selected = templateDropdown.value;
+    deleteTemplateButton.disabled = !selected;
+  });
+
+  // On delete button click
+  deleteTemplateButton.addEventListener('click', async () => {
+    const selectedTemplate = templateDropdown.value;
+    if (!selectedTemplate) return;
+
+    const confirmed = confirm(`Are you sure you want to delete the template "${selectedTemplate}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    try {
+      await window.electronAPI.deleteTemplate(selectedTemplate);
+      alert(`Template "${selectedTemplate}" deleted.`);
+
+      // Refresh templates dropdown
+      const templates = await window.electronAPI.listTemplates();
+      await window.uiManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
+      window.uiManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
+
+      // Disable buttons until new selection
+      deleteTemplateButton.disabled = true;
+      document.getElementById('select-template-confirm').disabled = true;
+
+    } catch (error) {
+      alert(`Failed to delete template: ${error.message}`);
+    }
+  });
+}
+
 
     // === RECORD DROPDOWN LOGIC ===
   // Initialize record dropdown for "Create New Entry"
@@ -160,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.uiManager.clearEntries();
     // Fix: Extract fields from the template, not directly from record
     window.uiManager.renderForm(currentRecord.template.fields);
+    addHelpTextToFormFields();
     window.uiManager.updateDisplay();
     showScreen('entry-form-screen');
   });
@@ -226,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.uiManager.clearEntries();
     const fields = currentRecord ? currentRecord.template.fields : currentTemplate.fields;
     window.uiManager.renderForm(fields);
+    addHelpTextToFormFields();
     window.uiManager.clearForm(fields);
     
     // Refresh record dropdowns after saving
@@ -371,6 +472,123 @@ document.getElementById('save-template-button')?.addEventListener('click', async
     window.uiManager.showErrorMessage(`Failed to save template: ${err.message}`);
   }
 });
+
+// Patch: Add icons and labels to status toasts for accessibility
+function showStatusToast(type, message) {
+  const statusMessage = document.getElementById('status-message');
+  let icon = '';
+  let label = '';
+  switch (type) {
+    case 'success':
+      icon = '✔';
+      label = 'Success:';
+      break;
+    case 'error':
+      icon = '✖';
+      label = 'Error:';
+      break;
+    case 'warning':
+      icon = '⚠';
+      label = 'Warning:';
+      break;
+    default:
+      icon = '';
+      label = '';
+  }
+  statusMessage.innerHTML = `<span class="status-icon">${icon}</span> <strong>${label}</strong> ${message}`;
+  statusMessage.className = `status-toast ${type}`;
+  statusMessage.classList.remove('hidden');
+  setTimeout(() => {
+    statusMessage.classList.add('hidden');
+  }, 3500);
+}
+
+// Accessible form error and help display helpers
+function showFieldError(input, message) {
+  input.classList.add('input-error');
+  input.setAttribute('aria-invalid', 'true');
+  let errorId = input.id + '-error';
+  let errorElem = document.getElementById(errorId);
+  if (!errorElem) {
+    errorElem = document.createElement('span');
+    errorElem.id = errorId;
+    errorElem.className = 'form-error-message';
+    input.parentNode.insertBefore(errorElem, input.nextSibling);
+  }
+  errorElem.textContent = message;
+  input.setAttribute('aria-describedby', errorId);
+}
+
+function clearFieldError(input) {
+  input.classList.remove('input-error');
+  input.removeAttribute('aria-invalid');
+  let errorId = input.id + '-error';
+  let errorElem = document.getElementById(errorId);
+  if (errorElem) errorElem.remove();
+  input.removeAttribute('aria-describedby');
+}
+
+function addHelpText(input, helpText) {
+  let helpId = input.id + '-help';
+  let helpElem = document.getElementById(helpId);
+  if (!helpElem) {
+    helpElem = document.createElement('span');
+    helpElem.id = helpId;
+    helpElem.className = 'form-help-text';
+    input.parentNode.insertBefore(helpElem, input.nextSibling);
+  }
+  helpElem.textContent = helpText;
+  input.setAttribute('aria-describedby', helpId);
+}
+
+// Add help text to all form fields after rendering
+function addHelpTextToFormFields() {
+  const formContainer = document.getElementById('form-container');
+  if (!formContainer) return;
+  
+  const inputs = formContainer.querySelectorAll('input, select, textarea');
+  inputs.forEach((input, idx) => {
+    // Skip if already has help text
+    if (input.getAttribute('aria-describedby') && input.getAttribute('aria-describedby').includes('-help')) {
+      return;
+    }
+    
+    let helpText = '';
+    const fieldName = input.name || '';
+    const fieldType = input.type || 'text';
+    
+    // Context-aware help for special fields
+    if (fieldName.toLowerCase().includes('template') && fieldName.toLowerCase().includes('name')) {
+      helpText = 'Enter a unique name for this template.';
+    } else if (fieldName.toLowerCase() === 'field name') {
+      helpText = 'Enter a name for this field (e.g., "Amount").';
+    } else if (fieldName.toLowerCase() === 'field type') {
+      helpText = 'Select the type of data for this field.';
+    } else {
+      // Type-based help text
+      switch (fieldType) {
+        case 'text':
+          helpText = 'Enter text.';
+          break;
+        case 'number':
+          helpText = 'Enter a number.';
+          break;
+        case 'date':
+          helpText = 'Select a date.';
+          break;
+        case 'checkbox':
+          helpText = 'Check for yes/true, uncheck for no/false.';
+          break;
+        default:
+          helpText = 'Enter a value.';
+      }
+    }
+    
+    if (helpText) {
+      addHelpText(input, helpText);
+    }
+  });
+}
 
 });
 
