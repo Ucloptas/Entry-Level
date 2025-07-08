@@ -120,7 +120,29 @@ function templateExists(userDataPath, name) {
   return allTemplates.some(t => t.name === name);
 }
 
+function deleteTemplate(userDataPath, templateName) {
+  const templatesDir = path.join(userDataPath, 'templates');
+  const userPath = path.join(templatesDir, 'userTemplates.json');
 
+  if (!fs.existsSync(userPath)) {
+    throw new Error('User templates file does not exist');
+  }
+
+  let existingTemplates = readJsonSafe(userPath);
+
+  const index = existingTemplates.findIndex(t => t.name === templateName);
+  if (index === -1) {
+    throw new Error(`Template "${templateName}" not found in user templates`);
+  }
+
+  // Remove the template
+  existingTemplates.splice(index, 1);
+
+  // Save updated array
+  fs.writeFileSync(userPath, JSON.stringify(existingTemplates, null, 2), 'utf-8');
+
+  return true;
+}
 
 module.exports = {
   listTemplates,
@@ -128,5 +150,6 @@ module.exports = {
   saveTemplate,
   createTemplate,
   templateExists,
-  ensureUserTemplatesFile
+  ensureUserTemplatesFile,
+  deleteTemplate
 };

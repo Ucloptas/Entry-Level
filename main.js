@@ -9,7 +9,8 @@ const {
   saveTemplate,
   createTemplate,
   templateExists,
-  ensureUserTemplatesFile
+  ensureUserTemplatesFile,
+  deleteTemplate
 } = require('./logic/templateManager');
 
 const {
@@ -84,6 +85,17 @@ ipcMain.handle('load-template', (event, name) => {
 
 ipcMain.handle('save-template', (event, { name, data }) => {
   return saveTemplate(userDataPath, name, data);
+});
+
+ipcMain.handle('delete-template', async (event, templateName) => {
+  try {
+    const result = deleteTemplate(userDataPath, templateName);
+    console.log(`Deleted template: ${templateName}`);
+    return result;
+  } catch (error) {
+    console.error('Error deleting template:', error);
+    throw error;
+  }
 });
 
 ipcMain.handle('list-records', () => {
