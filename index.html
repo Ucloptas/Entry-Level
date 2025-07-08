@@ -82,7 +82,9 @@
           <div id="record-display-content">
             <!-- Record details will be populated here -->
           </div>
-          <button class="big-button back-button" data-screen="all-records-screen" aria-label="Back to All Records">Back</button>
+          <button id="previous-entries" class="big-button hidden" data-screen="record-display-screen">Previous</button>
+        <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
+        <button class="big-button back-button" data-screen="all-records-screen" aria-label="Back to All Records" id="back-from-entries">Back</button>
         </div>
 
         <div id="record-search-screen" class="screen hidden">
