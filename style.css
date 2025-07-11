@@ -148,6 +148,20 @@ h2 {
   align-items: center;
 }
 
+.template-button-group {
+  display: flex;
+  justify-content: center;
+  gap: 16px; /* space between edit & delete buttons */
+  margin-top: 24px; /* space between Load and Edit/Delete */
+  margin-bottom: 16px; /* space before Back button */
+}
+
+.template-button-group .modal-button {
+  display: inline-block;
+  margin: 0;              /* Remove inherited margin */
+  padding: 12px 24px;     /* Keep the existing button size */
+}
+
 /* === BUTTONS === */
 .big-button {
   font-size: 1.2em;

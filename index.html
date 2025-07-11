@@ -103,14 +103,25 @@
         <!-- Template Selection -->
         <div id="select-template-screen" class="screen hidden">
           <h2>Select a Template</h2>
+
           <label for="template-dropdown">Select a Template:</label>
           <div class="dropdown-select-wrapper">
             <select id="template-dropdown" class="dropdown-select" aria-label="Template Dropdown"></select>
           </div>
+
+          <!-- Load button centered -->
           <div class="button-group" style="margin-top: 20px;">
+            <button id="select-template-confirm" class="modal-button" disabled aria-label="Continue with Selected Template">Load</button>
+          </div>
+
+          <!-- Delete/Edit buttons side by side -->
+          <div class="template-button-group">
             <button id="delete-template-button" class="modal-button" disabled aria-label="Delete Selected Template">Delete</button>
             <button id="edit-template-button" class="modal-button" disabled aria-label="Edit Selected Template">Edit</button>
-            <button id="select-template-confirm" class="modal-button" disabled aria-label="Continue with Selected Template">Continue</button>
+          </div>
+
+          <!-- Back button centered -->
+          <div class="button-group" style="margin-top: 20px;">
             <button class="modal-button back-button" data-screen="new-record-screen" aria-label="Back to New Record">Back</button>
           </div>
         </div>
@@ -154,6 +165,7 @@
           <ul id="template-fields-list"></ul>
 
           <button id="save-template-button" class="modal-button" aria-label="Save Template">Save Template</button>
+          <button id="cancel-edit-button" class="modal-button hidden">Cancel Editing</button>
           <button class="modal-button back-button" data-screen="new-record-screen" aria-label="Back to New Record">Back</button>
         </div>
 

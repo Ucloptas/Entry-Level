@@ -262,6 +262,9 @@ if (templateDropdown && editTemplateButton) {
   editingTemplate = selected; // original name before edits
   const template = await window.electronAPI.loadTemplate(selected);
 
+  //button to cancel editing
+  document.getElementById('cancel-edit-button').classList.remove('hidden');
+
   // Show create-template screen
   showScreen('create-template-screen');
 
@@ -520,10 +523,14 @@ document.getElementById('save-template-button')?.addEventListener('click', async
 
       console.log('Template created successfully:', result);
       window.uiManager.showSuccessMessage('Template saved!');
+
       nameInput.value = '';
       window.uiManager.clearCustomTemplateFields();
       await window.uiManager.refreshTemplateDropdown();
       showScreen('new-record-screen');
+      document.getElementById('cancel-edit-button').classList.add('hidden');
+      currentTemplate = null;
+      
     } catch (err) {
       console.error('Template creation failed:', err);
       window.uiManager.showErrorMessage(`Failed to save template: ${err.message}`);
@@ -531,6 +538,20 @@ document.getElementById('save-template-button')?.addEventListener('click', async
   }
 });
 
+//button for canceling editing
+document.getElementById('cancel-edit-button')?.addEventListener('click', () => {
+  currentTemplate = null;
+
+  // Clear template editor
+  document.getElementById('template-name-input').value = '';
+  window.uiManager.clearCustomTemplateFields();
+
+  // Hide cancel button again
+  document.getElementById('cancel-edit-button').classList.add('hidden');
+
+  // Optionally navigate back or stay on the screen
+  window.uiManager.showSuccessMessage('Edit cancelled.');
+});
 
 // Patch: Add icons and labels to status toasts for accessibility
 function showStatusToast(type, message) {
