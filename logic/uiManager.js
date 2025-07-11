@@ -238,6 +238,14 @@ class TemplateUIManager {
     this.renderTemplateFieldsPreview();
   }
 
+  //for editing templates
+  loadTemplateFieldsForEdit(fields) {
+  this.clearCustomTemplateFields();
+  fields.forEach(field => {
+    this.addTemplateField(field.name, field.type);
+  });
+}
+
   // Get custom template fields
   getCustomTemplateFields() {
     return [...this.customTemplateFields];
