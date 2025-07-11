@@ -530,7 +530,7 @@ document.getElementById('save-template-button')?.addEventListener('click', async
       showScreen('new-record-screen');
       document.getElementById('cancel-edit-button').classList.add('hidden');
       currentTemplate = null;
-      
+
     } catch (err) {
       console.error('Template creation failed:', err);
       window.uiManager.showErrorMessage(`Failed to save template: ${err.message}`);
@@ -551,6 +551,7 @@ document.getElementById('cancel-edit-button')?.addEventListener('click', () => {
 
   // Optionally navigate back or stay on the screen
   window.uiManager.showSuccessMessage('Edit cancelled.');
+  showScreen('new-record-screen');
 });
 
 // Patch: Add icons and labels to status toasts for accessibility
