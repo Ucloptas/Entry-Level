@@ -162,6 +162,11 @@ h2 {
   padding: 12px 24px;     /* Keep the existing button size */
 }
 
+.equal-width {
+  width: 95px;
+  text-align: center;
+}
+
 /* === BUTTONS === */
 .big-button {
   font-size: 1.2em;
