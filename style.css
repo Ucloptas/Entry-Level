@@ -423,7 +423,7 @@ h2 {
 }
 
 /* Entries display area */
-#entries-display {
+#card-display {
   margin: 20px 0;
   max-height: 40vh;
   overflow-y: auto;
@@ -433,8 +433,8 @@ h2 {
   padding: 16px;
 }
 
-.entry-row {
-  padding: 12px;
+.card-row {
+  padding: 2px;
   margin: 8px 0;
   background: var(--entry-bg);
   border-radius: 8px;
@@ -444,7 +444,7 @@ h2 {
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-.entry-row:hover {
+.card-row:hover {
   transform: translateX(2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }

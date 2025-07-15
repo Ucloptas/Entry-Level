@@ -170,7 +170,7 @@ class RecordDisplayManager {
       
       recordData.entries.forEach((entry, index) => {
         const entryDiv = document.createElement('div');
-        entryDiv.className = 'entry-row';
+        entryDiv.className = 'card-row';
         entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
         
         const fieldsList = document.createElement('ul');
@@ -191,6 +191,60 @@ class RecordDisplayManager {
     this.contentElement.appendChild(entriesSection);
   }
 }
+
+// Record Preview Display Manager
+class RecordPreviewDisplayManager {
+  constructor() {
+    this.titleElement = null;
+    this.contentElement = null;
+  }
+
+  // Display record preview in the UI
+  displayRecordPreview(recordData) {
+    this.titleElement = document.getElementById('record-preview-title');
+    this.contentElement = document.getElementById('record-preview-content');
+    
+    if (!this.titleElement || !this.contentElement) {
+      console.error('Record preview elements not found');
+      return;
+    }
+    
+    // Clear previous content
+    this.contentElement.innerHTML = '';
+    
+    // Display previews and title
+    const previewSection = document.createElement('div');
+    previewSection.innerHTML = `<h3>View Records (${recordData.length})</h3>`;
+    
+    if (recordData.length === 0) {
+      previewSection.innerHTML += '<p>No records found.</p>';
+    } else {
+      const recordsList = document.createElement('div');
+      recordsList.className = 'records-list';
+      
+      recordData.forEach((record, index) => {
+        const recordDiv = document.createElement('div');
+        recordDiv.className = 'card-row';
+        recordDiv.innerHTML = `<h4>${record.name}</h4>`;
+        
+        const fieldsList = document.createElement('ul');
+        record.fields.forEach(field => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${field.name}:</strong> ${field.type}`;
+          fieldsList.appendChild(li);
+        });
+        
+        recordDiv.appendChild(fieldsList);
+        recordsList.appendChild(recordDiv);
+      });
+      
+      previewSection.appendChild(recordsList);
+    }
+    
+    this.contentElement.appendChild(previewSection);
+  }
+}
+
 
 // Template UI Manager
 class TemplateUIManager {
@@ -277,5 +331,6 @@ module.exports = {
   DropdownManager,
   ScreenManager,
   RecordDisplayManager,
-  TemplateUIManager
+  TemplateUIManager,
+  RecordPreviewDisplayManager
 }; 
