@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const path = require('path');
+const { getAllRecordTemplateInfo } = require('./logic/recordManager');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Template methods
@@ -13,7 +14,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Record methods
   listRecords: () => ipcRenderer.invoke('list-records'),
   loadRecord: (name) => ipcRenderer.invoke('load-record', name),
-  saveRecord: ({ name, data }) => ipcRenderer.invoke('save-record', { name, data })
+  saveRecord: ({ name, data }) => ipcRenderer.invoke('save-record', { name, data }),
+  getAllRecordTemplateInfo: () => ipcRenderer.invoke('get-all-record-template-info')
 });
 
 // Expose UI manager methods directly
@@ -31,6 +33,7 @@ try {
   const formManagerInstance = new formManager.FormManager();
   const entryManagerInstance = new entryManager.EntryManager();
   const validationManagerInstance = new validationManager.ValidationManager();
+  const recordPreviewDisplayManagerInstance = new uiManager.RecordPreviewDisplayManager();
 
   contextBridge.exposeInMainWorld('uiManager', {
     // Screen management
@@ -47,7 +50,8 @@ try {
     
     // Record display management
     displayRecord: (recordData, fileName) => recordDisplayManagerInstance.displayRecord(recordData, fileName),
-    
+    displayRecordPreview: (recordData) => recordPreviewDisplayManagerInstance.displayRecordPreview(recordData),
+
     // Template UI management
     renderTemplateFieldsPreview: () => templateUIManagerInstance.renderTemplateFieldsPreview(),
     addTemplateField: (name, type) => templateUIManagerInstance.addTemplateField(name, type),

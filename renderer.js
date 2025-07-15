@@ -3,7 +3,7 @@ let currentRecord = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM Content Loaded');
-  
+
   // Debug: Check if uiManager is available
   console.log('window.uiManager available:', !!window.uiManager);
   if (window.uiManager) {
@@ -121,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (lastFocusedElement) lastFocusedElement.focus();
   }
 
-  // Replace your existing settings modal open/close logic with these functions
   // Example event listeners:
   document.getElementById('open-settings').addEventListener('click', openSettingsModal);
   document.getElementById('close-settings').addEventListener('click', closeSettingsModal);
@@ -400,6 +399,51 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   
   // Navigate to the record display screen
   showScreen('record-display-screen');
+});
+
+// === DISPLAY RECORD PREVIEWS FOR FILTERING === //
+
+document.getElementById('filter-records-button')?.addEventListener('click', async () => {
+  console.log("test");
+  const nextPreviews = document.getElementById('next-previews');
+  const previousPreviews = document.getElementById('previous-previews');
+
+  document.getElementById('back-from-preview').addEventListener('click', () => {
+    nextPreviews.classList.add('hidden');
+    previousPreviews.classList.add('hidden');
+  });
+  
+  const recordData = await window.electronAPI.getAllRecordTemplateInfo();
+
+    let index = 0;
+
+    if(recordData.length > 5) {
+      nextPreviews.classList.remove('hidden');
+      previousPreviews.classList.remove('hidden');
+    }
+    //Shows next entries
+    document.getElementById('next-previews').addEventListener('click', () => {
+      if(!(index+5 > recordData.length) && !(index === recordData.length)){
+        index += 5;
+        window.uiManager.displayRecordPreview(recordData.slice(index, index+5));
+      }
+      console.log(index);
+    });
+    
+    //Shows previous entries
+    document.getElementById('previous-previews').addEventListener('click', () => {
+      if(!(index-5 < 0) && !(index === 0)){
+        index -= 5;
+        window.uiManager.displayRecordPreview(recordData.slice(index, index+5));
+      }
+      console.log(index);
+    });
+
+  // Display the record data
+  window.uiManager.displayRecordPreview(recordData.slice(index, index+5));
+  
+  // Navigate to the record display screen
+  showScreen('record-preview-screen');
 });
 
 // === CREATE NEW TEMPLATE === //

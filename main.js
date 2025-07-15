@@ -17,7 +17,8 @@ const {
   loadRecord,
   saveRecord,
   listRecords,
-  ensureDirsExist
+  ensureDirsExist,
+  getAllRecordTemplateInfo
 } = require('./logic/recordManager');
 
 let userDataPath;
@@ -74,6 +75,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
+});
+
 // === IPC HANDLERS using userDataPath ===
 ipcMain.handle('list-templates', () => {
   return listTemplates(userDataPath);
@@ -127,5 +134,9 @@ ipcMain.handle('create-template', async (event, payload) => {
 
 ipcMain.handle('check-template-exists', (event, name) => {
   return templateExists(userDataPath, name);
+});
+
+ipcMain.handle('get-all-record-template-info',async ()=>{
+  return getAllRecordTemplateInfo(userDataPath);
 });
 

@@ -36,12 +36,6 @@
           </div>
         </div>
 
-        <!-- New Entry Placeholder -->
-        <div id="new-entry-screen" class="screen hidden">
-          <h2>Create New Entry</h2>
-          <p>(Feature coming soon.)</p>
-          <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
-        </div>
 
         <!-- Create New Record Path -->
         <div id="new-record-screen" class="screen hidden">
@@ -53,17 +47,36 @@
           </div>
         </div>
 
-        <!-- View Records Placeholder -->
+        <!-- View Records Screen -->
         <div id="view-records-screen" class="screen hidden">
           <h2>View Records</h2>
           <div class="button-group">
-            <button class="big-button" data-screen="all-records-screen" aria-label="View All Records">View All Records</button>
-            <button class="big-button" data-screen="record-search-screen" aria-label="Record Search">Record Search</button>
-            <button class="big-button" data-screen="record-categories-screen" aria-label="Categories">Categories</button>
+            <button class="big-button" data-screen="all-records-screen" aria-label="View all records">All Records</button>
+            <button id="filter-records-button" class="big-button" data-screen="record-preview-screen" aria-label="Filter records">Filter Records</button>
             <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
           </div>
         </div>
 
+        <!-- Record Preview Screen -->
+        <div id="record-preview-screen" class="screen hidden">
+          <h2 id="record-preview-title">View Records</h2>
+          <div id="record-preview-content">
+            <!-- Record details will be populated here -->
+          </div>
+          <button id="previous-previews" class="big-button hidden" data-screen="record-preview-screen">Previous</button>
+          <button id="next-previews" class="big-button hidden" data-screen="record-preview-screen">Next</button>
+          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to view Records" id="back-from-preview">Back</button>
+        </div>
+
+        <!-- Filter Records Screen -->
+        <div id="filter-records-screen" class="screen hidden">
+          <h2>Filter Records</h2>
+          <div class="button-group">
+            <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
+          </div>
+        </div>
+        
+        <!--All Records Screen-->
         <div id="all-records-screen" class="screen hidden">
           <h2>Select a Record</h2>
           <label for="record-select">Select a Record:</label>
@@ -83,8 +96,8 @@
             <!-- Record details will be populated here -->
           </div>
           <button id="previous-entries" class="big-button hidden" data-screen="record-display-screen">Previous</button>
-        <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
-        <button class="big-button back-button" data-screen="all-records-screen" aria-label="Back to All Records" id="back-from-entries">Back</button>
+          <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
+          <button class="big-button back-button" data-screen="all-records-screen" aria-label="Back to All Records" id="back-from-entries">Back</button>
         </div>
 
         <div id="record-search-screen" class="screen hidden">
