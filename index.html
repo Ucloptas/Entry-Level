@@ -32,6 +32,11 @@
           <div class="button-group">
             <button class="big-button" data-screen="new-record-screen" aria-label="Create New Record">Create New Record</button>
             <button class="big-button" data-screen="select-record-screen" aria-label="Create New Entry">Create New Entry</button>
+            
+            <!--Inicio de mi codigo-->
+            <button class="big-button" data-screen="edit-record-screen" aria-label="Edit Records">Edit Records</button>
+            <!--Fin de mi codigo-->
+
             <button class="big-button" data-screen="view-records-screen" aria-label="View Records">View Records</button>
           </div>
         </div>
@@ -166,6 +171,21 @@
           <button id="save-entry" class="modal-button" aria-label="Save Record">Save Record</button>
           <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
         </div>
+
+        <!----------------Inicio de mi codigo---------------------->
+
+        <!-- View Records Placeholder -->
+        <div id="edit-records-screen" class="screen hidden">
+          <h2>Edit Records</h2>
+          <div class="button-group">
+            <button class="big-button" data-screen="delete-record-screen" aria-label="Delete Entry">Delete Entry</button>
+            <button class="big-button" data-screen="edit-record-screen" aria-label="Edit Entry">Edit Entry</button>
+            <button class="big-button" data-screen="record-categories-screen" aria-label="Categories">Categories</button>
+            <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+          </div>
+        </div>
+
+        <!----------------Fin de mi codigo---------------------->
 
       </div>
     </div>
