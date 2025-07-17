@@ -402,6 +402,52 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   showScreen('record-display-screen');
 });
 
+
+
+
+
+// Mi codigo
+
+  // === EDIT RECORD DROPDOWN LOGIC ===
+  // Initialize record dropdown for "Edit Entry"
+  window.electronAPI.listRecords().then(records => {
+    window.uiManager.createDropdown('record-select-to-edit', records, '-- Select a Record --');
+    window.uiManager.setupDropdownWithEditAndDelete('record-select-to-edit', 'delete-record-button', 'edit-record-button');
+  });
+
+  document.getElementById('delete-record-button')?.addEventListener('click', async () => {
+    const selected = window.uiManager.getSelectedValue('record-select-to-edit');
+    if (!selected) return;
+
+    await window.electronAPI.deleteRecord({
+      name: window.uiManager.getSelectedValue('record-select-to-edit'),
+    });
+
+    window.uiManager.createDropdown('record-select-to-edit', records, '-- Select a Record --');
+
+    // currentRecord = await window.electronAPI.loadRecord(selected);
+    // window.uiManager.clearEntries();
+    // // Fix: Extract fields from the template, not directly from record
+    // window.uiManager.renderForm(currentRecord.template.fields);
+    // addHelpTextToFormFields();
+    // window.uiManager.updateDisplay();
+    showScreen('');
+    showScreen('edit-record-screen');
+  });
+
+  //Delete Entry
+  // document.getElementById('delete-record-button')?.addEventListener('click', async () => {
+    
+  // });
+
+
+
+
+
+
+
+
+
 // === CREATE NEW TEMPLATE === //
 
 document.getElementById('add-field-button')?.addEventListener('click', () => {

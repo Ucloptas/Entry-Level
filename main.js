@@ -16,6 +16,7 @@ const {
 const {
   loadRecord,
   saveRecord,
+  deleteRecord,
   listRecords,
   ensureDirsExist
 } = require('./logic/recordManager');
@@ -110,6 +111,14 @@ ipcMain.handle('load-record', (event, fileName) => {
 ipcMain.handle('save-record', (event, { name, data }) => {
   return saveRecord(userDataPath, name, data);
 });
+
+
+
+//Mi codigo
+ipcMain.handle('delete-record', (event, { name}) => {
+  return deleteRecord(userDataPath, name);
+});
+
 
 
 

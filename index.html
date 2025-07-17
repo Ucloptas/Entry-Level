@@ -175,12 +175,23 @@
         <!----------------Inicio de mi codigo---------------------->
 
         <!-- View Records Placeholder -->
-        <div id="edit-records-screen" class="screen hidden">
+        <div id="edit-record-screen" class="screen hidden">
           <h2>Edit Records</h2>
+
+          <h2>Select a Record</h2>
+          <label for="record-select">Select a Record:</label>
+          <div class="dropdown-select-wrapper">
+            <select id="record-select-to-edit" aria-label="Record Select To Edit">
+              <option value="">-- Choose a Record --</option>
+            </select>
+          </div>
+
+          <button id="view-record-button" class="big-button" disabled aria-label="View Selected Record">View Record</button>
+
           <div class="button-group">
-            <button class="big-button" data-screen="delete-record-screen" aria-label="Delete Entry">Delete Entry</button>
-            <button class="big-button" data-screen="edit-record-screen" aria-label="Edit Entry">Edit Entry</button>
-            <button class="big-button" data-screen="record-categories-screen" aria-label="Categories">Categories</button>
+            <button id="delete-record-button" class="big-button" data-screen="delete-record-screen" disabled aria-label="Delete Entry">Delete Entry</button>
+            <button id="edit-record-button" class="big-button" data-screen="edit-record-screen" disabled aria-label="Edit Entry">Edit Entry</button>
+            <!-- <button class="big-button" data-screen="record-categories-screen" aria-label="Categories">Categories</button> -->
             <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
           </div>
         </div>

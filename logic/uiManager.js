@@ -69,6 +69,35 @@ class DropdownManager {
     });
   }
 
+
+
+
+    // Enable/disable confirm button based on dropdown selection
+    setupDropdownWithEditAndDelete(dropdownId, deleteButtonId, editButtonId) {
+      const dropdown = document.getElementById(dropdownId);
+      const deleteButton = document.getElementById(deleteButtonId);
+      const editButton = document.getElementById(editButtonId);
+      
+      if (!dropdown || !deleteButton || !editButton) {
+        console.error(`Dropdown or confirm button not found: ${dropdownId}, ${deleteButton}, ${editButton}`);
+        return;
+      }
+  
+      // Set initial state
+      deleteButton.disabled = !dropdown.value;
+      editButton.disabled = !dropdown.value;
+  
+      // Listen for changes
+      dropdown.addEventListener('change', () => {
+        deleteButton.disabled = !dropdown.value;
+        editButton.disabled = !dropdown.value;
+      });
+    }
+
+
+
+
+
   // Get selected value from dropdown
   getSelectedValue(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
@@ -163,6 +192,17 @@ class RecordDisplayManager {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'entry-row';
         entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
+
+
+
+
+        //Mi codigo
+        entryDiv.id = index;
+
+
+
+
+
         
         const fieldsList = document.createElement('ul');
         recordData.template.fields.forEach(field => {

@@ -21,6 +21,29 @@ function saveRecord(userDataPath, fileName, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
+
+
+
+// Mi codigo
+function deleteRecord(userDataPath, fileName) {
+  const recordsDir = path.join(userDataPath, 'records');
+  ensureDirsExist(userDataPath);
+  const filePath = path.join(recordsDir, fileName);
+  fs.unlinkSync(filePath, (err) => {
+    if(err){
+      console.error(`There was an error deleting the file, ${err}`);
+      return;
+    }
+    else {
+      console.log(`File deleted successfully`);
+    }
+  });
+}
+
+
+
+
+
 function loadRecord(userDataPath, fileName) {
   const recordsDir = path.join(userDataPath, 'records');
   const filePath = path.join(recordsDir, fileName);
@@ -28,4 +51,4 @@ function loadRecord(userDataPath, fileName) {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist };
+module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist, deleteRecord };

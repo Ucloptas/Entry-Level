@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const path = require('path');
+const { deleteRecord } = require('./logic/recordManager');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Template methods
@@ -13,7 +14,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Record methods
   listRecords: () => ipcRenderer.invoke('list-records'),
   loadRecord: (name) => ipcRenderer.invoke('load-record', name),
-  saveRecord: ({ name, data }) => ipcRenderer.invoke('save-record', { name, data })
+  saveRecord: ({ name, data }) => ipcRenderer.invoke('save-record', { name, data }),
+
+
+  //Mi codigo
+  deleteRecord: ({name}) => ipcRenderer.invoke('delete-record', {name}),
+
+
+
 });
 
 // Expose UI manager methods directly
@@ -42,6 +50,16 @@ try {
       dropdownManagerInstance.createDropdown(dropdownId, options, placeholder, formatOption),
     setupDropdownWithConfirm: (dropdownId, confirmButtonId) => 
       dropdownManagerInstance.setupDropdownWithConfirm(dropdownId, confirmButtonId),
+    
+    
+    //Mi codigo
+     
+    setupDropdownWithEditAndDelete: (dropdownId, deleteButtonId, editButtonId) => 
+      dropdownManagerInstance.setupDropdownWithEditAndDelete(dropdownId, deleteButtonId, editButtonId),
+
+
+
+
     getSelectedValue: (dropdownId) => dropdownManagerInstance.getSelectedValue(dropdownId),
     clearDropdown: (dropdownId) => dropdownManagerInstance.clearDropdown(dropdownId),
     
