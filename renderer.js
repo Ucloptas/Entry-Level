@@ -501,6 +501,7 @@ document.getElementById('save-template-button')?.addEventListener('click', async
       await window.electronAPI.updateTemplate(editingTemplate, { name: templateName, fields });
       window.uiManager.showSuccessMessage('Template updated successfully.');
       editingTemplate = null;
+      currentTemplate = null;
       nameInput.value = '';
       window.uiManager.clearCustomTemplateFields();
       await window.uiManager.refreshTemplateDropdown();
