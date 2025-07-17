@@ -98,6 +98,38 @@ ipcMain.handle('delete-template', async (event, templateName) => {
   }
 });
 
+ipcMain.handle('update-template', (event, { oldName, updatedTemplate }) => {
+  try {
+    const templatesDir = path.join(userDataPath, 'templates');
+    const userPath = path.join(templatesDir, 'userTemplates.json');
+
+    if (!fs.existsSync(userPath)) {
+      throw new Error('User templates file does not exist');
+    }
+
+    let existingTemplates = JSON.parse(fs.readFileSync(userPath, 'utf-8'));
+    const index = existingTemplates.findIndex(t => t.name === oldName);
+
+    if (index === -1) {
+      throw new Error(`Template "${oldName}" not found`);
+    }
+
+    // If changing name, ensure new name isn't already used (except current template)
+    if (oldName !== updatedTemplate.name && existingTemplates.some(t => t.name === updatedTemplate.name)) {
+      throw new Error(`Template name "${updatedTemplate.name}" already exists`);
+    }
+
+    existingTemplates[index] = updatedTemplate;
+    fs.writeFileSync(userPath, JSON.stringify(existingTemplates, null, 2), 'utf-8');
+
+    return true;
+  } catch (error) {
+    console.error('Failed to update template:', error);
+    throw error;
+  }
+});
+
+
 ipcMain.handle('list-records', () => {
   return listRecords(userDataPath);
 });

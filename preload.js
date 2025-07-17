@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   createTemplate: (payload) => ipcRenderer.invoke('create-template', payload),
   checkTemplateExists: (name) => ipcRenderer.invoke('check-template-exists', name),
   deleteTemplate: (templateName) => ipcRenderer.invoke('delete-template', templateName),
+  updateTemplate: (oldName, updatedTemplate) => ipcRenderer.invoke('update-template', { oldName, updatedTemplate }),
   
   // Record methods
   listRecords: () => ipcRenderer.invoke('list-records'),
