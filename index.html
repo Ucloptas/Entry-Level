@@ -15,6 +15,7 @@
       <ul>
         <li><button type="button" aria-label="About">About</button></li>
         <li><button type="button" id="open-settings" aria-label="Open Settings">Settings</button></li>
+        <li><button type="button" id="import-export-menu" aria-label="Import/Export">Import/Export</button></li>
         <li><button type="button" aria-label="Debug Tools">Debug Tools</button></li>
         <li><button type="button" id="open-exit" aria-label="Exit Application">Exit</button></li>
       </ul>
@@ -49,6 +50,7 @@
           <div class="button-group">
             <button class="big-button" data-screen="select-template-screen" aria-label="Use Existing Template">Use Existing Template</button>
             <button class="big-button" data-screen="create-template-screen" aria-label="Create New Template">Create New Template</button>
+            <button id="import-record-button" class="big-button" aria-label="Import from File">Import from File</button>
             <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
           </div>
         </div>
@@ -82,6 +84,9 @@
           <div id="record-display-content">
             <!-- Record details will be populated here -->
           </div>
+          
+
+          
           <button id="previous-entries" class="big-button hidden" data-screen="record-display-screen">Previous</button>
         <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
         <button class="big-button back-button" data-screen="all-records-screen" aria-label="Back to All Records" id="back-from-entries">Back</button>
@@ -190,6 +195,31 @@
       <h2>Settings</h2>
       <button id="toggle-dark-mode" class="modal-button" aria-label="Toggle Dark Mode">Toggle Dark Mode</button>
       <button id="close-settings" class="modal-button" aria-label="Close Settings">Close (Esc)</button>
+    </div>
+  </div>
+
+  <!-- Import/Export Modal -->
+  <div id="import-export-overlay" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>Import/Export Records</h2>
+      <div class="button-group">
+        <button id="import-record-modal-button" class="modal-button" aria-label="Import Record">Import Record</button>
+        <button id="export-record-button" class="modal-button" aria-label="Export Record">Export Record</button>
+        <button id="close-import-export" class="modal-button" aria-label="Close Import/Export">Close (Esc)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Format Modal -->
+  <div id="export-format-overlay" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>Export Record</h2>
+      <p>Choose export format:</p>
+      <div class="button-group">
+        <button id="export-as-json" class="modal-button" aria-label="Export as JSON">Export as JSON</button>
+        <button id="export-as-csv" class="modal-button" aria-label="Export as CSV">Export as CSV</button>
+        <button id="cancel-export" class="modal-button" aria-label="Cancel Export">Cancel (Esc)</button>
+      </div>
     </div>
   </div>
 

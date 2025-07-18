@@ -1,0 +1,53 @@
+{
+  "template": {
+    "name": "template master format, example 1",
+    "fields": [
+      {
+        "name": "field 1",
+        "type": "text"
+      },
+      {
+        "name": "field 2",
+        "type": "money"
+      }
+    ]
+  },
+  "entries": [
+    {
+      "field 1": "first",
+      "field 2": 1
+    },
+    {
+      "field 1": "second",
+      "field 2": 2
+    },
+    {
+      "field 1": "third",
+      "field 2": 3
+    },
+    {
+      "field 1": "fourth",
+      "field 2": 4
+    },
+    {
+      "field 1": "fifth",
+      "field 2": 5
+    },
+    {
+      "field 1": "sixth",
+      "field 2": 6
+    },
+    {
+      "field 1": "seventh",
+      "field 2": 7
+    },
+    {
+      "field 1": "eighth ",
+      "field 2": 8
+    },
+    {
+      "field 1": "ninth",
+      "field 2": 9
+    }
+  ]
+}

@@ -127,11 +127,20 @@ class RecordDisplayManager {
 
   // Display record data in the UI
   displayRecord(recordData, fileName) {
+    console.log('RecordDisplayManager.displayRecord called with:', recordData); // Debug log
+    
     this.titleElement = document.getElementById('record-display-title');
     this.contentElement = document.getElementById('record-display-content');
     
     if (!this.titleElement || !this.contentElement) {
       console.error('Record display elements not found');
+      return;
+    }
+    
+    // Validate record data structure
+    if (!recordData.template || !recordData.template.fields || !Array.isArray(recordData.template.fields)) {
+      console.error('Invalid record data structure:', recordData);
+      this.contentElement.innerHTML = '<p>Error: Invalid record format</p>';
       return;
     }
     
