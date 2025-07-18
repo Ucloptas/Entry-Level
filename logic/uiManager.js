@@ -224,9 +224,15 @@ class RecordPreviewDisplayManager {
       
       recordData.forEach((record, index) => {
         const recordDiv = document.createElement('div');
-        recordDiv.className = 'card-row';
+        recordDiv.className = 'card-row record-preview-card';
+        recordDiv.setAttribute('data-record-id', record.name);
         recordDiv.innerHTML = `<h4>${record.name}</h4>`;
         
+        recordDiv.tabIndex = 0;
+        recordDiv.style.cursor = 'pointer';
+        recordDiv.setAttribute('role', 'button');
+        recordDiv.setAttribute('aria-label', `View record ${record.name}`);
+
         const fieldsList = document.createElement('ul');
         record.fields.forEach(field => {
           const li = document.createElement('li');

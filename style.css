@@ -422,6 +422,29 @@ h2 {
   box-shadow: 0 0 0 2px rgba(0, 106, 77, 0.2);
 }
 
+/* styling for record preview screen*/
+
+#filter-records-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 80%;
+  max-width: 400px;
+}
+
+.form-row label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #fff;
+}
+
 /* Entries display area */
 #card-display {
   margin: 20px 0;

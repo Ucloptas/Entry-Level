@@ -1,6 +1,7 @@
 let currentTemplate = null;
 let currentRecord = null;
 let editingTemplate = null; //editing template
+let recordDisplayData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM Content Loaded');
@@ -646,28 +647,29 @@ document.getElementById('import-record-button')?.addEventListener('click', async
 // === DISPLAY RECORD PREVIEWS FOR FILTERING === //
 
 document.getElementById('filter-records-button')?.addEventListener('click', async () => {
-  console.log("test");
   const nextPreviews = document.getElementById('next-previews');
   const previousPreviews = document.getElementById('previous-previews');
 
   document.getElementById('back-from-preview').addEventListener('click', () => {
     nextPreviews.classList.add('hidden');
     previousPreviews.classList.add('hidden');
+    recordDisplayData = null;
   });
   
-  const recordData = await window.electronAPI.getAllRecordTemplateInfo();
+  if (recordDisplayData==null)
+  recordDisplayData = await window.electronAPI.getAllRecordTemplateInfo();
 
     let index = 0;
 
-    if(recordData.length > 5) {
+    if(recordDisplayData.length > 5) {
       nextPreviews.classList.remove('hidden');
       previousPreviews.classList.remove('hidden');
     }
     //Shows next entries
     document.getElementById('next-previews').addEventListener('click', () => {
-      if(!(index+5 > recordData.length) && !(index === recordData.length)){
+      if(!(index+5 > recordDisplayData.length) && !(index === recordDisplayData.length)){
         index += 5;
-        window.uiManager.displayRecordPreview(recordData.slice(index, index+5));
+        window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index+5));
       }
       console.log(index);
     });
@@ -676,17 +678,114 @@ document.getElementById('filter-records-button')?.addEventListener('click', asyn
     document.getElementById('previous-previews').addEventListener('click', () => {
       if(!(index-5 < 0) && !(index === 0)){
         index -= 5;
-        window.uiManager.displayRecordPreview(recordData.slice(index, index+5));
+        window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index+5));
       }
       console.log(index);
     });
 
+    document.getElementById('select-record-filters')?.addEventListener('click', async () => {
+        document.getElementById('apply-filter').addEventListener('click', () => {
+          const type = document.getElementById('filter-type').value;
+          const value = document.getElementById('filter-value').value;
+          if (!value) return;
+          console.log(type,value)
+          const filteredData = recordDisplayData.filter(template => {
+            if (type == 'name') {
+              return template.name.includes(value);
+            } else if (type == 'field') {
+              return template.fields.some(field => field.name.includes(value));
+            }
+            return false;
+          });
+          console.log(filteredData);
+          document.getElementById('clear-filter').addEventListener('click', async () => {
+          recordDisplayData = await window.electronAPI.getAllRecordTemplateInfo();
+          index = 0;
+          window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+          showScreen('record-preview-screen');
+        });
+          
+          // Replace recordDisplayData with filtered version
+          recordDisplayData = filteredData;
+        
+          // Reset index to start
+          index = 0;
+        
+          // Display the filtered preview
+          window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+        });
+        
+        
+
+
+    });
   // Display the record data
-  window.uiManager.displayRecordPreview(recordData.slice(index, index+5));
+  window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index+5));
   
   // Navigate to the record display screen
   showScreen('record-preview-screen');
 });
+
+// === HANDLING LOGIC FOR DISPLAYING RECORDS WHEN CLICKED FROM CARD === //
+
+const previewContainer = document.getElementById('record-preview-content');
+
+previewContainer.addEventListener('click', async (event) => {
+  const card = event.target.closest('.record-preview-card');
+  if (!card) return;
+
+  const recordId = card.getAttribute('data-record-id');
+  if (!recordId) return;
+
+  try {
+    console.log(recordId);
+    const recordData = await window.electronAPI.loadRecord(recordId+".json");
+    currentRecord = recordData;
+
+    // Prepare initial display of entries with pagination (first 5 entries)
+    let index = 0;
+    let displayedEntries = {
+      ...recordData,
+      entries: recordData.entries.slice(index, index + 5),
+    };
+
+    window.uiManager.displayRecord(displayedEntries, recordId);
+    showScreen('record-display-screen');
+
+    // Setup next/previous buttons visibility and handlers
+    const nextEntries = document.getElementById('next-entries');
+    const previousEntries = document.getElementById('previous-entries');
+
+    nextEntries.classList.toggle('hidden', recordData.entries.length <= 5);
+    previousEntries.classList.add('hidden');
+
+    let currentIndex = 0;
+
+    nextEntries.onclick = () => {
+      if (currentIndex + 5 < recordData.entries.length) {
+        currentIndex += 5;
+        const slice = recordData.entries.slice(currentIndex, currentIndex + 5);
+        window.uiManager.displayRecord({ ...recordData, entries: slice }, recordId);
+        previousEntries.classList.remove('hidden');
+        if (currentIndex + 5 >= recordData.entries.length) nextEntries.classList.add('hidden');
+      }
+    };
+
+    previousEntries.onclick = () => {
+      if (currentIndex - 5 >= 0) {
+        currentIndex -= 5;
+        const slice = recordData.entries.slice(currentIndex, currentIndex + 5);
+        window.uiManager.displayRecord({ ...recordData, entries: slice }, recordId);
+        nextEntries.classList.remove('hidden');
+        if (currentIndex === 0) previousEntries.classList.add('hidden');
+      }
+    };
+
+  } catch (err) {
+    window.uiManager.showErrorMessage('Failed to load record: ' + err.message);
+  }
+});
+
 
 // === CREATE NEW TEMPLATE === //
 
