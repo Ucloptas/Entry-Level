@@ -18,7 +18,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 
   //Mi codigo
-  deleteRecord: ({name}) => ipcRenderer.invoke('delete-record', {name}),
+  deleteRecord: ({name, index}) => ipcRenderer.invoke('delete-record', {name, index}),
 
 
 
@@ -50,16 +50,6 @@ try {
       dropdownManagerInstance.createDropdown(dropdownId, options, placeholder, formatOption),
     setupDropdownWithConfirm: (dropdownId, confirmButtonId) => 
       dropdownManagerInstance.setupDropdownWithConfirm(dropdownId, confirmButtonId),
-    
-    
-    //Mi codigo
-     
-    setupDropdownWithEditAndDelete: (dropdownId, deleteButtonId, editButtonId) => 
-      dropdownManagerInstance.setupDropdownWithEditAndDelete(dropdownId, deleteButtonId, editButtonId),
-
-
-
-
     getSelectedValue: (dropdownId) => dropdownManagerInstance.getSelectedValue(dropdownId),
     clearDropdown: (dropdownId) => dropdownManagerInstance.clearDropdown(dropdownId),
     

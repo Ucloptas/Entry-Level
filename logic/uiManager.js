@@ -69,35 +69,6 @@ class DropdownManager {
     });
   }
 
-
-
-
-    // Enable/disable confirm button based on dropdown selection
-    setupDropdownWithEditAndDelete(dropdownId, deleteButtonId, editButtonId) {
-      const dropdown = document.getElementById(dropdownId);
-      const deleteButton = document.getElementById(deleteButtonId);
-      const editButton = document.getElementById(editButtonId);
-      
-      if (!dropdown || !deleteButton || !editButton) {
-        console.error(`Dropdown or confirm button not found: ${dropdownId}, ${deleteButton}, ${editButton}`);
-        return;
-      }
-  
-      // Set initial state
-      deleteButton.disabled = !dropdown.value;
-      editButton.disabled = !dropdown.value;
-  
-      // Listen for changes
-      dropdown.addEventListener('change', () => {
-        deleteButton.disabled = !dropdown.value;
-        editButton.disabled = !dropdown.value;
-      });
-    }
-
-
-
-
-
   // Get selected value from dropdown
   getSelectedValue(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
@@ -198,9 +169,43 @@ class RecordDisplayManager {
 
         //Mi codigo
         entryDiv.id = index;
+        let entryStatusActive = false;
+        const deleteButton = document.getElementById('delete-record-button');
+        const editButton = document.getElementById('edit-record-button');
 
 
+        entryDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          console.log(`Le estas dando click al index ${entryDiv.id}`);
+          if(entryStatusActive === false){
+            entryDiv.style.backgroundColor = "yellow";
+            entryStatusActive = true;
+            deleteButton.disabled = false;
+            editButton.disabled = false;
+            localStorage.setItem('index', index);
+            console.log(localStorage.getItem('index'));        
+          }
+          else {
+            entryDiv.style.backgroundColor = "#eef1f5";
+            entryStatusActive = false;
+            deleteButton.disabled = true;
+            editButton.disabled = true;
+            localStorage.removeItem('index');
+          }
+          console.log(entryDiv.style.backgroundColor);
+        });
 
+        document.addEventListener('click', (event) => {
+          const deleteButton = document.getElementById('delete-record-button');
+          if(!entryDiv.contains(event.target) || !deleteButton.contains(event.target)) {
+            entryDiv.style.backgroundColor = "#eef1f5";
+            entryStatusActive = false;
+            localStorage.removeItem('index');
+          }
+        });
+
+
+        /////////
 
 
         

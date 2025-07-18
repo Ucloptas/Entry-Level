@@ -393,6 +393,52 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
       console.log(index);
     });
 
+
+
+
+
+
+
+
+    //Mi codigo
+
+    document.getElementById('delete-record-button').onclick =  async () => {
+      // const selected = window.uiManager.getSelectedValue('record-select-to-edit');
+      // if (!selected) return;
+  
+      
+        await window.electronAPI.deleteRecord({
+        name: selected,
+        index: parseInt(localStorage.getItem('index')) + index,
+      });
+
+      document.getElementById('delete-record-button').disabled = true;
+      document.getElementById('edit-record-button').disabled = true;
+      
+      document.getElementById('back-from-entries').click();
+      document.getElementById('view-record-button').click();
+
+       console.log(`sin index: ${localStorage.getItem('index')}, con index: ${parseInt(localStorage.getItem('index')) + index}, index: ${index}`);
+  
+      // window.uiManager.createDropdown('select-record-to-edit', records, '-- Select a Record --');
+    };
+
+
+
+
+
+    ////////////////
+
+
+
+
+
+
+
+
+
+
+
   console.log('Loaded record:', recordData);
 
   // Display the record data
@@ -401,52 +447,6 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   // Navigate to the record display screen
   showScreen('record-display-screen');
 });
-
-
-
-
-
-// Mi codigo
-
-  // === EDIT RECORD DROPDOWN LOGIC ===
-  // Initialize record dropdown for "Edit Entry"
-  window.electronAPI.listRecords().then(records => {
-    window.uiManager.createDropdown('record-select-to-edit', records, '-- Select a Record --');
-    window.uiManager.setupDropdownWithEditAndDelete('record-select-to-edit', 'delete-record-button', 'edit-record-button');
-  });
-
-  document.getElementById('delete-record-button')?.addEventListener('click', async () => {
-    const selected = window.uiManager.getSelectedValue('record-select-to-edit');
-    if (!selected) return;
-
-    await window.electronAPI.deleteRecord({
-      name: window.uiManager.getSelectedValue('record-select-to-edit'),
-    });
-
-    window.uiManager.createDropdown('record-select-to-edit', records, '-- Select a Record --');
-
-    // currentRecord = await window.electronAPI.loadRecord(selected);
-    // window.uiManager.clearEntries();
-    // // Fix: Extract fields from the template, not directly from record
-    // window.uiManager.renderForm(currentRecord.template.fields);
-    // addHelpTextToFormFields();
-    // window.uiManager.updateDisplay();
-    showScreen('');
-    showScreen('edit-record-screen');
-  });
-
-  //Delete Entry
-  // document.getElementById('delete-record-button')?.addEventListener('click', async () => {
-    
-  // });
-
-
-
-
-
-
-
-
 
 // === CREATE NEW TEMPLATE === //
 

@@ -115,8 +115,8 @@ ipcMain.handle('save-record', (event, { name, data }) => {
 
 
 //Mi codigo
-ipcMain.handle('delete-record', (event, { name}) => {
-  return deleteRecord(userDataPath, name);
+ipcMain.handle('delete-record', (event, { name, index }) => {
+  return deleteRecord(userDataPath, name, index);
 });
 
 
