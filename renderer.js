@@ -15,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Showing screen:', id);
     window.uiManager.showScreen(id);
     
+    // Clear current record when navigating away from record display
+    if (id !== 'record-display-screen') {
+      currentRecord = null;
+    }
+    
     // Refresh dropdowns when navigating to screens that need them
     if (id === 'select-record-screen' || id === 'view-records-screen') {
       window.uiManager.refreshRecordDropdowns();
@@ -154,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // === KEYBOARD SHORTCUTS FOR MODALS ===
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      [settingsOverlay, exitOverlay].forEach(el => {
+      [settingsOverlay, exitOverlay, importExportOverlay, exportFormatOverlay].forEach(el => {
         if (el && !el.classList.contains('hidden')) {
           el.classList.add('hidden');
         }
@@ -355,7 +360,9 @@ if (templateDropdown && editTemplateButton) {
       };
 
       const safeName = (currentTemplate.name || 'untitled').replace(/\s+/g, '_').toLowerCase();
-      const fileName = `${safeName}-${Date.now()}.json`;
+      const date = new Date().toISOString().split('T')[0]; // "2024-01-15"
+      const time = new Date().toTimeString().split(' ')[0].replace(/:/g, '-'); // "14-30-25"
+      const fileName = `${safeName}_${date}_${time}.json`;
 
       await window.electronAPI.saveRecord({
         name: fileName,
@@ -396,6 +403,17 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   });
   
   const recordData = await window.electronAPI.loadRecord(selected);
+  
+  // Set currentRecord for export functionality
+  currentRecord = recordData;
+  
+  // Update export button state if modal is open
+  const exportButton = document.getElementById('export-record-button');
+  if (exportButton && !importExportOverlay.classList.contains('hidden')) {
+    exportButton.disabled = false;
+    exportButton.textContent = 'Export Record';
+    exportButton.setAttribute('aria-label', 'Export Record');
+  }
 
     let index = 0;
 
@@ -436,12 +454,194 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
     });
 
   console.log('Loaded record:', recordData);
+  console.log('Record template:', recordData.template); // Debug log
 
   // Display the record data
   window.uiManager.displayRecord(reducedData, selected);
   
   // Navigate to the record display screen
   showScreen('record-display-screen');
+});
+
+// === IMPORT/EXPORT MODAL FUNCTIONALITY ===
+const importExportOverlay = document.getElementById('import-export-overlay');
+const exportFormatOverlay = document.getElementById('export-format-overlay');
+
+// Import/Export modal accessibility
+function openImportExportModal() {
+  lastFocusedElement = document.activeElement;
+  importExportOverlay.classList.remove('hidden');
+  importExportOverlay.setAttribute('aria-modal', 'true');
+  importExportOverlay.setAttribute('role', 'dialog');
+  appMain.setAttribute('aria-hidden', 'true');
+  
+  // Enable/disable export button based on whether a record is loaded
+  const exportButton = document.getElementById('export-record-button');
+  if (exportButton) {
+    if (currentRecord) {
+      exportButton.disabled = false;
+      exportButton.textContent = 'Export Record';
+      exportButton.setAttribute('aria-label', 'Export Record');
+    } else {
+      exportButton.disabled = true;
+      exportButton.textContent = 'Export Record (No Record Loaded)';
+      exportButton.setAttribute('aria-label', 'Export Record (No Record Loaded)');
+    }
+  }
+  
+  trapFocus(importExportOverlay);
+  const firstFocusable = importExportOverlay.querySelector('button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+  if (firstFocusable) firstFocusable.focus();
+}
+
+function closeImportExportModal() {
+  importExportOverlay.classList.add('hidden');
+  importExportOverlay.removeAttribute('aria-modal');
+  importExportOverlay.removeAttribute('role');
+  appMain.removeAttribute('aria-hidden');
+  releaseFocus(importExportOverlay);
+  if (lastFocusedElement) lastFocusedElement.focus();
+}
+
+// Export format modal accessibility
+function openExportFormatModal() {
+  lastFocusedElement = document.activeElement;
+  exportFormatOverlay.classList.remove('hidden');
+  exportFormatOverlay.setAttribute('aria-modal', 'true');
+  exportFormatOverlay.setAttribute('role', 'dialog');
+  appMain.setAttribute('aria-hidden', 'true');
+  trapFocus(exportFormatOverlay);
+  const firstFocusable = exportFormatOverlay.querySelector('button, [tabindex]:not([tabindex="-1"])');
+  if (firstFocusable) firstFocusable.focus();
+}
+
+function closeExportFormatModal() {
+  exportFormatOverlay.classList.add('hidden');
+  exportFormatOverlay.removeAttribute('aria-modal');
+  exportFormatOverlay.removeAttribute('role');
+  appMain.removeAttribute('aria-hidden');
+  releaseFocus(exportFormatOverlay);
+  if (lastFocusedElement) lastFocusedElement.focus();
+}
+
+// === IMPORT/EXPORT MODAL EVENT HANDLERS ===
+document.getElementById('import-export-menu')?.addEventListener('click', () => {
+  openImportExportModal();
+});
+
+document.getElementById('close-import-export')?.addEventListener('click', () => {
+  closeImportExportModal();
+});
+
+document.getElementById('import-record-modal-button')?.addEventListener('click', async () => {
+  closeImportExportModal();
+  try {
+    const result = await window.electronAPI.importRecordFromFile();
+    if (result.canceled) {
+      showStatusToast('info', 'Import cancelled');
+    } else if (result.success) {
+      showStatusToast('success', `Record "${result.recordName}" imported successfully with ${result.entryCount} entries`);
+      // Refresh record dropdowns to show the new record
+      await window.uiManager.refreshRecordDropdowns();
+      
+      // Automatically load and display the imported record
+      const recordFileName = `${result.recordName}.json`;
+      const recordData = await window.electronAPI.loadRecord(recordFileName);
+      
+      // Set currentRecord for export functionality
+      currentRecord = recordData;
+      
+      // Display the record
+      window.uiManager.displayRecord(recordData, recordFileName);
+      
+      // Navigate to record display screen
+      showScreen('record-display-screen');
+    } else {
+      showStatusToast('error', result.error || 'Import failed');
+    }
+  } catch (error) {
+    showStatusToast('error', `Import failed: ${error.message}`);
+  }
+});
+
+document.getElementById('export-record-button')?.addEventListener('click', () => {
+  if (!currentRecord) {
+    showStatusToast('error', 'No record loaded to export. Please view a record first.');
+    return;
+  }
+  closeImportExportModal();
+  openExportFormatModal();
+});
+
+document.getElementById('close-import-export')?.addEventListener('click', () => {
+  closeImportExportModal();
+});
+
+document.getElementById('cancel-export')?.addEventListener('click', () => {
+  closeExportFormatModal();
+});
+
+document.getElementById('export-as-json')?.addEventListener('click', async () => {
+  closeExportFormatModal();
+  try {
+    const result = await window.electronAPI.exportRecordAsJson(currentRecord);
+    if (result.canceled) {
+      showStatusToast('info', 'Export cancelled');
+    } else if (result.success) {
+      showStatusToast('success', `JSON exported successfully to: ${result.filePath}`);
+    } else {
+      showStatusToast('error', result.error || 'Export failed');
+    }
+  } catch (error) {
+    showStatusToast('error', `Export failed: ${error.message}`);
+  }
+});
+
+document.getElementById('export-as-csv')?.addEventListener('click', async () => {
+  closeExportFormatModal();
+  try {
+    const result = await window.electronAPI.exportRecordAsCsv(currentRecord);
+    if (result.canceled) {
+      showStatusToast('info', 'Export cancelled');
+    } else if (result.success) {
+      showStatusToast('success', `CSV exported successfully to: ${result.filePath}`);
+    } else {
+      showStatusToast('error', result.error || 'Export failed');
+    }
+  } catch (error) {
+    showStatusToast('error', `Export failed: ${error.message}`);
+  }
+});
+
+// === ORIGINAL IMPORT BUTTON (in new-record-screen) ===
+document.getElementById('import-record-button')?.addEventListener('click', async () => {
+  try {
+    const result = await window.electronAPI.importRecordFromFile();
+    if (result.canceled) {
+      showStatusToast('info', 'Import cancelled');
+    } else if (result.success) {
+      showStatusToast('success', `Record "${result.recordName}" imported successfully with ${result.entryCount} entries`);
+      // Refresh record dropdowns to show the new record
+      await window.uiManager.refreshRecordDropdowns();
+      
+      // Automatically load and display the imported record
+      const recordFileName = `${result.recordName}.json`;
+      const recordData = await window.electronAPI.loadRecord(recordFileName);
+      
+      // Set currentRecord for export functionality
+      currentRecord = recordData;
+      
+      // Display the record
+      window.uiManager.displayRecord(recordData, recordFileName);
+      
+      // Navigate to record display screen
+      showScreen('record-display-screen');
+    } else {
+      showStatusToast('error', result.error || 'Import failed');
+    }
+  } catch (error) {
+    showStatusToast('error', `Import failed: ${error.message}`);
+  }
 });
 
 // === CREATE NEW TEMPLATE === //

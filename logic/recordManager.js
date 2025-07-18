@@ -25,7 +25,9 @@ function loadRecord(userDataPath, fileName) {
   const recordsDir = path.join(userDataPath, 'records');
   const filePath = path.join(recordsDir, fileName);
   if (!fs.existsSync(filePath)) throw new Error('Record file not found');
-  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  const recordData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  console.log('Loaded record from file:', fileName, 'Structure:', JSON.stringify(recordData, null, 2)); // Debug log
+  return recordData;
 }
 
 module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist };
