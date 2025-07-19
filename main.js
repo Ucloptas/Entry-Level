@@ -18,7 +18,8 @@ const {
   saveRecord,
   deleteRecord,
   listRecords,
-  ensureDirsExist
+  ensureDirsExist,
+  getAllRecordTemplateInfo
 } = require('./logic/recordManager');
 
 const {
@@ -80,6 +81,12 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow();
+  }
 });
 
 // === IPC HANDLERS using userDataPath ===
@@ -330,5 +337,9 @@ ipcMain.handle('import-record-from-file', async (event) => {
     console.error('Error in import-record-from-file:', error);
     throw error;
   }
+});
+
+ipcMain.handle('get-all-record-template-info',async ()=>{
+  return getAllRecordTemplateInfo(userDataPath);
 });
 

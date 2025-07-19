@@ -62,4 +62,25 @@ function loadRecord(userDataPath, fileName) {
   return recordData;
 }
 
-module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist, deleteRecord };
+function getAllRecordTemplateInfo(userDataPath){
+  const recordsDir = path.join(userDataPath, 'records'); // Adjust if needed
+  const recordFiles = fs.readdirSync(recordsDir).filter(file => file.endsWith('.json'));
+  let recordTemplates = []
+  recordFiles.forEach(file => {
+    const filePath = path.join(recordsDir, file);
+    try {
+      const jsonData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const recordTemplate = jsonData.template;
+
+      if (recordTemplate) {
+        recordTemplates.push(recordTemplate);
+      }
+    } catch (err) {
+      console.error(`Error reading ${file}:`, err);
+    }
+  });
+
+  return recordTemplates;
+}
+
+module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist, deleteRecord, getAllRecordTemplateInfo };
