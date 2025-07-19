@@ -16,19 +16,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   listRecords: () => ipcRenderer.invoke('list-records'),
   loadRecord: (name) => ipcRenderer.invoke('load-record', name),
   saveRecord: ({ name, data }) => ipcRenderer.invoke('save-record', { name, data }),
+  deleteRecord: ({name, index}) => ipcRenderer.invoke('delete-record', {name, index}),
   
   // Export/Import methods
   exportRecordAsJson: (recordData) => ipcRenderer.invoke('export-record-as-json', recordData),
   exportRecordAsCsv: (recordData) => ipcRenderer.invoke('export-record-as-csv', recordData),
   importRecordFromFile: (filePath) => ipcRenderer.invoke('import-record-from-file', filePath),
   getAllRecordTemplateInfo: () => ipcRenderer.invoke('get-all-record-template-info'),
-
-
-  //Mi codigo
-  deleteRecord: ({name, index}) => ipcRenderer.invoke('delete-record', {name, index}),
-
-
-
 });
 
 // Expose UI manager methods directly

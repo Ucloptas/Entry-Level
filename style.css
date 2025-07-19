@@ -6,7 +6,9 @@
   --header-color: #006A4D;
   --subheader-color: #006A4D;
   --button-bg: #006A4D;
+  --button-bg-delete-entry: #f53333;
   --button-hover-bg: #004b32;
+  --button-hover-bg-delete-entry: #f20a0a;
   --back-button-bg: #cccccc;
   --back-button-hover: #aaaaaa;
   --icon-color: #006A4D;
@@ -30,7 +32,9 @@ body.dark {
   --header-color: #4fd58f;
   --subheader-color: #4fd58f;
   --button-bg: #4fd58f;
+  --button-bg-delete-entry: #f53333;
   --button-hover-bg: #38a16c;
+  --button-hover-bg-delete-entry: #f20a0a;
   --back-button-bg: #333333;
   --back-button-hover: #444444;
   --icon-color: #4fd58f;
@@ -148,6 +152,15 @@ h2 {
   align-items: center;
 }
 
+.entry-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
 .template-button-group {
   display: flex;
   justify-content: center;
@@ -181,6 +194,25 @@ h2 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.big-button-delete-entry {
+  font-size: 1.2em;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--button-bg-delete-entry);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.big-button-delete-entry:hover {
+  background-color: var(--button-hover-bg-delete-entry);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .big-button:hover {
   background-color: var(--button-hover-bg);
   transform: translateY(-1px);
@@ -193,6 +225,14 @@ h2 {
 }
 
 .big-button:disabled {
+  background-color: #bdbdbd;
+  color: #444;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.big-button-delete-entry:disabled {
   background-color: #bdbdbd;
   color: #444;
   cursor: not-allowed;

@@ -158,15 +158,9 @@ ipcMain.handle('save-record', (event, { name, data }) => {
   return saveRecord(userDataPath, name, data);
 });
 
-
-
-//Mi codigo
 ipcMain.handle('delete-record', (event, { name, index }) => {
   return deleteRecord(userDataPath, name, index);
 });
-
-
-
 
 ipcMain.handle('create-template', async (event, payload) => {
   try {

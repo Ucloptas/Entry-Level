@@ -21,10 +21,6 @@ function saveRecord(userDataPath, fileName, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-
-
-
-// Mi codigo
 function deleteRecord(userDataPath, fileName, index) {
   const recordsDir = path.join(userDataPath, 'records');
   ensureDirsExist(userDataPath);
@@ -32,7 +28,6 @@ function deleteRecord(userDataPath, fileName, index) {
   const content = fs.readFileSync(filePath, 'utf8');
   const data = JSON.parse(content);
   const indexToDelete = index;
-
 
   if (
     Array.isArray(data.entries) &&
@@ -47,11 +42,6 @@ function deleteRecord(userDataPath, fileName, index) {
 
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
 }
-
-
-
-
-
 
 function loadRecord(userDataPath, fileName) {
   const recordsDir = path.join(userDataPath, 'records');

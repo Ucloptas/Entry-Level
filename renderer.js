@@ -452,14 +452,6 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
     });
 
 
-
-
-
-
-
-
-    //Mi codigo
-
     document.getElementById('delete-record-button').onclick =  async () => {
       
         await window.electronAPI.deleteRecord({
@@ -473,25 +465,7 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
       document.getElementById('back-from-entries').click();
       document.getElementById('view-record-button').click();
     };
-
-
     
-
-
-
-
-
-    ////////////////
-
-
-
-
-
-
-
-
-
-
 
   console.log('Loaded record:', recordData);
   console.log('Record template:', recordData.template); // Debug log

@@ -168,29 +168,14 @@ class RecordDisplayManager {
       const entriesList = document.createElement('div');
       entriesList.className = 'entries-list';
       
-
-      //////
-
-
       let currentlyActiveDiv = null;
-
-      ////
-
 
       recordData.entries.forEach((entry, index) => {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'card-row';
         entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
 
-
-
-
-        //Mi codigo
-        entryDiv.id = index;
-        //let entryStatusActive = false;
         const deleteButton = document.getElementById('delete-record-button');
-        // const editButton = document.getElementById('edit-record-button');
-
 
         entryDiv.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -198,8 +183,6 @@ class RecordDisplayManager {
           if (currentlyActiveDiv && currentlyActiveDiv !== entryDiv) {
             currentlyActiveDiv.style.backgroundColor = "#eef1f5";
           }
-
-
 
           const isActive = currentlyActiveDiv === entryDiv;
 
@@ -215,10 +198,6 @@ class RecordDisplayManager {
             localStorage.removeItem('index');
           }
         });
-
-
-        /////////
-
 
         
         const fieldsList = document.createElement('ul');
