@@ -11,7 +11,7 @@
     },   
 
     { 
-        "name": "Expensive Tracker Template", 
+        "name": "Expense Tracker Template", 
         "fields": [
             {"name": "Date", "type": "date"},
             {"name": "Amount", "type": "money"},
