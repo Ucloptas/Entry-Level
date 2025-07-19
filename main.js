@@ -33,8 +33,8 @@ let userDataPath;
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 900,
-    height: 750,
+    width: 1000,
+    height: 850,
     minWidth: 700,
     minHeight: 500,
     resizable: true,

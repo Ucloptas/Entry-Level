@@ -1,0 +1,8 @@
+# Record: Import-My-Workout-Diary
+# Fields: Workout Date (date), Name of Exercise (text), Description of Workout (text), Number of Reps per Set (number), Number of Sets (number)
+# Exported: 2025-07-19T22:45:53.181Z
+
+"Workout Date","Name of Exercise","Description of Workout","Number of Reps per Set","Number of Sets"
+"2025-07-19","Push-ups","Basic push ups on a hard surface","20","5"
+"2025-07-20","Pull-ups","Pull-ups using hanging bar, to chin","10","5"
+"2025-07-21","Yoga","Insanity Yoga-portion from YouTube","60","3"

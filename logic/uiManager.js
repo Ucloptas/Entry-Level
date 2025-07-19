@@ -168,47 +168,81 @@ class RecordDisplayManager {
       const entriesList = document.createElement('div');
       entriesList.className = 'entries-list';
       
-      let currentlyActiveDiv = null;
-
       recordData.entries.forEach((entry, index) => {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'card-row';
-        entryDiv.innerHTML = `<h4>Entry ${index + 1}</h4>`;
-
-        const deleteButton = document.getElementById('delete-record-button');
-
-        entryDiv.addEventListener('click', (e) => {
-          e.stopPropagation();
-
-          if (currentlyActiveDiv && currentlyActiveDiv !== entryDiv) {
-            currentlyActiveDiv.style.backgroundColor = "#eef1f5";
-          }
-
-          const isActive = currentlyActiveDiv === entryDiv;
-
-          if (!isActive) {
-            entryDiv.style.backgroundColor = "#ffef5c";
-            currentlyActiveDiv = entryDiv;
-            deleteButton.disabled = false;
-            localStorage.setItem('index', index);
-          } else {
-            entryDiv.style.backgroundColor = "#eef1f5";
-            currentlyActiveDiv = null;
-            deleteButton.disabled = true;
-            localStorage.removeItem('index');
-          }
-        });
-
+        entryDiv.setAttribute('data-entry-index', index);
+        entryDiv.setAttribute('role', 'button');
+        entryDiv.setAttribute('tabindex', '0');
+        entryDiv.setAttribute('aria-label', `View Entry ${index + 1}`);
         
+        // Create entry header
+        const entryHeader = document.createElement('h4');
+        entryHeader.textContent = `Entry ${index + 1}`;
+        entryDiv.appendChild(entryHeader);
+        
+        // Create fields list with truncation
         const fieldsList = document.createElement('ul');
-        recordData.template.fields.forEach(field => {
+        const maxFieldsToShow = 4; // Show only first 4 fields in card
+        const maxCharsPerField = 120; // Max characters per field value
+        let hasOverflow = false;
+        
+        recordData.template.fields.forEach((field, fieldIndex) => {
+          if (fieldIndex >= maxFieldsToShow) {
+            hasOverflow = true;
+            return; // Skip remaining fields
+          }
+          
           const value = entry[field.name] || 'N/A';
           const li = document.createElement('li');
-          li.innerHTML = `<strong>${field.name}:</strong> ${value}`;
+          
+          // Create field name span
+          const fieldName = document.createElement('span');
+          fieldName.className = 'field-name';
+          fieldName.textContent = `${field.name}:`;
+          
+          // Create field value span with truncation
+          const fieldValue = document.createElement('span');
+          fieldValue.className = 'field-value';
+          
+          if (typeof value === 'string' && value.length > maxCharsPerField) {
+            fieldValue.textContent = value.substring(0, maxCharsPerField);
+            fieldValue.classList.add('truncated');
+            hasOverflow = true;
+          } else {
+            fieldValue.textContent = value;
+          }
+          
+          li.appendChild(fieldName);
+          li.appendChild(fieldValue);
           fieldsList.appendChild(li);
         });
         
         entryDiv.appendChild(fieldsList);
+        
+        // Add overflow indicator if needed
+        if (hasOverflow || recordData.template.fields.length > maxFieldsToShow) {
+          const overflowIndicator = document.createElement('div');
+          overflowIndicator.className = 'card-overflow-indicator';
+          overflowIndicator.textContent = '⋯';
+          overflowIndicator.setAttribute('aria-label', 'More content available');
+          entryDiv.appendChild(overflowIndicator);
+        }
+        
+        // Add click handler to open modal
+        entryDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.openEntryViewer(entry, index, recordData.template, fileName);
+        });
+        
+        // Add keyboard support
+        entryDiv.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.openEntryViewer(entry, index, recordData.template, fileName);
+          }
+        });
+        
         entriesList.appendChild(entryDiv);
       });
       
@@ -216,6 +250,92 @@ class RecordDisplayManager {
     }
     
     this.contentElement.appendChild(entriesSection);
+  }
+  
+  // Open entry viewer modal
+  openEntryViewer(entry, entryIndex, template, fileName) {
+    const overlay = document.getElementById('entry-viewer-overlay');
+    const title = document.getElementById('entry-viewer-title');
+    const content = document.getElementById('entry-viewer-content');
+    const deleteButton = document.getElementById('delete-entry-button');
+    
+    if (!overlay || !title || !content || !deleteButton) {
+      console.error('Entry viewer modal elements not found');
+      return;
+    }
+    
+    // Set modal title
+    title.textContent = `Entry ${entryIndex + 1} Details`;
+    
+    // Populate content with all fields
+    content.innerHTML = '';
+    const fieldsList = document.createElement('ul');
+    fieldsList.style.listStyle = 'none';
+    fieldsList.style.padding = '0';
+    fieldsList.style.margin = '0';
+    
+    template.fields.forEach(field => {
+      const value = entry[field.name] || 'N/A';
+      const li = document.createElement('li');
+      li.style.marginBottom = '15px';
+      li.style.padding = '10px';
+      li.style.borderBottom = '1px solid var(--dropdown-border)';
+      
+      const fieldName = document.createElement('div');
+      fieldName.style.fontWeight = 'bold';
+      fieldName.style.color = 'var(--header-color)';
+      fieldName.style.marginBottom = '5px';
+      fieldName.textContent = field.name;
+      
+      const fieldValue = document.createElement('div');
+      fieldValue.style.wordWrap = 'break-word';
+      fieldValue.style.whiteSpace = 'pre-wrap';
+      fieldValue.textContent = value;
+      
+      li.appendChild(fieldName);
+      li.appendChild(fieldValue);
+      fieldsList.appendChild(li);
+    });
+    
+    content.appendChild(fieldsList);
+    
+    // Set up delete button
+    deleteButton.onclick = async () => {
+      const confirmed = confirm(`Are you sure you want to delete Entry ${entryIndex + 1}? This action cannot be undone.`);
+      if (!confirmed) return;
+      
+      try {
+        await window.electronAPI.deleteRecord({
+          name: fileName,
+          index: entryIndex
+        });
+        
+        // Close modal
+        overlay.classList.add('hidden');
+        
+        // Refresh the record display
+        const recordData = await window.electronAPI.loadRecord(fileName);
+        this.displayRecord(recordData, fileName);
+        
+        // Show success message
+        window.uiManager.showSuccessMessage(`Entry ${entryIndex + 1} deleted successfully`);
+      } catch (error) {
+        window.uiManager.showErrorMessage(`Failed to delete entry: ${error.message}`);
+      }
+    };
+    
+    // Show modal
+    overlay.classList.remove('hidden');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('role', 'dialog');
+    
+    // Set up focus management
+    const appMain = document.querySelector('main');
+    if (appMain) appMain.setAttribute('aria-hidden', 'true');
+    
+    // Focus first focusable element
+    const firstFocusable = overlay.querySelector('button, [tabindex]:not([tabindex="-1"])');
+    if (firstFocusable) firstFocusable.focus();
   }
 }
 

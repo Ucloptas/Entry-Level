@@ -118,10 +118,6 @@
           <button id="previous-entries" class="big-button hidden" data-screen="record-display-screen">Previous</button>
           <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
           <button class="big-button back-button" data-screen="record-preview-screen" aria-label="Back to All Records" id="back-from-entries">Back</button>
-          <div class="entry-button-group">
-            <button id="delete-record-button" class="big-button-delete-entry" data-screen="record-display-screen" disabled aria-label="Delete Entry">Delete Entry</button>
-            <!-- <button id="edit-record-button" class="big-button" data-screen="edit-record-screen" disabled aria-label="Edit Entry">Edit Entry</button> -->
-          </div>
 
         </div>
 
@@ -263,6 +259,20 @@
       <div class="button-group">
         <button id="confirm-exit" class="modal-button" aria-label="Confirm Exit">Yes, Exit (Enter)</button>
         <button id="cancel-exit" class="modal-button" aria-label="Cancel Exit">Cancel (Esc)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entry Viewer Modal -->
+  <div id="entry-viewer-overlay" class="modal-overlay hidden">
+    <div class="modal-content entry-modal-content">
+      <h2 id="entry-viewer-title">Entry Details</h2>
+      <div id="entry-viewer-content">
+        <!-- Entry content will be populated here -->
+      </div>
+      <div class="entry-viewer-actions">
+        <button id="delete-entry-button" class="modal-button delete-button" aria-label="Delete Entry">Delete Entry</button>
+        <button id="close-entry-viewer" class="modal-button" aria-label="Close Entry Viewer">Close (Esc)</button>
       </div>
     </div>
   </div>

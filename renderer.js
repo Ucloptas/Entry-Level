@@ -156,12 +156,34 @@ document.addEventListener('DOMContentLoaded', () => {
     window.close();
   });
 
+  // === ENTRY VIEWER MODAL ===
+  const entryViewerOverlay = document.getElementById('entry-viewer-overlay');
+  const closeEntryViewer = document.getElementById('close-entry-viewer');
+
+  closeEntryViewer?.addEventListener('click', () => {
+    entryViewerOverlay.classList.add('hidden');
+    entryViewerOverlay.removeAttribute('aria-modal');
+    entryViewerOverlay.removeAttribute('role');
+    releaseFocus(entryViewerOverlay);
+    const appMain = document.querySelector('main');
+    if (appMain) appMain.removeAttribute('aria-hidden');
+    if (lastFocusedElement) lastFocusedElement.focus();
+  });
+
   // === KEYBOARD SHORTCUTS FOR MODALS ===
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      [settingsOverlay, exitOverlay, importExportOverlay, exportFormatOverlay].forEach(el => {
+      [settingsOverlay, exitOverlay, importExportOverlay, exportFormatOverlay, entryViewerOverlay].forEach(el => {
         if (el && !el.classList.contains('hidden')) {
           el.classList.add('hidden');
+          if (el === entryViewerOverlay) {
+            el.removeAttribute('aria-modal');
+            el.removeAttribute('role');
+            releaseFocus(entryViewerOverlay);
+            const appMain = document.querySelector('main');
+            if (appMain) appMain.removeAttribute('aria-hidden');
+            if (lastFocusedElement) lastFocusedElement.focus();
+          }
         }
       });
     }
@@ -452,19 +474,7 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
     });
 
 
-    document.getElementById('delete-record-button').onclick =  async () => {
-      
-        await window.electronAPI.deleteRecord({
-        name: selected,
-        index: parseInt(localStorage.getItem('index')) + index,
-      });
 
-      document.getElementById('delete-record-button').disabled = true;
-      // document.getElementById('edit-record-button').disabled = true;
-      
-      document.getElementById('back-from-entries').click();
-      document.getElementById('view-record-button').click();
-    };
     
 
   console.log('Loaded record:', recordData);
