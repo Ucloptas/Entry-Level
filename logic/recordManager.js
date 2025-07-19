@@ -25,32 +25,29 @@ function saveRecord(userDataPath, fileName, data) {
 
 
 // Mi codigo
-function deleteRecord(userDataPath, fileName, indexToDelete) {
+function deleteRecord(userDataPath, fileName, index) {
   const recordsDir = path.join(userDataPath, 'records');
   ensureDirsExist(userDataPath);
   const filePath = path.join(recordsDir, fileName);
-
   const content = fs.readFileSync(filePath, 'utf8');
-
-  // 2. Convertir a objeto JS
   const data = JSON.parse(content);
+  const indexToDelete = index;
 
-  // 3. Verifica que el índice existe
-  const indexABorrar = indexToDelete;
+
   if (
     Array.isArray(data.entries) &&
-    indexABorrar >= 0 &&
-    indexABorrar < data.entries.length
+    indexToDelete >= 0 &&
+    indexToDelete < data.entries.length
   ) {
-    data.entries.splice(indexABorrar, 1);
-    console.log(`Elemento en índice ${indexABorrar} eliminado.`);
+    data.entries.splice(indexToDelete, 1);
+    console.log(`Entry at index ${indexToDelete} deleted.`);
   } else {
-    console.log('Índice inválido o entries no existe');
+    console.log('Invalid index or entry do not exit');
   }
 
-  // 4. Escribir de nuevo al archivo
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
 }
+
 
 
 

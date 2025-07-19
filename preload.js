@@ -1,6 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const path = require('path');
-const { deleteRecord } = require('./logic/recordManager');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Template methods

@@ -437,7 +437,6 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
         }
         window.uiManager.displayRecord(reducedData, selected);
       }
-      console.log(index);
     });
     
     //Shows previous entries
@@ -450,7 +449,6 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
         }
         window.uiManager.displayRecord(reducedData, selected);
       }
-      console.log(index);
     });
 
 
@@ -463,9 +461,6 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
     //Mi codigo
 
     document.getElementById('delete-record-button').onclick =  async () => {
-      // const selected = window.uiManager.getSelectedValue('record-select-to-edit');
-      // if (!selected) return;
-  
       
         await window.electronAPI.deleteRecord({
         name: selected,
@@ -473,15 +468,14 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
       });
 
       document.getElementById('delete-record-button').disabled = true;
-      document.getElementById('edit-record-button').disabled = true;
+      // document.getElementById('edit-record-button').disabled = true;
       
       document.getElementById('back-from-entries').click();
       document.getElementById('view-record-button').click();
-
-       console.log(`sin index: ${localStorage.getItem('index')}, con index: ${parseInt(localStorage.getItem('index')) + index}, index: ${index}`);
-  
-      // window.uiManager.createDropdown('select-record-to-edit', records, '-- Select a Record --');
     };
+
+
+    
 
 
 

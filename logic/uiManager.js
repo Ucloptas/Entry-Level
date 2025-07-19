@@ -168,6 +168,15 @@ class RecordDisplayManager {
       const entriesList = document.createElement('div');
       entriesList.className = 'entries-list';
       
+
+      //////
+
+
+      let currentlyActiveDiv = null;
+
+      ////
+
+
       recordData.entries.forEach((entry, index) => {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'entry-row';
@@ -178,37 +187,31 @@ class RecordDisplayManager {
 
         //Mi codigo
         entryDiv.id = index;
-        let entryStatusActive = false;
+        //let entryStatusActive = false;
         const deleteButton = document.getElementById('delete-record-button');
-        const editButton = document.getElementById('edit-record-button');
+        // const editButton = document.getElementById('edit-record-button');
 
 
         entryDiv.addEventListener('click', (e) => {
           e.stopPropagation();
-          console.log(`Le estas dando click al index ${entryDiv.id}`);
-          if(entryStatusActive === false){
-            entryDiv.style.backgroundColor = "yellow";
-            entryStatusActive = true;
-            deleteButton.disabled = false;
-            editButton.disabled = false;
-            localStorage.setItem('index', index);
-            console.log(localStorage.getItem('index'));        
-          }
-          else {
-            entryDiv.style.backgroundColor = "#eef1f5";
-            entryStatusActive = false;
-            deleteButton.disabled = true;
-            editButton.disabled = true;
-            localStorage.removeItem('index');
-          }
-          console.log(entryDiv.style.backgroundColor);
-        });
 
-        document.addEventListener('click', (event) => {
-          const deleteButton = document.getElementById('delete-record-button');
-          if(!entryDiv.contains(event.target) || !deleteButton.contains(event.target)) {
+          if (currentlyActiveDiv && currentlyActiveDiv !== entryDiv) {
+            currentlyActiveDiv.style.backgroundColor = "#eef1f5";
+          }
+
+
+
+          const isActive = currentlyActiveDiv === entryDiv;
+
+          if (!isActive) {
+            entryDiv.style.backgroundColor = "#ffef5c";
+            currentlyActiveDiv = entryDiv;
+            deleteButton.disabled = false;
+            localStorage.setItem('index', index);
+          } else {
             entryDiv.style.backgroundColor = "#eef1f5";
-            entryStatusActive = false;
+            currentlyActiveDiv = null;
+            deleteButton.disabled = true;
             localStorage.removeItem('index');
           }
         });
