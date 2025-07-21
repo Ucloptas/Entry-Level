@@ -85,6 +85,8 @@ try {
     clearEntries: () => entryManagerInstance.clearEntries(),
     updateDisplay: () => entryManagerInstance.updateDisplay(),
     isEmpty: () => entryManagerInstance.isEmpty(),
+    replaceEntries: (newEntries) => entryManagerInstance.replaceEntries(newEntries),
+    mergeFromRecord: (recordEntries) => entryManagerInstance.mergeFromRecord(recordEntries),
     
     // Validation management
     validateFormData: (fields, data) => validationManagerInstance.validateFormData(fields, data),

@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Showing screen:', id);
     window.uiManager.showScreen(id);
     
-    // Clear current record when navigating away from record display
-    if (id !== 'record-display-screen') {
+    // Clear current record when navigating away from record display and entry form
+    if (id !== 'record-display-screen' && id !== 'entry-form-screen') {
       currentRecord = null;
     }
     
@@ -231,6 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!selected) return;
 
     currentTemplate = await window.electronAPI.loadTemplate(selected);
+    
+    // Validate that the template has fields
+    if (!currentTemplate || !currentTemplate.fields) {
+      window.uiManager.showErrorMessage('Invalid template format: missing fields. Please select a valid template.');
+      return;
+    }
+    
     window.uiManager.clearEntries();
     window.uiManager.renderForm(currentTemplate.fields);
     addHelpTextToFormFields();
@@ -293,6 +300,12 @@ if (templateDropdown && editTemplateButton) {
   editingTemplate = selected; // original name before edits
   const template = await window.electronAPI.loadTemplate(selected);
 
+  // Validate that the template has fields
+  if (!template || !template.fields || !Array.isArray(template.fields)) {
+    window.uiManager.showErrorMessage('Invalid template format: missing fields. Please select a valid template.');
+    return;
+  }
+
   //button to cancel editing
   document.getElementById('cancel-edit-button').classList.remove('hidden');
 
@@ -322,7 +335,18 @@ if (templateDropdown && editTemplateButton) {
     if (!selected) return;
 
     currentRecord = await window.electronAPI.loadRecord(selected);
+    
+    // Validate that the record has a proper template structure
+    if (!currentRecord || !currentRecord.template || !currentRecord.template.fields) {
+      window.uiManager.showErrorMessage('Invalid record format: missing template or fields. Please select a valid record.');
+      return;
+    }
+    
     window.uiManager.clearEntries();
+    // Load existing entries from the record into the UI manager
+    if (currentRecord.entries && Array.isArray(currentRecord.entries)) {
+      window.uiManager.replaceEntries(currentRecord.entries);
+    }
     // Fix: Extract fields from the template, not directly from record
     window.uiManager.renderForm(currentRecord.template.fields);
     addHelpTextToFormFields();
@@ -333,7 +357,27 @@ if (templateDropdown && editTemplateButton) {
   // === FORM ACTIONS ===
   document.getElementById('add-entry')?.addEventListener('click', () => {
     // Use the appropriate fields based on whether we're creating new or adding to existing
-    const fields = currentRecord ? currentRecord.template.fields : currentTemplate.fields;
+    let fields;
+    if (currentRecord && currentRecord.template && currentRecord.template.fields) {
+      fields = currentRecord.template.fields;
+    } else if (currentTemplate && currentTemplate.fields) {
+      fields = currentTemplate.fields;
+    } else {
+      let errorMessage = 'No template fields available. ';
+      if (!currentRecord && !currentTemplate) {
+        errorMessage += 'Please select a template or record first.';
+      } else if (currentRecord && !currentRecord.template) {
+        errorMessage += 'Selected record has no template information.';
+      } else if (currentRecord && currentRecord.template && !currentRecord.template.fields) {
+        errorMessage += 'Selected record has no template fields.';
+      } else if (currentTemplate && !currentTemplate.fields) {
+        errorMessage += 'Selected template has no fields.';
+      }
+      
+      window.uiManager.showErrorMessage(errorMessage);
+      return;
+    }
+    
     const entry = window.uiManager.readFormData(fields);
     
     // Validate the entry before adding
@@ -354,11 +398,12 @@ if (templateDropdown && editTemplateButton) {
       return;
     }
 
-    if (currentRecord) {
+    if (currentRecord && currentRecord.template && currentRecord.entries) {
       // Adding to existing record
+      // The UI manager already contains both original and new entries, so just save what's in there
       const updatedRecord = {
         template: currentRecord.template,
-        entries: [...currentRecord.entries, ...window.uiManager.getEntries()]
+        entries: window.uiManager.getEntries()
       };
       
       // Save with the same filename
@@ -371,6 +416,11 @@ if (templateDropdown && editTemplateButton) {
     } else {
       //PATCH: issue for when using an editted template
       // Ensure we're using the latest template from disk
+      if (!currentTemplate || !currentTemplate.name) {
+        window.uiManager.showErrorMessage('No template selected. Please select a template first.');
+        return;
+      }
+      
       const updatedTemplate = await window.electronAPI.loadTemplate(currentTemplate.name);
       if (!updatedTemplate) {
         window.uiManager.showErrorMessage('Template could not be loaded for saving.');
@@ -399,7 +449,15 @@ if (templateDropdown && editTemplateButton) {
     }
 
     window.uiManager.clearEntries();
-    const fields = currentRecord ? currentRecord.template.fields : currentTemplate.fields;
+    let fields;
+    if (currentRecord && currentRecord.template && currentRecord.template.fields) {
+      fields = currentRecord.template.fields;
+    } else if (currentTemplate && currentTemplate.fields) {
+      fields = currentTemplate.fields;
+    } else {
+      window.uiManager.showErrorMessage('No template fields available. Please select a valid template or record.');
+      return;
+    }
     window.uiManager.renderForm(fields);
     addHelpTextToFormFields();
     window.uiManager.clearForm(fields);
