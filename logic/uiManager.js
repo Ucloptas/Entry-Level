@@ -123,6 +123,29 @@ class RecordDisplayManager {
   constructor() {
     this.titleElement = null;
     this.contentElement = null;
+    this.statusTimeout = null;
+  }
+
+  // Show status message
+  showStatusMessage(text, duration = 3000) {
+    const statusMessageElement = document.getElementById('status-message');
+    if (!statusMessageElement) {
+      console.error('Status message element not found');
+      return;
+    }
+
+    statusMessageElement.textContent = text;
+    statusMessageElement.classList.remove('hidden');
+
+    // Clear existing timeout
+    if (this.statusTimeout) {
+      clearTimeout(this.statusTimeout);
+    }
+
+    // Auto-hide after duration
+    this.statusTimeout = setTimeout(() => {
+      statusMessageElement.classList.add('hidden');
+    }, duration);
   }
 
   // Display record data in the UI
@@ -302,10 +325,14 @@ class RecordDisplayManager {
     // Set up delete button
     deleteButton.onclick = async () => {
       const confirmed = confirm(`Are you sure you want to delete Entry ${entryIndex + 1}? This action cannot be undone.`);
-      if (!confirmed) return;
+      if (!confirmed) {
+        return;
+      }
       
-      try {
-        await window.electronAPI.deleteRecord({
+              try {
+        // Use require to get electronAPI in preload context
+        const { ipcRenderer } = require('electron');
+        await ipcRenderer.invoke('delete-record', {
           name: fileName,
           index: entryIndex
         });
@@ -314,13 +341,16 @@ class RecordDisplayManager {
         overlay.classList.add('hidden');
         
         // Refresh the record display
-        const recordData = await window.electronAPI.loadRecord(fileName);
+        const recordData = await ipcRenderer.invoke('load-record', fileName);
         this.displayRecord(recordData, fileName);
         
+        // Update currentRecord in renderer if it matches the current file
+        window.dispatchEvent(new CustomEvent('currentRecordUpdate', { detail: recordData }));
+        
         // Show success message
-        window.uiManager.showSuccessMessage(`Entry ${entryIndex + 1} deleted successfully`);
+        this.showStatusMessage(`Success: Entry ${entryIndex + 1} deleted successfully`);
       } catch (error) {
-        window.uiManager.showErrorMessage(`Failed to delete entry: ${error.message}`);
+        this.showStatusMessage(`Error: Failed to delete entry: ${error.message}`, 5000);
       }
     };
     

@@ -35,7 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const screenId = button.getAttribute('data-screen');
       console.log('Big button clicked, screen:', screenId);
-      showScreen(screenId);
+      if (screenId) {
+        showScreen(screenId);
+      }
     });
   });
 
@@ -46,7 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const screenId = button.getAttribute('data-screen');
       console.log('Back button clicked, screen:', screenId);
-      showScreen(screenId);
+      if (screenId) {
+        showScreen(screenId);
+      }
     });
   });
 
@@ -1041,9 +1045,7 @@ function addHelpTextToFormFields() {
 
 });
 
-
-
-
-
-
-
+// Listen for current record updates from UI manager
+window.addEventListener('currentRecordUpdate', (event) => {
+  currentRecord = event.detail;
+});

@@ -162,6 +162,8 @@ ipcMain.handle('delete-record', (event, { name, index }) => {
   return deleteRecord(userDataPath, name, index);
 });
 
+
+
 ipcMain.handle('create-template', async (event, payload) => {
   try {
     console.log('Creating template with payload:', payload);

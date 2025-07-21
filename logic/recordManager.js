@@ -35,9 +35,8 @@ function deleteRecord(userDataPath, fileName, index) {
     indexToDelete < data.entries.length
   ) {
     data.entries.splice(indexToDelete, 1);
-    console.log(`Entry at index ${indexToDelete} deleted.`);
   } else {
-    console.log('Invalid index or entry do not exit');
+    throw new Error('Invalid index or entry does not exist');
   }
 
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');

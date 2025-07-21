@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self';">
   <title>Entry Level</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -68,7 +69,7 @@
           <button id="previous-previews" class="big-button hidden" data-screen="record-preview-screen">Previous</button>
           <button id="next-previews" class="big-button hidden" data-screen="record-preview-screen">Next</button>
           <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to view Records" id="back-from-preview">Back</button>
-          <button id="select-record-filters" class="big-button" data-screen="filter-records-screen" aria-label="apply filters" id=>Apply filter</button>
+          <button id="select-record-filters" class="big-button" data-screen="filter-records-screen" aria-label="apply filters">Apply filter</button>
         </div>
 
         <!-- Filter Records Screen -->
