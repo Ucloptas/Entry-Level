@@ -46,7 +46,6 @@
             <button class="big-button" data-screen="select-template-screen" aria-label="Use Existing Template">Use Existing Template</button>
             <button class="big-button" data-screen="create-template-screen" aria-label="Create New Template">Create New Template</button>
             <button id="import-record-button" class="big-button" aria-label="Import from File">Import from File</button>
-            <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
           </div>
         </div>
 
@@ -56,7 +55,6 @@
           <div class="button-group">
             <button class="big-button" data-screen="all-records-screen" aria-label="View all records">All Records</button>
             <button id="filter-records-button" class="big-button" data-screen="record-preview-screen" aria-label="Filter records">Filter Records</button>
-            <button class="big-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
           </div>
         </div>
 
@@ -68,7 +66,6 @@
           </div>
           <button id="previous-previews" class="big-button hidden" data-screen="record-preview-screen">Previous</button>
           <button id="next-previews" class="big-button hidden" data-screen="record-preview-screen">Next</button>
-          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to view Records" id="back-from-preview">Back</button>
           <button id="select-record-filters" class="big-button" data-screen="filter-records-screen" aria-label="apply filters">Apply filter</button>
         </div>
 
@@ -88,7 +85,6 @@
               <input type="text" id="filter-value" placeholder="Enter a record name or field type" />
             </div>
             <div class="form-row button-group">
-              <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
               <button id="apply-filter" class="big-button" data-screen="record-preview-screen" aria-label="apply filters">Apply Filter</button>
               <button id="clear-filter" class="big-button" data-screen="record-preview-screen" aria-label="clear filters">Clear Filter</button>
             </div>
@@ -105,7 +101,6 @@
             </select>
           </div>
           <button id="view-record-button" class="big-button" disabled aria-label="View Selected Record">View Record</button>
-          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
         </div>
 
         <!-- Record Display Screen -->
@@ -117,20 +112,17 @@
           
           <button id="previous-entries" class="big-button hidden" data-screen="record-display-screen">Previous</button>
           <button id="next-entries" class="big-button hidden" data-screen="record-display-screen">Next</button>
-          <button class="big-button back-button" data-screen="record-preview-screen" aria-label="Back to All Records" id="back-from-entries">Back</button>
 
         </div>
 
         <div id="record-search-screen" class="screen hidden">
           <h2>Search Records</h2>
           <p>[Placeholder for search functionality]</p>
-          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
         </div>
 
         <div id="record-categories-screen" class="screen hidden">
           <h2>Browse by Categories</h2>
           <p>[Placeholder for category browsing]</p>
-          <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
         </div>
 
 
@@ -154,10 +146,6 @@
             <button id="delete-template-button" class="modal-button equal-width" disabled aria-label="Delete Selected Template">Delete</button>
           </div>
 
-          <!-- Back button centered -->
-          <div class="button-group" style="margin-top: 20px;">
-            <button class="modal-button back-button" data-screen="new-record-screen" aria-label="Back to New Record">Back</button>
-          </div>
         </div>
 
         <!-- Record Selection Screen-->
@@ -169,7 +157,6 @@
           </div>
           <div class="button-group" style="margin-top: 20px;">
             <button id="select-record-confirm" class="modal-button" disabled aria-label="Continue with Selected Record">Continue</button>
-            <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
           </div>
         </div>
 
@@ -200,7 +187,7 @@
 
           <button id="save-template-button" class="modal-button" aria-label="Save Template">Save Template</button>
           <button id="cancel-edit-button" class="modal-button hidden">Cancel Editing</button>
-          <button class="modal-button back-button" data-screen="new-record-screen" aria-label="Back to New Record">Back</button>
+
         </div>
 
 
@@ -211,11 +198,33 @@
           <button id="add-entry" class="modal-button" aria-label="Add Entry">Add Entry</button>
           <div id="entries-display"></div>
           <button id="save-entry" class="modal-button" aria-label="Save Record">Save Record</button>
-          <button class="modal-button back-button" data-screen="main-menu" aria-label="Back to Main Menu">Back</button>
+
         </div>
       </div>
     </div>
   </main>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <button id="footer-home-button" class="footer-button" aria-label="Home">Home</button>
+        <button id="footer-help-button" class="footer-button" aria-label="Help">Help</button>
+        <span class="app-version">v1.0.0</span>
+      </div>
+      
+      <div class="footer-center">
+        <button id="footer-back-button" class="big-button" aria-label="Back">Back</button>
+      </div>
+      
+      <div class="footer-right">
+        <div class="footer-links">
+          <a href="mailto:BrackenConner@my.unt.edu" class="footer-link" aria-label="Contact">Contact</a>
+          <span class="footer-separator">|</span>
+          <a href="https://github.com/Ucloptas/Entry-Level/" class="footer-link" aria-label="GitHub" target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
   <!-- Settings Modal -->
   <div id="settings-overlay" class="modal-overlay hidden">

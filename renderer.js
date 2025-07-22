@@ -37,22 +37,49 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Big button clicked, screen:', screenId);
       if (screenId) {
         showScreen(screenId);
+        // Track navigation for back button
+        if (!window.screenHistory) window.screenHistory = [];
+        window.screenHistory.push(screenId);
       }
     });
   });
 
-  const backButtons = document.querySelectorAll('.back-button');
-  console.log('Found back buttons:', backButtons.length);
-  
-  backButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const screenId = button.getAttribute('data-screen');
-      console.log('Back button clicked, screen:', screenId);
-      if (screenId) {
-        showScreen(screenId);
+  // Add event listener for the footer back button
+  const footerBackButton = document.getElementById('footer-back-button');
+  if (footerBackButton) {
+    footerBackButton.addEventListener('click', () => {
+      if (window.screenHistory && window.screenHistory.length > 1) {
+        // Remove current screen
+        window.screenHistory.pop();
+        // Go to previous screen
+        const prevScreen = window.screenHistory[window.screenHistory.length - 1];
+        if (prevScreen) {
+          showScreen(prevScreen);
+        }
+      } else {
+        // Default: go to main menu
+        showScreen('main-menu');
+        window.screenHistory = ['main-menu'];
       }
     });
-  });
+  }
+
+  // Add event listeners for footer home and help buttons
+  const footerHomeButton = document.getElementById('footer-home-button');
+  if (footerHomeButton) {
+    footerHomeButton.addEventListener('click', () => {
+      showScreen('main-menu');
+      window.screenHistory = ['main-menu'];
+    });
+  }
+
+  const footerHelpButton = document.getElementById('footer-help-button');
+  if (footerHelpButton) {
+    footerHelpButton.addEventListener('click', () => {
+      // Open help modal or navigate to help screen
+      alert('Help functionality coming soon!');
+    });
+  }
 
   // === MENU LOGIC ===
   const menuButton = document.getElementById('menu-button');
@@ -481,11 +508,7 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   const nextEntries = document.getElementById('next-entries');
   const previousEntries = document.getElementById('previous-entries');
 
-  document.getElementById('back-from-entries').addEventListener('click', () => {
-    nextEntries.classList.add('hidden');
-    previousEntries.classList.add('hidden');
-    showScreen('view-records-screen');
-  });
+  // Remove the back-from-entries event listener since that button was deleted
   
   const recordData = await window.electronAPI.loadRecord(selected);
   

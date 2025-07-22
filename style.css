@@ -9,8 +9,6 @@
   --button-bg-delete-entry: #f53333;
   --button-hover-bg: #004b32;
   --button-hover-bg-delete-entry: #f20a0a;
-  --back-button-bg: #cccccc;
-  --back-button-hover: #aaaaaa;
   --icon-color: #006A4D;
   --dropdown-bg: white;
   --dropdown-border: #ccc;
@@ -35,8 +33,6 @@ body.dark {
   --button-bg-delete-entry: #f53333;
   --button-hover-bg: #38a16c;
   --button-hover-bg-delete-entry: #f20a0a;
-  --back-button-bg: #333333;
-  --back-button-hover: #444444;
   --icon-color: #4fd58f;
   --dropdown-bg: #2a2a2a;
   --dropdown-border: #555;
@@ -90,6 +86,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-bottom: 32px;
 }
 @media (min-width: 950px) {
   .content-container {
@@ -243,7 +240,7 @@ h2 {
 /* === TOP-RIGHT MENU ICON === */
 .top-right-icon {
   position: fixed;
-  top: 15px;
+  top: 20px;
   right: 20px;
   font-size: 24px;
   cursor: pointer;
@@ -252,7 +249,12 @@ h2 {
   border: 2px solid #fff; /* white border in light mode */
   border-radius: 10px;
   background: #006A4D; /* green background in light mode */
-  padding: 4px 8px;
+  padding: 8px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: border-color 0.2s, background 0.2s;
 }
 
@@ -861,7 +863,7 @@ body.dark .status-toast.success {
   --focus-text: var(--focus-text-light);
 }
 
-button:focus, .big-button:focus, .modal-button:focus, .back-button:focus,
+button:focus, .big-button:focus, .modal-button:focus,
 a:focus, input:focus, select:focus, textarea:focus {
   outline: 3px solid var(--unt-green);
   outline-offset: 2px;
@@ -894,7 +896,7 @@ a:focus, input:focus, select:focus, textarea:focus {
 }
 
 /* Ensure buttons and inputs scale with text size */
-button, .big-button, .modal-button, .back-button, input, select, textarea {
+button, .big-button, .modal-button, input, select, textarea {
   font-size: 1em;
 }
 
@@ -933,7 +935,7 @@ button, .big-button, .modal-button, .back-button, input, select, textarea {
   background-color: var(--button-hover-bg);
 }
 .cancel-button {
-  background-color: var(--back-button-bg);
+  background-color: #cccccc;
   color: #222;
   margin-left: 0.5em;
   border: none;
@@ -941,7 +943,7 @@ button, .big-button, .modal-button, .back-button, input, select, textarea {
   transition: background-color 0.2s;
 }
 .cancel-button:hover {
-  background-color: var(--back-button-hover);
+  background-color: #aaaaaa;
   color: #222;
 }
 .edit-entry-input {
@@ -1024,13 +1026,13 @@ button, .big-button, .modal-button, .back-button, input, select, textarea {
 }
 
 .modal-button.cancel-button {
-  background: var(--back-button-bg);
+  background: #cccccc;
   color: #222;
   border: none;
 }
 
 .modal-button.cancel-button:hover {
-  background: var(--back-button-hover);
+  background: #aaaaaa;
   color: #222;
 }
 
@@ -1118,6 +1120,120 @@ body.dark .edit-modal-form-container input[type="date"]::placeholder {
 
 .card-row li:last-child {
   border-bottom: none;
+}
+
+/* === FOOTER === */
+.app-footer {
+  width: 100%;
+  background: var(--card-bg);
+  color: var(--text-color);
+  text-align: center;
+  padding: 12px 0;
+  border-top: 1.5px solid #b0b8c1;
+  font-size: 1.05em;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  margin-top: 0;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+body.dark .app-footer {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border-top: 1.5px solid #444;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.12);
+}
+
+/* Footer layout */
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  position: relative;
+}
+
+.footer-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.footer-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.footer-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Footer buttons */
+.footer-button {
+  background: var(--button-bg);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.footer-button:hover {
+  background: var(--button-hover-bg);
+}
+
+/* App version */
+.app-version {
+  color: var(--text-color);
+  opacity: 0.7;
+  font-size: 0.85em;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+/* Footer links */
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-link {
+  color: var(--button-bg);
+  text-decoration: none;
+  font-size: 0.85em;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--button-hover-bg);
+  text-decoration: underline;
+}
+
+.footer-separator {
+  color: var(--text-color);
+  opacity: 0.5;
+  font-size: 0.85em;
+}
+
+.app-footer .big-button {
+  margin: 0 auto;
+  display: inline-block;
+  min-width: 120px;
+  font-size: 1.1em;
+  padding: 12px 28px;
+}
+
+/* Add bottom padding to main content so it doesn't hide behind the sticky footer */
+.app-shell {
+  padding-bottom: 80px; /* reduced for shorter footer */
 }
 
 
