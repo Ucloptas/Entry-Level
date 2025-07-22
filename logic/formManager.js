@@ -54,16 +54,15 @@ class FormManager {
   }
 
   // Read form data and convert to appropriate types
-  readFormData(fields) {
+  readFormData(fields, container) {
     const entry = {};
-    
+    const root = container || document;
     fields.forEach(field => {
-      const input = document.querySelector(`[name="${field.name}"]`);
+      const input = root.querySelector(`[name="${field.name}"]`);
       if (!input) {
         console.warn(`Input field '${field.name}' not found`);
         return;
       }
-
       switch (field.type) {
         case 'boolean':
           entry[field.name] = input.checked;
@@ -82,7 +81,6 @@ class FormManager {
           break;
       }
     });
-
     return entry;
   }
 

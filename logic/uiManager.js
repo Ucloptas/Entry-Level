@@ -1,4 +1,6 @@
 // UI Manager - Handles reusable UI components and screen management
+const { ValidationManager } = require('./validationManager');
+const { FormManager } = require('./formManager');
 
 class DropdownManager {
   constructor() {
@@ -288,8 +290,13 @@ class RecordDisplayManager {
       return;
     }
 
+    // Always fully clear modal content before rendering
+    content.innerHTML = '';
+    // Remove any lingering forms or event listeners (defensive)
+    // (No explicit event listeners on content, but this is a good place for future-proofing)
+
     let isEditMode = false;
-    let currentEditData = { ...entry };
+    const formManager = new FormManager();
 
     // Helper to render fields in view or edit mode
     const renderFields = () => {
@@ -299,70 +306,65 @@ class RecordDisplayManager {
       fieldsList.style.padding = '0';
       fieldsList.style.margin = '0';
       
-      template.fields.forEach(field => {
-        const value = currentEditData[field.name] || '';
-        const li = document.createElement('li');
-        li.style.marginBottom = '15px';
-        li.style.padding = '10px';
-        li.style.borderBottom = '1px solid var(--dropdown-border)';
-        
-        const fieldName = document.createElement('div');
-        fieldName.style.fontWeight = 'bold';
-        fieldName.style.color = 'var(--header-color)';
-        fieldName.style.marginBottom = '5px';
-        fieldName.textContent = field.name;
-        li.appendChild(fieldName);
-        
-        if (isEditMode) {
-          // Editable input
-          let input;
-          switch (field.type) {
-            case 'number':
-              input = document.createElement('input');
-              input.type = 'number';
-              input.value = value;
-              break;
-            case 'date':
-              input = document.createElement('input');
-              input.type = 'date';
-              input.value = value;
-              break;
-            case 'boolean':
-              input = document.createElement('input');
-              input.type = 'checkbox';
-              input.checked = value === true || value === 'true';
-              break;
-            default:
-              input = document.createElement('input');
-              input.type = 'text';
-              input.value = value;
-          }
-          input.name = field.name;
-          input.className = 'edit-entry-input';
-          input.oninput = (e) => {
-            if (field.type === 'boolean') {
-              currentEditData[field.name] = e.target.checked;
-            } else {
-              currentEditData[field.name] = e.target.value;
+      if (isEditMode) {
+        // Add a heading for edit mode
+        const heading = document.createElement('h3');
+        heading.textContent = 'Edit Entry';
+        heading.className = 'edit-modal-heading';
+        content.appendChild(heading);
+        // Use FormManager to render the form for edit mode
+        // Create a styled container for the form
+        const formContainer = document.createElement('div');
+        formContainer.id = `edit-modal-form-container-${entryIndex}`;
+        formContainer.className = 'edit-modal-form-container';
+        content.appendChild(formContainer);
+        // Render form with unique container ID
+        formManager.renderForm(template.fields, formContainer.id);
+        // Set each input's value to the current entry's value
+        template.fields.forEach((field, idx) => {
+          // Ensure unique input IDs
+          const inputId = `form-field-${field.name.replace(/\s+/g, '-').toLowerCase()}-${entryIndex}-${idx}`;
+          const input = formContainer.querySelector(`[name="${field.name}"]`);
+          if (input) input.id = inputId;
+          if (!input) return;
+          let value = entry[field.name];
+          if (field.type === 'date') {
+            if (value instanceof Date) {
+              value = value.toISOString().slice(0, 10);
+            } else if (typeof value === 'string' && value.length > 0) {
+              const d = new Date(value);
+              if (!isNaN(d)) value = d.toISOString().slice(0, 10);
             }
-          };
-          if (field.type === 'boolean') {
-            input.onchange = (e) => {
-              currentEditData[field.name] = e.target.checked;
-            };
+            input.value = value || '';
+          } else if (field.type === 'boolean') {
+            input.checked = value === true || value === 'true';
+          } else {
+            input.value = value !== undefined && value !== null ? value : '';
           }
-          li.appendChild(input);
-        } else {
-          // Read-only view
+        });
+      } else {
+        // Read-only view (as before)
+        template.fields.forEach(field => {
+          const value = entry[field.name] || '';
+          const li = document.createElement('li');
+          li.style.marginBottom = '15px';
+          li.style.padding = '10px';
+          li.style.borderBottom = '1px solid var(--dropdown-border)';
+          const fieldName = document.createElement('div');
+          fieldName.style.fontWeight = 'bold';
+          fieldName.style.color = 'var(--header-color)';
+          fieldName.style.marginBottom = '5px';
+          fieldName.textContent = field.name;
+          li.appendChild(fieldName);
           const fieldValue = document.createElement('div');
           fieldValue.style.wordWrap = 'break-word';
           fieldValue.style.whiteSpace = 'pre-wrap';
           fieldValue.textContent = value === '' ? 'N/A' : value;
           li.appendChild(fieldValue);
-        }
-        fieldsList.appendChild(li);
-      });
-      content.appendChild(fieldsList);
+          fieldsList.appendChild(li);
+        });
+        content.appendChild(fieldsList);
+      }
     };
 
     // Initial render (view mode)
@@ -384,19 +386,33 @@ class RecordDisplayManager {
           saveBtn.className = 'modal-button save-button';
           saveBtn.textContent = 'Save';
           saveBtn.onclick = async () => {
+            // Read edited data from the form
+            const formContainer = document.getElementById(`edit-modal-form-container-${entryIndex}`);
+            const editedData = formManager.readFormData(template.fields, formContainer);
+            // Validate edited data before saving
+            const validationManager = new ValidationManager();
+            const errors = validationManager.validateFormData(template.fields, editedData);
+            if (errors.length > 0) {
+              validationManager.showErrorMessage('Validation failed:\n' + errors.join('\n'), 5000);
+              return;
+            }
             // Save changes to currentRecord
             try {
               const { ipcRenderer } = require('electron');
               // Update entry in currentRecord
               const recordData = await ipcRenderer.invoke('load-record', fileName);
-              recordData.entries[entryIndex] = { ...currentEditData };
+              recordData.entries[entryIndex] = { ...editedData };
               await ipcRenderer.invoke('save-record', { name: fileName, data: recordData });
-              // Update UI and exit edit mode
-              isEditMode = false;
-              renderFields();
               // Remove Save/Cancel buttons
               saveBtn.remove();
               cancelBtn.remove();
+              // Hide the modal before re-opening (defensive)
+              overlay.classList.add('hidden');
+              // Re-open the modal in view mode with updated entry data (fresh object)
+              const updatedEntry = recordData.entries[entryIndex];
+              setTimeout(() => {
+                this.openEntryViewer(updatedEntry, entryIndex, template, fileName);
+              }, 10);
               // Refresh record display
               this.displayRecord(recordData, fileName);
               window.dispatchEvent(new CustomEvent('currentRecordUpdate', { detail: recordData }));
@@ -413,7 +429,6 @@ class RecordDisplayManager {
           cancelBtn.textContent = 'Cancel';
           cancelBtn.onclick = () => {
             isEditMode = false;
-            currentEditData = { ...entry };
             renderFields();
             saveBtn.remove();
             cancelBtn.remove();
@@ -456,102 +471,22 @@ class RecordDisplayManager {
   }
 }
 
-// Record Preview Display Manager
-class RecordPreviewDisplayManager {
-  constructor() {
-    this.titleElement = null;
-    this.contentElement = null;
-  }
-
-  // Display record preview in the UI
-  displayRecordPreview(recordData) {
-    this.titleElement = document.getElementById('record-preview-title');
-    this.contentElement = document.getElementById('record-preview-content');
-    
-    if (!this.titleElement || !this.contentElement) {
-      console.error('Record preview elements not found');
-      return;
-    }
-    
-    // Clear previous content
-    this.contentElement.innerHTML = '';
-    
-    // Display previews and title
-    const previewSection = document.createElement('div');
-    previewSection.innerHTML = `<h3>View Records (${recordData.length})</h3>`;
-    
-    if (recordData.length === 0) {
-      previewSection.innerHTML += '<p>No records found.</p>';
-    } else {
-      const recordsList = document.createElement('div');
-      recordsList.className = 'records-list';
-      
-      recordData.forEach((record, index) => {
-        const recordDiv = document.createElement('div');
-        recordDiv.className = 'card-row record-preview-card';
-        recordDiv.setAttribute('data-record-id', record.name);
-        recordDiv.innerHTML = `<h4>${record.name}</h4>`;
-        
-        recordDiv.tabIndex = 0;
-        recordDiv.style.cursor = 'pointer';
-        recordDiv.setAttribute('role', 'button');
-        recordDiv.setAttribute('aria-label', `View record ${record.name}`);
-
-        const fieldsList = document.createElement('ul');
-        record.fields.forEach(field => {
-          const li = document.createElement('li');
-          li.innerHTML = `<strong>${field.name}:</strong> ${field.type}`;
-          fieldsList.appendChild(li);
-        });
-        
-        recordDiv.appendChild(fieldsList);
-        recordsList.appendChild(recordDiv);
-      });
-      
-      previewSection.appendChild(recordsList);
-    }
-    
-    this.contentElement.appendChild(previewSection);
-  }
-}
-
-
-// Template UI Manager
+// Add TemplateUIManager
 class TemplateUIManager {
   constructor() {
     this.customTemplateFields = [];
   }
 
-  // Refresh template dropdown
-  async refreshTemplateDropdown(dropdownManager, templates) {
-    dropdownManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
-    dropdownManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
-  }
-
-  // Refresh record dropdowns
-  async refreshRecordDropdowns(dropdownManager, records) {
-    // Refresh "Create New Entry" dropdown
-    dropdownManager.createDropdown('record-dropdown', records, '-- Select a Record --');
-    dropdownManager.setupDropdownWithConfirm('record-dropdown', 'select-record-confirm');
-    
-    // Refresh "View Records" dropdown
-    dropdownManager.createDropdown('record-select', records, '-- Choose a Record --');
-    dropdownManager.setupDropdownWithConfirm('record-select', 'view-record-button');
-  }
-
-  // Render template fields preview
   renderTemplateFieldsPreview() {
     const list = document.getElementById('template-fields-list');
     if (!list) {
       console.error('Template fields list element not found');
       return;
     }
-    
     list.innerHTML = '';
     this.customTemplateFields.forEach((field, index) => {
       const li = document.createElement('li');
       li.textContent = `${field.name} (${field.type})`;
-      
       const removeBtn = document.createElement('button');
       removeBtn.textContent = 'Remove';
       removeBtn.style.marginLeft = '1em';
@@ -559,48 +494,92 @@ class TemplateUIManager {
         this.customTemplateFields.splice(index, 1);
         this.renderTemplateFieldsPreview();
       });
-
       li.appendChild(removeBtn);
       list.appendChild(li);
     });
   }
 
-  // Add a field to the custom template
   addTemplateField(name, type) {
     this.customTemplateFields.push({ name, type });
     this.renderTemplateFieldsPreview();
   }
 
-  //for editing templates
-  loadTemplateFieldsForEdit(fields) {
-  this.clearCustomTemplateFields();
-  fields.forEach(field => {
-    this.addTemplateField(field.name, field.type);
-  });
-}
-
-  // Get custom template fields
   getCustomTemplateFields() {
     return [...this.customTemplateFields];
   }
 
-  // Clear custom template fields
   clearCustomTemplateFields() {
     this.customTemplateFields = [];
     this.renderTemplateFieldsPreview();
   }
 
-  // Check if field name already exists
   hasFieldName(name) {
     return this.customTemplateFields.find(field => field.name === name);
   }
+
+  async refreshTemplateDropdown(dropdownManager, templates) {
+    dropdownManager.createDropdown('template-dropdown', templates, '-- Select a Template --');
+    dropdownManager.setupDropdownWithConfirm('template-dropdown', 'select-template-confirm');
+  }
+
+  async refreshRecordDropdowns(dropdownManager, records) {
+    dropdownManager.createDropdown('record-dropdown', records, '-- Select a Record --');
+    dropdownManager.setupDropdownWithConfirm('record-dropdown', 'select-record-confirm');
+    dropdownManager.createDropdown('record-select', records, '-- Choose a Record --');
+    dropdownManager.setupDropdownWithConfirm('record-select', 'view-record-button');
+  }
 }
 
-// Export the managers
+// Add RecordPreviewDisplayManager
+class RecordPreviewDisplayManager {
+  constructor() {
+    this.titleElement = null;
+    this.contentElement = null;
+  }
+
+  displayRecordPreview(recordData) {
+    this.titleElement = document.getElementById('record-preview-title');
+    this.contentElement = document.getElementById('record-preview-content');
+    if (!this.titleElement || !this.contentElement) {
+      console.error('Record preview elements not found');
+      return;
+    }
+    this.contentElement.innerHTML = '';
+    const previewSection = document.createElement('div');
+    previewSection.innerHTML = `<h3>View Records (${recordData.length})</h3>`;
+    if (recordData.length === 0) {
+      previewSection.innerHTML += '<p>No records found.</p>';
+    } else {
+      const recordsList = document.createElement('div');
+      recordsList.className = 'records-list';
+      recordData.forEach((record, index) => {
+        const recordDiv = document.createElement('div');
+        recordDiv.className = 'card-row record-preview-card';
+        recordDiv.setAttribute('data-record-id', record.name);
+        recordDiv.innerHTML = `<h4>${record.name}</h4>`;
+        recordDiv.tabIndex = 0;
+        recordDiv.style.cursor = 'pointer';
+        recordDiv.setAttribute('role', 'button');
+        recordDiv.setAttribute('aria-label', `View record ${record.name}`);
+        const fieldsList = document.createElement('ul');
+        record.fields.forEach(field => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${field.name}:</strong> ${field.type}`;
+          fieldsList.appendChild(li);
+        });
+        recordDiv.appendChild(fieldsList);
+        recordsList.appendChild(recordDiv);
+      });
+      previewSection.appendChild(recordsList);
+    }
+    this.contentElement.appendChild(previewSection);
+  }
+}
+
 module.exports = {
   DropdownManager,
   ScreenManager,
   RecordDisplayManager,
   TemplateUIManager,
   RecordPreviewDisplayManager
-}; 
+};

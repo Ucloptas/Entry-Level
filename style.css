@@ -941,5 +941,116 @@ button, .big-button, .modal-button, .back-button, input, select, textarea {
   font-size: 1em;
 }
 
+/* Edit Modal Enhancements */
+.edit-modal-heading {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 1.35em;
+  color: var(--header-color);
+  text-align: left;
+  letter-spacing: 0.5px;
+}
+
+.edit-modal-form-container {
+  background: var(--entry-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 24px 20px 18px 20px;
+  margin-bottom: 18px;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.edit-modal-form-container label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--header-color);
+}
+
+.edit-modal-form-container input[type="text"],
+.edit-modal-form-container input[type="number"],
+.edit-modal-form-container input[type="date"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  margin-bottom: 12px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.edit-modal-form-container input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.edit-modal-form-container .form-error-message,
+.edit-modal-form-container .form-help-text {
+  margin-bottom: 10px;
+}
+
+.modal-button.save-button, .modal-button.cancel-button {
+  min-width: 100px;
+  font-size: 1.08em;
+  padding: 10px 18px;
+  margin-top: 10px;
+  margin-right: 10px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.modal-button.save-button {
+  background: var(--button-bg);
+  color: #fff;
+  border: none;
+}
+
+.modal-button.save-button:hover {
+  background: var(--button-hover-bg);
+}
+
+.modal-button.cancel-button {
+  background: var(--back-button-bg);
+  color: #222;
+  border: none;
+}
+
+.modal-button.cancel-button:hover {
+  background: var(--back-button-hover);
+  color: #222;
+}
+
+body.dark .edit-modal-form-container {
+  background: var(--card-bg);
+  color: var(--text-color);
+}
+
+body.dark .edit-modal-form-container label {
+  color: var(--header-color);
+}
+
+body.dark .edit-modal-form-container input[type="text"],
+body.dark .edit-modal-form-container input[type="number"],
+body.dark .edit-modal-form-container input[type="date"] {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--dropdown-border);
+}
+
+body.dark .edit-modal-form-container input[type="text"]::placeholder,
+body.dark .edit-modal-form-container input[type="number"]::placeholder,
+body.dark .edit-modal-form-container input[type="date"]::placeholder {
+  color: #aaa;
+  opacity: 1;
+}
+
+/* Ensure modal overlays are always on top and interactive */
+.modal-overlay, #entry-viewer-overlay {
+  z-index: 9999 !important;
+  pointer-events: auto;
+}
+
 
 
