@@ -1,6 +1,6 @@
 /* === THEME VARIABLES === */
 :root {
-  --bg-color: #f5f7fa;
+  --bg-color: #006A4D;
   --text-color: #222;
   --card-bg: #ffffff;
   --header-color: #006A4D;
@@ -11,7 +11,7 @@
   --button-hover-bg-delete-entry: #f20a0a;
   --back-button-bg: #cccccc;
   --back-button-hover: #aaaaaa;
-  --icon-color: #006A4D;
+  --icon-color: #fff; /* Make icon visible on dark bg in light mode */
   --dropdown-bg: white;
   --dropdown-border: #ccc;
   --dropdown-hover: #f0f0f0;
@@ -247,9 +247,26 @@ h2 {
   right: 20px;
   font-size: 24px;
   cursor: pointer;
-  z-index: 1000;
+  background: rgba(0,106,77,0.92); /* dark green for light mode */
+  border-radius: 12px;
+  padding: 8px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  border: 2px solid #fff;
   color: var(--icon-color);
   user-select: none;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  transition: color 0.2s, text-shadow 0.2s, background 0.2s, box-shadow 0.2s;
+  z-index: 1100;
+}
+body.dark .top-right-icon {
+  background: rgba(34,34,34,0.92); /* dark gray for dark mode */
+  border: 2px solid #4fd58f;
+}
+.top-right-icon:hover, .top-right-icon:focus {
+  color: #ffe066;
+  background: #00853E;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.28);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.28);
 }
 
 /* === FLOATING MENU === */
