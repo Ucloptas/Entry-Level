@@ -41,7 +41,7 @@ body.dark {
   --dropdown-bg: #2a2a2a;
   --dropdown-border: #555;
   --dropdown-hover: #3c3c3c;
-  --entry-bg: #2c2c2c;
+  --entry-bg: #23272b;
   --focus-bg: var(--focus-bg-dark);
   --focus-text: var(--focus-text-dark);
 }
@@ -1067,6 +1067,21 @@ body.dark .edit-modal-form-container input[type="date"]::placeholder {
 .modal-overlay, #entry-viewer-overlay {
   z-index: 9999 !important;
   pointer-events: auto;
+}
+
+.card-row {
+  background: linear-gradient(180deg, #f3f7fa 80%, #e9eef5 100%); /* very subtle gradient */
+  border: 1.5px solid #d2dde7;
+  border-left: 4px solid #00a86b;
+  box-shadow: 0 2px 12px rgba(0, 168, 107, 0.07), 0 1px 2px rgba(0,0,0,0.03);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 14px 0;
+}
+body.dark .card-row {
+  background: #23272b;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.32);
 }
 
 
