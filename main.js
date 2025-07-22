@@ -50,12 +50,18 @@ function createWindow() {
 
 // Seeds defaultTemplates into userData/templates if missing
 function seedDefaultTemplatesIfMissing(userDataPath) {
-  const targetPath = path.join(userDataPath, 'templates', 'defaultTemplates.json');
-  const sourcePath = path.join(__dirname, 'EntryLevelData', 'templates', 'defaultTemplates.json');
+  const templatesDir = path.join(userDataPath, 'templates');
+  const targetPath = path.join(templatesDir, 'defaultTemplates.json');
+  const sourcePath = path.join(app.getAppPath(), 'EntryLevelData', 'templates', 'defaultTemplates.json');
 
   if (!fs.existsSync(targetPath)) {
     try {
-      fs.copyFileSync(sourcePath, targetPath);
+      // Ensure templates directory exists
+      if (!fs.existsSync(templatesDir)) {
+        fs.mkdirSync(templatesDir, { recursive: true });
+      }
+      const data = fs.readFileSync(sourcePath); // works inside asar
+      fs.writeFileSync(targetPath, data);
       console.log('Default templates copied to userData path.');
     } catch (err) {
       console.error('Failed to copy default templates:', err);

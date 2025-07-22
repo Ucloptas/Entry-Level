@@ -4,12 +4,26 @@
   "description": "Basic Electron app skeleton for school project",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist-win": "electron-builder --win --x64 --config.win.target=nsis"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^26.2.0"
+    "electron": "^26.2.0",
+    "electron-builder": "^24.14.1"
+  },
+  "build": {
+    "appId": "com.example.entrylevel",
+    "productName": "Entry Level",
+    "files": [
+      "**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   },
   "repository": {
     "type": "git",
