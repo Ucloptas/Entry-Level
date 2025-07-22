@@ -4,6 +4,19 @@ let editingTemplate = null; //editing template
 let recordDisplayData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize footer button visibility
+  const initialHomeButton = document.getElementById('footer-home-button');
+  if (initialHomeButton) {
+    // Hide home button initially since we start on main menu
+    initialHomeButton.style.display = 'none';
+  }
+
+  const initialBackButton = document.getElementById('footer-back-button');
+  if (initialBackButton) {
+    // Hide back button initially since there's no navigation history
+    initialBackButton.style.display = 'none';
+  }
+
   console.log('DOM Content Loaded');
 
   // Debug: Check if uiManager is available
@@ -24,6 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Refresh dropdowns when navigating to screens that need them
     if (id === 'select-record-screen' || id === 'view-records-screen') {
       window.uiManager.refreshRecordDropdowns();
+    }
+
+    // Hide home button when on main menu, show it on other screens
+    const footerHomeButton = document.getElementById('footer-home-button');
+    if (footerHomeButton) {
+      if (id === 'main-menu') {
+        footerHomeButton.style.display = 'none';
+      } else {
+        footerHomeButton.style.display = 'inline-block';
+      }
+    }
+
+    // Hide back button when no navigation history, show it when there are previous screens
+    const footerBackButton = document.getElementById('footer-back-button');
+    if (footerBackButton) {
+      if (id === 'main-menu') {
+        footerBackButton.style.display = 'none';
+      } else {
+        footerBackButton.style.display = 'inline-block';
+      }
     }
   }
 
@@ -70,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     footerHomeButton.addEventListener('click', () => {
       showScreen('main-menu');
       window.screenHistory = ['main-menu'];
+      footerHomeButton.blur(); // Remove focus after clicking
     });
   }
 
@@ -78,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     footerHelpButton.addEventListener('click', () => {
       // Open help modal or navigate to help screen
       alert('Help functionality coming soon!');
+      footerHelpButton.blur(); // Remove focus after clicking
     });
   }
 

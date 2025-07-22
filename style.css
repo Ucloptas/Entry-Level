@@ -1189,6 +1189,16 @@ body.dark .app-footer {
   background: var(--button-hover-bg);
 }
 
+.footer-button:active {
+  background: var(--button-bg);
+}
+
+.footer-button:focus {
+  background: var(--button-bg);
+  outline: 3px solid var(--unt-green);
+  outline-offset: 2px;
+}
+
 /* App version */
 .app-version {
   color: var(--text-color);
@@ -1226,9 +1236,9 @@ body.dark .app-footer {
 .app-footer .big-button {
   margin: 0 auto;
   display: inline-block;
-  min-width: 120px;
-  font-size: 1.1em;
-  padding: 12px 28px;
+  min-width: 110px;
+  font-size: 1.05em;
+  padding: 10px 24px;
 }
 
 /* Add bottom padding to main content so it doesn't hide behind the sticky footer */
