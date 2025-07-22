@@ -15,7 +15,7 @@
   --dropdown-bg: white;
   --dropdown-border: #ccc;
   --dropdown-hover: #f0f0f0;
-  --entry-bg: #eef1f5;
+  --entry-bg: #f0f4f9; /* much lighter, cooler for more contrast */
   --unt-green: #00853E;
   --focus-bg-light: #b2dfc7;
   --focus-bg-dark: #174c2a;
@@ -41,7 +41,7 @@ body.dark {
   --dropdown-bg: #2a2a2a;
   --dropdown-border: #555;
   --dropdown-hover: #3c3c3c;
-  --entry-bg: #2c2c2c;
+  --entry-bg: #23272b; /* darker for more contrast */
   --focus-bg: var(--focus-bg-dark);
   --focus-text: var(--focus-text-dark);
 }
@@ -615,6 +615,7 @@ body.dark .modal-content {
   text-align: left;
   width: 650px;
   max-width: 90vw;
+  border: 1.5px solid #b0b8c1; /* more visible border for contrast in light mode */
 }
 
 .card-row:hover {
@@ -704,6 +705,7 @@ body.dark .card-row li {
 
 body.dark .card-row {
   background: var(--entry-bg);
+  border: 1.5px solid #444; /* stronger border in dark mode */
 }
 
 .modal-button {
