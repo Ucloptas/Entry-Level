@@ -908,5 +908,38 @@ button, .big-button, .modal-button, .back-button, input, select, textarea {
   display: block;
 }
 
+/* Entry Viewer Modal Edit Buttons */
+.edit-button, .save-button {
+  background-color: var(--button-bg);
+  color: white;
+  margin-left: 0.5em;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+.edit-button:hover, .save-button:hover {
+  background-color: var(--button-hover-bg);
+}
+.cancel-button {
+  background-color: var(--back-button-bg);
+  color: #222;
+  margin-left: 0.5em;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+.cancel-button:hover {
+  background-color: var(--back-button-hover);
+  color: #222;
+}
+.edit-entry-input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
 
 

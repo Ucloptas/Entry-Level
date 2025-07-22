@@ -281,89 +281,176 @@ class RecordDisplayManager {
     const title = document.getElementById('entry-viewer-title');
     const content = document.getElementById('entry-viewer-content');
     const deleteButton = document.getElementById('delete-entry-button');
+    const editButton = document.getElementById('edit-entry-button');
     
-    if (!overlay || !title || !content || !deleteButton) {
+    if (!overlay || !title || !content || !deleteButton || !editButton) {
       console.error('Entry viewer modal elements not found');
       return;
     }
-    
+
+    let isEditMode = false;
+    let currentEditData = { ...entry };
+
+    // Helper to render fields in view or edit mode
+    const renderFields = () => {
+      content.innerHTML = '';
+      const fieldsList = document.createElement('ul');
+      fieldsList.style.listStyle = 'none';
+      fieldsList.style.padding = '0';
+      fieldsList.style.margin = '0';
+      
+      template.fields.forEach(field => {
+        const value = currentEditData[field.name] || '';
+        const li = document.createElement('li');
+        li.style.marginBottom = '15px';
+        li.style.padding = '10px';
+        li.style.borderBottom = '1px solid var(--dropdown-border)';
+        
+        const fieldName = document.createElement('div');
+        fieldName.style.fontWeight = 'bold';
+        fieldName.style.color = 'var(--header-color)';
+        fieldName.style.marginBottom = '5px';
+        fieldName.textContent = field.name;
+        li.appendChild(fieldName);
+        
+        if (isEditMode) {
+          // Editable input
+          let input;
+          switch (field.type) {
+            case 'number':
+              input = document.createElement('input');
+              input.type = 'number';
+              input.value = value;
+              break;
+            case 'date':
+              input = document.createElement('input');
+              input.type = 'date';
+              input.value = value;
+              break;
+            case 'boolean':
+              input = document.createElement('input');
+              input.type = 'checkbox';
+              input.checked = value === true || value === 'true';
+              break;
+            default:
+              input = document.createElement('input');
+              input.type = 'text';
+              input.value = value;
+          }
+          input.name = field.name;
+          input.className = 'edit-entry-input';
+          input.oninput = (e) => {
+            if (field.type === 'boolean') {
+              currentEditData[field.name] = e.target.checked;
+            } else {
+              currentEditData[field.name] = e.target.value;
+            }
+          };
+          if (field.type === 'boolean') {
+            input.onchange = (e) => {
+              currentEditData[field.name] = e.target.checked;
+            };
+          }
+          li.appendChild(input);
+        } else {
+          // Read-only view
+          const fieldValue = document.createElement('div');
+          fieldValue.style.wordWrap = 'break-word';
+          fieldValue.style.whiteSpace = 'pre-wrap';
+          fieldValue.textContent = value === '' ? 'N/A' : value;
+          li.appendChild(fieldValue);
+        }
+        fieldsList.appendChild(li);
+      });
+      content.appendChild(fieldsList);
+    };
+
+    // Initial render (view mode)
+    renderFields();
+
     // Set modal title
     title.textContent = `Entry ${entryIndex + 1} Details`;
-    
-    // Populate content with all fields
-    content.innerHTML = '';
-    const fieldsList = document.createElement('ul');
-    fieldsList.style.listStyle = 'none';
-    fieldsList.style.padding = '0';
-    fieldsList.style.margin = '0';
-    
-    template.fields.forEach(field => {
-      const value = entry[field.name] || 'N/A';
-      const li = document.createElement('li');
-      li.style.marginBottom = '15px';
-      li.style.padding = '10px';
-      li.style.borderBottom = '1px solid var(--dropdown-border)';
-      
-      const fieldName = document.createElement('div');
-      fieldName.style.fontWeight = 'bold';
-      fieldName.style.color = 'var(--header-color)';
-      fieldName.style.marginBottom = '5px';
-      fieldName.textContent = field.name;
-      
-      const fieldValue = document.createElement('div');
-      fieldValue.style.wordWrap = 'break-word';
-      fieldValue.style.whiteSpace = 'pre-wrap';
-      fieldValue.textContent = value;
-      
-      li.appendChild(fieldName);
-      li.appendChild(fieldValue);
-      fieldsList.appendChild(li);
-    });
-    
-    content.appendChild(fieldsList);
-    
-    // Set up delete button
+
+    // Set up edit button
+    editButton.onclick = () => {
+      if (!isEditMode) {
+        isEditMode = true;
+        renderFields();
+        // Add Save and Cancel buttons
+        let actions = overlay.querySelector('.entry-viewer-actions');
+        if (!overlay.querySelector('#save-edit-entry-button')) {
+          const saveBtn = document.createElement('button');
+          saveBtn.id = 'save-edit-entry-button';
+          saveBtn.className = 'modal-button save-button';
+          saveBtn.textContent = 'Save';
+          saveBtn.onclick = async () => {
+            // Save changes to currentRecord
+            try {
+              const { ipcRenderer } = require('electron');
+              // Update entry in currentRecord
+              const recordData = await ipcRenderer.invoke('load-record', fileName);
+              recordData.entries[entryIndex] = { ...currentEditData };
+              await ipcRenderer.invoke('save-record', { name: fileName, data: recordData });
+              // Update UI and exit edit mode
+              isEditMode = false;
+              renderFields();
+              // Remove Save/Cancel buttons
+              saveBtn.remove();
+              cancelBtn.remove();
+              // Refresh record display
+              this.displayRecord(recordData, fileName);
+              window.dispatchEvent(new CustomEvent('currentRecordUpdate', { detail: recordData }));
+              this.showStatusMessage('Entry updated successfully');
+            } catch (error) {
+              this.showStatusMessage('Error saving entry: ' + error.message, 5000);
+            }
+          };
+          actions.insertBefore(saveBtn, editButton);
+
+          const cancelBtn = document.createElement('button');
+          cancelBtn.id = 'cancel-edit-entry-button';
+          cancelBtn.className = 'modal-button cancel-button';
+          cancelBtn.textContent = 'Cancel';
+          cancelBtn.onclick = () => {
+            isEditMode = false;
+            currentEditData = { ...entry };
+            renderFields();
+            saveBtn.remove();
+            cancelBtn.remove();
+          };
+          actions.insertBefore(cancelBtn, editButton);
+        }
+      }
+    };
+
+    // Set up delete button (unchanged)
     deleteButton.onclick = async () => {
       const confirmed = confirm(`Are you sure you want to delete Entry ${entryIndex + 1}? This action cannot be undone.`);
       if (!confirmed) {
         return;
       }
-      
-              try {
-        // Use require to get electronAPI in preload context
+      try {
         const { ipcRenderer } = require('electron');
         await ipcRenderer.invoke('delete-record', {
           name: fileName,
           index: entryIndex
         });
-        
-        // Close modal
         overlay.classList.add('hidden');
-        
-        // Refresh the record display
         const recordData = await ipcRenderer.invoke('load-record', fileName);
         this.displayRecord(recordData, fileName);
-        
-        // Update currentRecord in renderer if it matches the current file
         window.dispatchEvent(new CustomEvent('currentRecordUpdate', { detail: recordData }));
-        
-        // Show success message
         this.showStatusMessage(`Success: Entry ${entryIndex + 1} deleted successfully`);
       } catch (error) {
         this.showStatusMessage(`Error: Failed to delete entry: ${error.message}`, 5000);
       }
     };
-    
+
     // Show modal
     overlay.classList.remove('hidden');
     overlay.setAttribute('aria-modal', 'true');
     overlay.setAttribute('role', 'dialog');
-    
-    // Set up focus management
     const appMain = document.querySelector('main');
     if (appMain) appMain.setAttribute('aria-hidden', 'true');
-    
-    // Focus first focusable element
     const firstFocusable = overlay.querySelector('button, [tabindex]:not([tabindex="-1"])');
     if (firstFocusable) firstFocusable.focus();
   }
