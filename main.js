@@ -29,12 +29,38 @@ const {
   parseCsvToRecord
 } = require('./logic/exportManager');
 
+const { readJson, writeJson } = require('./logic/fileUtils');
+
 let userDataPath;
+let settingsPath;
+
+function loadUserSettings() {
+  try {
+    if (fs.existsSync(settingsPath)) {
+      return readJson(settingsPath);
+    }
+  } catch (err) {
+    console.error('Failed to load user settings:', err);
+  }
+  return {};
+}
+
+function saveUserSettings(settings) {
+  try {
+    writeJson(settingsPath, settings);
+  } catch (err) {
+    console.error('Failed to save user settings:', err);
+  }
+}
 
 function createWindow() {
+  // Load settings before creating window
+  const settings = loadUserSettings();
   const win = new BrowserWindow({
-    width: 1000,
-    height: 850,
+    width: settings.width || 1000,
+    height: settings.height || 850,
+    x: settings.x,
+    y: settings.y,
     minWidth: 700,
     minHeight: 500,
     resizable: true,
@@ -46,6 +72,21 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
+
+  // Save window size/position on move/resize/close
+  const saveBounds = () => {
+    const bounds = win.getBounds();
+    const newSettings = Object.assign({}, loadUserSettings(), {
+      width: bounds.width,
+      height: bounds.height,
+      x: bounds.x,
+      y: bounds.y
+    });
+    saveUserSettings(newSettings);
+  };
+  win.on('resize', saveBounds);
+  win.on('move', saveBounds);
+  win.on('close', saveBounds);
 }
 
 // Seeds defaultTemplates into userData/templates if missing
@@ -71,6 +112,7 @@ function seedDefaultTemplatesIfMissing(userDataPath) {
 
 app.whenReady().then(() => {
   userDataPath = app.getPath('userData');
+  settingsPath = path.join(userDataPath, 'settings.json');
   console.log('User data path:', userDataPath);
   
   try {

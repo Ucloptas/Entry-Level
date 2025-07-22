@@ -1,6 +1,6 @@
 /* === THEME VARIABLES === */
 :root {
-  --bg-color: #f5f7fa;
+  --bg-color: #006A4D;
   --text-color: #222;
   --card-bg: #ffffff;
   --header-color: #006A4D;
@@ -248,8 +248,18 @@ h2 {
   font-size: 24px;
   cursor: pointer;
   z-index: 1000;
-  color: var(--icon-color);
-  user-select: none;
+  color: #fff; /* white icon in light mode */
+  border: 2px solid #fff; /* white border in light mode */
+  border-radius: 10px;
+  background: #006A4D; /* green background in light mode */
+  padding: 4px 8px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+body.dark .top-right-icon {
+  color: var(--icon-color); /* green icon in dark mode */
+  border-color: var(--icon-color); /* green border in dark mode */
+  background: transparent; /* transparent in dark mode */
 }
 
 /* === FLOATING MENU === */
