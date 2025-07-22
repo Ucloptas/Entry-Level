@@ -106,7 +106,7 @@ class ValidationManager {
     }
     
     // Check for invalid characters
-    const invalidChars = /[<>:"/\\|?*]/;
+    const invalidChars = /[<>:"/\\|*]/;
     if (invalidChars.test(trimmedName)) {
       errors.push('Field name contains invalid characters');
     }
