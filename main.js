@@ -341,7 +341,7 @@ ipcMain.handle('import-record-from-file', async (event) => {
   }
 });
 
-ipcMain.handle('get-all-record-template-info',async ()=>{
+ipcMain.handle('get-all-record-template-info', async () => {
   return getAllRecordTemplateInfo(userDataPath);
 });
 

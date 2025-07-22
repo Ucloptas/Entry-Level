@@ -733,10 +733,72 @@ document.getElementById('import-record-button')?.addEventListener('click', async
 
 // === DISPLAY RECORD PREVIEWS FOR FILTERING === //
 
-// Change: Directly show the filter screen when clicking 'Filter Records'
 document.getElementById('filter-records-button')?.addEventListener('click', async () => {
-  // Just show the filter screen, skip preview logic
-  window.uiManager.showScreen('filter-records-screen');
+  console.log("test");
+  const nextPreviews = document.getElementById('next-previews');
+  const previousPreviews = document.getElementById('previous-previews');
+  document.getElementById('back-from-preview').addEventListener('click', () => {
+    nextPreviews.classList.add('hidden');
+    previousPreviews.classList.add('hidden');
+    recordDisplayData = null;
+  });
+  const recordData = await window.electronAPI.getAllRecordTemplateInfo();
+  if (recordDisplayData == null)
+    recordDisplayData = await window.electronAPI.getAllRecordTemplateInfo();
+  let index = 0;
+  if (recordDisplayData.length > 5) {
+    nextPreviews.classList.remove('hidden');
+    previousPreviews.classList.remove('hidden');
+  }
+  //Shows next entries
+  document.getElementById('next-previews').addEventListener('click', () => {
+    if (!(index + 5 > recordDisplayData.length) && !(index === recordDisplayData.length)) {
+      index += 5;
+      window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+    }
+    console.log(index);
+  });
+  //Shows previous entries
+  document.getElementById('previous-previews').addEventListener('click', () => {
+    if (!(index - 5 < 0) && !(index === 0)) {
+      index -= 5;
+      window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+    }
+    console.log(index);
+  });
+  document.getElementById('select-record-filters')?.addEventListener('click', async () => {
+    document.getElementById('apply-filter').addEventListener('click', () => {
+      const type = document.getElementById('filter-type').value;
+      const value = document.getElementById('filter-value').value;
+      if (!value) return;
+      console.log(type, value);
+      const filteredData = recordDisplayData.filter(template => {
+        if (type == 'name') {
+          return template.name.includes(value);
+        } else if (type == 'field') {
+          return template.fields.some(field => field.name.includes(value));
+        }
+        return false;
+      });
+      console.log(filteredData);
+      document.getElementById('clear-filter').addEventListener('click', async () => {
+        recordDisplayData = await window.electronAPI.getAllRecordTemplateInfo();
+        index = 0;
+        window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+        showScreen('record-preview-screen');
+      });
+      // Replace recordDisplayData with filtered version
+      recordDisplayData = filteredData;
+      // Reset index to start
+      index = 0;
+      // Display the filtered preview
+      window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+    });
+  });
+  // Display the record data
+  window.uiManager.displayRecordPreview(recordDisplayData.slice(index, index + 5));
+  // Navigate to the record display screen
+  showScreen('record-preview-screen');
 });
 
 
@@ -1034,4 +1096,8 @@ function addHelpTextToFormFields() {
 // Listen for current record updates from UI manager
 window.addEventListener('currentRecordUpdate', (event) => {
   currentRecord = event.detail;
+});
+
+document.getElementById('select-record-filters')?.addEventListener('click', () => {
+  showScreen('filter-records-screen');
 });

@@ -75,24 +75,23 @@
         <!-- Filter Records Screen -->
         <div id="filter-records-screen" class="screen hidden">
           <h2>Filter Records</h2>
-        
-          <div class="form-row">
-            <label for="filter-type">Filter by:</label>
-            <select id="filter-type" >
-              <option value="name">Template Name</option>
-              <option value="field">Field Name</option>
-            </select>
-          </div>
-        
-          <div class="form-row">
-            <label for="filter-value">Enter value:</label>
-            <input type="text" id="filter-value" placeholder="Enter a record name or field type" />
-          </div>
-        
-          <div class="form-row button-group">
-            <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
-            <button id="apply-filter" class="big-button" data-screen="record-preview-screen" aria-label="apply filters">Apply Filter</button>
-            <button id="clear-filter" class="big-button" data-screen="record-preview-screen" aria-label="clear filters">Clear Filter</button>
+          <div class="button-group">
+            <div class="form-row">
+              <label for="filter-type">Filter by:</label>
+              <select id="filter-type" >
+                <option value="name">Template Name</option>
+                <option value="field">Field Name</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="filter-value">Enter value:</label>
+              <input type="text" id="filter-value" placeholder="Enter a record name or field type" />
+            </div>
+            <div class="form-row button-group">
+              <button class="big-button back-button" data-screen="view-records-screen" aria-label="Back to View Records">Back</button>
+              <button id="apply-filter" class="big-button" data-screen="record-preview-screen" aria-label="apply filters">Apply Filter</button>
+              <button id="clear-filter" class="big-button" data-screen="record-preview-screen" aria-label="clear filters">Clear Filter</button>
+            </div>
           </div>
         </div>
         

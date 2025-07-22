@@ -1052,5 +1052,61 @@ body.dark .edit-modal-form-container input[type="date"]::placeholder {
   pointer-events: auto;
 }
 
+.records-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.card-row {
+  padding: 12px;
+  margin: 8px 0;
+  background: var(--entry-bg);
+  border-radius: 8px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-left: 4px solid var(--button-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  max-height: 250px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  text-align: left;
+  width: 650px;
+  max-width: 90vw;
+}
+
+.card-row:hover {
+  transform: translateX(2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-row h4 {
+  margin: 0 0 10px 0;
+  color: var(--header-color);
+  font-size: 1.1em;
+}
+
+.card-row ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-row li {
+  margin-bottom: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.card-row li:last-child {
+  border-bottom: none;
+}
+
 
 

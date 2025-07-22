@@ -530,13 +530,13 @@ class TemplateUIManager {
   }
 }
 
-// Add RecordPreviewDisplayManager
+// Record Preview Display Manager
 class RecordPreviewDisplayManager {
   constructor() {
     this.titleElement = null;
     this.contentElement = null;
   }
-
+  // Display record preview in the UI
   displayRecordPreview(recordData) {
     this.titleElement = document.getElementById('record-preview-title');
     this.contentElement = document.getElementById('record-preview-content');
@@ -544,7 +544,9 @@ class RecordPreviewDisplayManager {
       console.error('Record preview elements not found');
       return;
     }
+    // Clear previous content
     this.contentElement.innerHTML = '';
+    // Display previews and title
     const previewSection = document.createElement('div');
     previewSection.innerHTML = `<h3>View Records (${recordData.length})</h3>`;
     if (recordData.length === 0) {
