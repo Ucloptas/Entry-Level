@@ -484,6 +484,7 @@ document.getElementById('view-record-button')?.addEventListener('click', async (
   document.getElementById('back-from-entries').addEventListener('click', () => {
     nextEntries.classList.add('hidden');
     previousEntries.classList.add('hidden');
+    showScreen('view-records-screen');
   });
   
   const recordData = await window.electronAPI.loadRecord(selected);
