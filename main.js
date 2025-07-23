@@ -2,6 +2,10 @@ const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs'); // Still needed for seedDefaultTemplatesIfMissing
 
+// Set Chromium flags for DPI support and device scale factor
+app.commandLine.appendSwitch('force-device-scale-factor', '1');
+app.commandLine.appendSwitch('high-dpi-support', '1');
+
 // Import logic modules using userData path structure
 const {
   loadTemplate,
