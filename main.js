@@ -64,6 +64,7 @@ function createWindow() {
     minWidth: 700,
     minHeight: 500,
     resizable: true,
+    icon: path.join(__dirname, 'logo.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,

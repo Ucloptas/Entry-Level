@@ -18,6 +18,7 @@
   "build": {
     "appId": "com.example.entrylevel",
     "productName": "Entry Level",
+    "icon": "logo.svg",
     "files": [
       "**/*"
     ],
