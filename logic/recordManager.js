@@ -70,4 +70,4 @@ function getAllRecordTemplateInfo(userDataPath){
   return recordTemplates;
 }
 
-module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist, getAllRecordTemplateInfo };
+module.exports = { listRecords, saveRecord, loadRecord, ensureDirsExist, getAllRecordTemplateInfo, deleteRecord };

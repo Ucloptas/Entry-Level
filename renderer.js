@@ -161,6 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('keydown', handleTab);
     modal._trapFocusHandler = handleTab;
   }
+  
+  // Expose trapFocus globally so it can be used in uiManager.js
+  window.trapFocus = trapFocus;
 
   function releaseFocus(modal) {
     if (modal._trapFocusHandler) {

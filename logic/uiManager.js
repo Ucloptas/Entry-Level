@@ -365,6 +365,10 @@ class RecordDisplayManager {
         });
         content.appendChild(fieldsList);
       }
+      // Re-apply focus trap after rendering fields
+      if (window.trapFocus) {
+        window.trapFocus(overlay);
+      }
     };
 
     // Initial render (view mode)
@@ -388,19 +392,21 @@ class RecordDisplayManager {
           saveBtn.onclick = async () => {
             // Read edited data from the form
             const formContainer = document.getElementById(`edit-modal-form-container-${entryIndex}`);
-            const editedData = formManager.readFormData(template.fields, formContainer);
+            const { ipcRenderer } = require('electron');
+            // Always reload the record to get the latest template fields
+            const recordData = await ipcRenderer.invoke('load-record', fileName);
+            const currentTemplateFields = recordData.template.fields;
+            const editedData = formManager.readFormData(currentTemplateFields, formContainer);
             // Validate edited data before saving
             const validationManager = new ValidationManager();
-            const errors = validationManager.validateFormData(template.fields, editedData);
+            const errors = validationManager.validateFormData(currentTemplateFields, editedData);
             if (errors.length > 0) {
               validationManager.showErrorMessage('Validation failed:\n' + errors.join('\n'), 5000);
               return;
             }
             // Save changes to currentRecord
             try {
-              const { ipcRenderer } = require('electron');
               // Update entry in currentRecord
-              const recordData = await ipcRenderer.invoke('load-record', fileName);
               recordData.entries[entryIndex] = { ...editedData };
               await ipcRenderer.invoke('save-record', { name: fileName, data: recordData });
               // Remove Save/Cancel buttons
@@ -411,7 +417,7 @@ class RecordDisplayManager {
               // Re-open the modal in view mode with updated entry data (fresh object)
               const updatedEntry = recordData.entries[entryIndex];
               setTimeout(() => {
-                this.openEntryViewer(updatedEntry, entryIndex, template, fileName);
+                this.openEntryViewer(updatedEntry, entryIndex, recordData.template, fileName);
               }, 10);
               // Refresh record display
               this.displayRecord(recordData, fileName);
