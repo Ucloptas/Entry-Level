@@ -1,6 +1,6 @@
 {
   "name": "entry-level",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Basic Electron app skeleton for school project",
   "main": "main.js",
   "scripts": {
@@ -27,12 +27,12 @@
       "target": "nsis"
     },
     "mac": {
+      "icon": "icons/icon.icns",
       "target": [
         "dmg",
         "zip"
       ],
-      "category": "public.app-category.productivity",
-      "icon": "logopng.icns"
+      "category": "public.app-category.productivity"
     }
   },
   "repository": {
